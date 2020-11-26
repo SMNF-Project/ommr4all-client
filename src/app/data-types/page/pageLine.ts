@@ -27,6 +27,7 @@ export class PageLine extends Region {
 
   // TextLine
   public sentence = new Sentence();
+  public transcriptionName = 'default';
 
   // MusicLine
   private _symbols: Array<MusicSymbol> = [];
@@ -43,6 +44,12 @@ export class PageLine extends Region {
     line.coords = PolyLine.fromString(json.coords);
     line.sentence = Sentence.fromJson(json.sentence);
     line.reconstructed = json.reconstructed === true;
+
+    // Transcription name enables multiple text versions for a given text.
+    if (json.transcriptionName) {
+      console.log('PageLine: toJson() with transcriptionName = ' + json.transcriptionName);
+      line.transcriptionName = json.transcriptionName;
+    }
 
     // Staff lines are required for clef and note positioning if available, so attach it first
     if (json.staffLines) { json.staffLines.map(s => StaffLine.fromJson(s, line)); }
@@ -62,10 +69,12 @@ export class PageLine extends Region {
   }
 
   toJson() {
+    console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
     return {
       id: this.id,
       coords: this.coords.toString(),
       reconstructed: this.reconstructed,
+      transcriptionName: this.transcriptionName,
       sentence: this.sentence.toJson(),
       staffLines: this.staffLines.map(s => s.toJson()),
       symbols: this._symbols.map(s => s.toJson()),
