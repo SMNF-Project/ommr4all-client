@@ -9,9 +9,9 @@
     *ngIf="blockType === Mode.Lyrics"
     class="full-width"
     >
-    <input autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
+    <textarea autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
            (wheel)="$event.preventDefault()"
-    >
+    ></textarea>
   </div>
   <div
     *ngIf="blockType !== Mode.Lyrics">
