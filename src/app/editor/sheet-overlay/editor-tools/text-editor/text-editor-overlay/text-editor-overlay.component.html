@@ -15,9 +15,9 @@
   </div>
   <div
     *ngIf="blockType !== Mode.Lyrics">
-    <input autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
+    <textarea autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
            (wheel)="$event.preventDefault()"
-    >
+    ></textarea>
   </div>
   <app-virtual-keyboard (buttonClicked)="insertAtCaret($event)" [url]="virtualKeyboardUrl" [storePermitted]="virtualKeyboardStoringPermitted"></app-virtual-keyboard>
 </div>

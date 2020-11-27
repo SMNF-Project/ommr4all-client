@@ -24,6 +24,25 @@ input:focus {
   border-bottom: 2px solid #9f968a;
 }
 
+
+textarea {
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: whitesmoke;
+  font-size: 120%;
+  outline: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  color: black;
+}
+textarea:focus {
+  border: none;
+  outline: none;
+  background: whitesmoke;
+  border-bottom: 2px solid #9f968a;
+}
+
 .full-width {
   width: 100%;
 }
