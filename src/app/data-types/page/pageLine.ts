@@ -152,7 +152,13 @@ export class PageLine extends Region {
 
   get avgStaffLineDistance() { return this._avgStaffLineDistance; }
   set avgStaffLineDistance(d: number) { this._avgStaffLineDistance = d; }
-  staffHeight() { if (this.staffLines.length <= 1) { return 0; } else { return this.staffLines[this.staffLines.length - 1].coords.averageY() - this.staffLines[0].coords.averageY(); }}
+  staffHeight() {
+    if (this.staffLines.length <= 1) {
+      return 0;
+    } else {
+      return this.staffLines[this.staffLines.length - 1].coords.averageY() - this.staffLines[0].coords.averageY();
+    }
+  }
   get logicalConnections() { return this._logicalConnections; }
 
   refreshMusicIds() {
