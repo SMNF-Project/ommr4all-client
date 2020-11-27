@@ -3,7 +3,7 @@ import {IdGenerator, IdType} from './id-generator';
 
 export class Syllable {
   private static readonly conToPrefix = ['~', '-', ' '];
-  private static readonly conToVisiblePrefix = ['~', '', ' '];
+  private static readonly conToVisiblePrefix = ['~', '-', ' '];
 
   constructor(
     public text = '',
@@ -48,5 +48,6 @@ export class Syllable {
     this.prefix = o.prefix;
   }
 
-  equals(o: Syllable, withPrefix = false): boolean { return this.text === o.text && this.connection === o.connection && (!withPrefix || this.prefix === o.prefix); }
+  equals(o: Syllable, withPrefix = false): boolean {
+    return this.text === o.text && this.connection === o.connection && (!withPrefix || this.prefix === o.prefix); }
 }
