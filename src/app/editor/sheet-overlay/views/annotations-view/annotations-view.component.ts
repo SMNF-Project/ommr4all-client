@@ -19,6 +19,23 @@ export class AnnotationsViewComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    // TODO: Here the annotations to display should be filtered
+    // The ViewSettings are in the ViewSettings of the editor tool.
+    // This needs to be defined properly.
+    //
+    // The problem with only displaying annotations is that each line
+    // also gets rendered. Therefore, we get multiple regions drawn.
+    // Ideally, the entire *line* is excluded from rendering.
+    // This means adding a masking mechanism, some "visibility"
+    // property set on different pcgts objects.
+    //
+    // The proper place to set this is in the Region class, from which
+    // all visible PcGts classes inherit.
+    // You would then always check in the corresponding templates whether
+    // the children of a region that get rendered are visible, e.g.:
+    // *ngIf="line.visible"
+    //
+    // Let's first check how the hiding of regions is handled, though.
     this.redraw();
   }
 

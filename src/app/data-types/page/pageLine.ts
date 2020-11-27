@@ -27,7 +27,7 @@ export class PageLine extends Region {
 
   // TextLine
   public sentence = new Sentence();
-  public transcriptionName = 'default';
+  public transcriptionName = null;
 
   // MusicLine
   private _symbols: Array<MusicSymbol> = [];
@@ -47,7 +47,7 @@ export class PageLine extends Region {
 
     // Transcription name enables multiple text versions for a given text.
     if (json.transcriptionName) {
-      console.log('PageLine: toJson() with transcriptionName = ' + json.transcriptionName);
+      console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
       line.transcriptionName = json.transcriptionName;
     }
 
@@ -69,12 +69,22 @@ export class PageLine extends Region {
   }
 
   toJson() {
-    console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
+    if (this.transcriptionName !== null) {
+      console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
+      return {
+        id: this.id,
+        coords: this.coords.toString(),
+        reconstructed: this.reconstructed,
+        transcriptionName: this.transcriptionName,
+        sentence: this.sentence.toJson(),
+        staffLines: this.staffLines.map(s => s.toJson()),
+        symbols: this._symbols.map(s => s.toJson()),
+      };
+    }
     return {
       id: this.id,
       coords: this.coords.toString(),
       reconstructed: this.reconstructed,
-      transcriptionName: this.transcriptionName,
       sentence: this.sentence.toJson(),
       staffLines: this.staffLines.map(s => s.toJson()),
       symbols: this._symbols.map(s => s.toJson()),
