@@ -9,6 +9,15 @@
   <mat-slide-toggle [(ngModel)]="showReadingOrder" i18n>Show reading order</mat-slide-toggle>
   <mat-slide-toggle [(ngModel)]="showAnnotations" i18n>Show annotations</mat-slide-toggle>
   <mat-slide-toggle [(ngModel)]="showComments" i18n>Show comments</mat-slide-toggle>
+
   <mat-divider></mat-divider>
+
+  <mat-label><b>Reading:</b></mat-label>
+  <mat-select [(ngModel)]="activeReading">
+    <mat-option *ngFor="let reading of viewSettings.availableReadings" value="{{reading}}">{{reading}}</mat-option>
+  </mat-select>
+
+  <mat-divider></mat-divider>
+
   <button mat-button (click)="resetToDefault.emit()" i18n>Reset to default</button>
 </div>

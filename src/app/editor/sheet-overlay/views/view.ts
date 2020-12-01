@@ -11,6 +11,9 @@ export class ViewSettings {
 
     public showBackground = true,
     public showSymbolCenterOnly = false,
+
+    public activeReading = 'Transcription',
+    public availableReadings: Array<string> = []
   ) {
   }
 

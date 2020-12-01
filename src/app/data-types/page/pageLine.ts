@@ -22,7 +22,7 @@ export class LogicalConnection {
 }
 
 export class LineReading {
-  static readonly defaultReadingName = '__LineReading__default';
+  static readonly defaultReadingName = 'Lemma reading (default)';
 
   public readingName = null;
   public sentence = new Sentence();
@@ -59,7 +59,9 @@ export class LineReading {
   }
 
   static dictToJson(readingsDict) {
-    const json = Object.values(readingsDict).filter(reading => !reading.isDefaultReading()).map(reading => reading.toJson());
+    const json = Object.values(readingsDict).filter(
+      reading => reading instanceof LineReading).filter(
+        reading => !reading.isDefaultReading()).map(reading => reading.toJson());
     console.log('LineReading.dictToJson: created json ' + json);
     return json;
   }
@@ -172,7 +174,7 @@ export class PageLine extends Region {
     }
     if (this.hasReadings) {
       // The default reading should NOT be exported in the readings dict.
-      Object.assign(output, {readings: LineReading.dictToJson(this.readings, true)});
+      Object.assign(output, {readings: LineReading.dictToJson(this.readings)});
     }
     return output;
   }
@@ -588,11 +590,18 @@ export class PageLine extends Region {
 
   /* Readings */
   setActiveReading(readingName: string): void {
-    const reading = this.readings[readingName];
-    if (!reading) {
-      console.log('Reading ' + readingName + ' not available!');
+    if (!this.hasReadings) {
       return;
     }
+    const reading = this.readings[readingName];
+    if (!reading) {
+      console.log('PageLine.setActiveReading: Reading ' + readingName + ' not available!');
+      return;
+    }
+    // We should also save the current reading in case it was edited!
+    // However, this seems to work by virtue of reference assignment:
+    // changes to the active reading are made directly to the Sentence
+    // inside readings[activeReading].
     this.sentence = reading.sentence;
     this.coords = reading.coords;
     this.activeReading = readingName;
@@ -608,6 +617,14 @@ export class PageLine extends Region {
   get availableReadings(): Array<string> {
     if (!this.hasReadings) { return []; }
     return Object.keys(this.readings);
+  }
+
+  isReadingAvailable(readingName: string): boolean {
+    if (!this.hasReadings) {
+      return false;
+    }
+    const reading = this.readings[readingName];
+    return !!reading;  // not not: cast to boolean, check un-negated
   }
 
   get defaultReading(): LineReading {

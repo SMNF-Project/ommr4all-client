@@ -63,6 +63,20 @@ export class Page extends Region {
   get musicRegions() { return this.blocks.filter(b => b.type === BlockType.Music); }
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
 
+  get availableReadings(): Array<string> {
+    const readingNames: Array<string> = [];
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        for (const readingName of tl.availableReadings) {
+          if (!readingNames.find(n => n === readingName)) {
+            readingNames.push(readingName);
+          }
+        }
+      }
+    }
+    return readingNames;
+  }
+
   clean() {
     this.blocks.forEach(b => b.lines.forEach(l => l.clean()));
     this.blocks.forEach(b => b.lines.filter(l => l.isEmpty()).forEach(l => l.detachFromParent()));
