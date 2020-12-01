@@ -4,14 +4,16 @@
     <ng-container *ngIf="connection.textRegion.visible">
       <g *ngFor="let syllable of connection.syllableConnectors">
         <ng-container *ngIf="syllable.textLine.visible">
-          <text
-            [attr.x]="syllable.neume.coord.x"
-            [attr.y]="syllable.textLine.AABB.vcenter()"
-            [attr.font-size]="syllable.textLine.AABB.size.h / 2"
-            [class.selected]="syllable === editorTool.selectedSyllableConnection"
-            (mousedown)="onSyllableMouseDown($event, syllable)"
-            (mouseup)="onSyllableMouseUp($event, connection, syllable)"
-          >{{ syllable.syllable.visibleText }}</text>
+          <ng-container *ngIf="syllable.isActive">
+            <text
+              [attr.x]="syllable.neume.coord.x"
+              [attr.y]="syllable.textLine.AABB.vcenter()"
+              [attr.font-size]="syllable.textLine.AABB.size.h / 2"
+              [class.selected]="syllable === editorTool.selectedSyllableConnection"
+              (mousedown)="onSyllableMouseDown($event, syllable)"
+              (mouseup)="onSyllableMouseUp($event, connection, syllable)"
+            >{{ syllable.syllable.visibleText }}</text>
+          </ng-container>
         </ng-container>
       </g>
     </ng-container>

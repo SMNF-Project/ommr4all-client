@@ -25,6 +25,8 @@ export class Page extends Region {
   }
 
   static fromJson(json) {
+    console.log('DEBUG: New page from json:');
+    console.log(json);
     const page = new Page(
       json.imageFilename,
       json.imageHeight / json.imageHeight * Constants.GLOBAL_SCALING,

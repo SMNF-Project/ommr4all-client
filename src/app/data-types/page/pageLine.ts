@@ -21,13 +21,77 @@ export class LogicalConnection {
   }
 }
 
+export class LineReading {
+  static readonly defaultReadingName = '__LineReading__default';
+
+  public readingName = null;
+  public sentence = new Sentence();
+  public coords = null;
+
+  private readonly _line = null;
+
+  public constructor(parent: PageLine = null) {
+    if (parent) {
+      this._line = parent;
+    }
+  }
+
+  static fromJson(json, line: PageLine = null) {
+    const reading = new LineReading(line);
+    // console.log('Reading PolyLine from coords: ' + json.coords);
+    reading.coords = PolyLine.fromString(json.coords);
+    // console.log('Reading Sentence from json: ' + json.sentence);
+    reading.sentence = Sentence.fromJson(json.sentence);
+    reading.readingName = json.readingName;
+    console.log('LineReading created: ' + reading.readingName + ' / ' + json.readingName);
+    console.log(reading);
+    console.log('json: ' + JSON.stringify(json));
+    return reading;
+  }
+
+  static dictFromJson(json, line: PageLine = null) {
+    const readings = Object.assign({},
+      ...json.map((reading) => ({[reading.readingName]: LineReading.fromJson(reading, line)})
+      ));
+    console.log('LineReading.dictFromJson: Created readings: ');
+    console.log(readings);
+    return readings;
+  }
+
+  static dictToJson(readingsDict) {
+    const json = readingsDict.values().filter(reading => reading.isDefaultReading()).map(readingValue => readingValue.toJson());
+    console.log('LineReading.dictToJson: created json ' + json);
+    return json;
+  }
+
+  toJson() {
+    return {
+      readingName: this.readingName,
+      coords: this.coords.toJson(),
+      sentence: this.sentence.toJson()
+    };
+  }
+
+  getLine(): PageLine {
+    return this._line;
+  }
+
+  isDefaultReading(): boolean {
+    return (this.readingName === LineReading.defaultReadingName);
+  }
+
+}
+
 export class PageLine extends Region {
   // General
   public reconstructed = false;
 
   // TextLine
   public sentence = new Sentence();
-  public transcriptionName = null;
+  public transcriptionName: string = null;
+  public readings = Object.create({}); // Object of LineReadings, keyed by 'reading' property
+  public hasReadings = false;
+  public activeReading: string = null;
 
   // MusicLine
   private _symbols: Array<MusicSymbol> = [];
@@ -50,6 +114,25 @@ export class PageLine extends Region {
       console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
       line.transcriptionName = json.transcriptionName;
     }
+    // Readings from data
+    if (json.readings) {
+      line.readings = LineReading.dictFromJson(json.readings, line);
+      line.hasReadings = true;
+      // Add default reading
+      line.readings[LineReading.defaultReadingName] = line.createDefaultReading();
+      line.activeReading = LineReading.defaultReadingName;
+    }
+
+    if (line.hasReadings) {
+      console.log('PageLine readings ' + line._id);
+      console.log(line.availableReadings);
+      console.log(line.readings);
+      if (line.readings.hasOwnProperty('Transcription')) {
+        console.log('Setting reading to Transcription');
+        // DEBUG: For testing.
+        line.setActiveReading('Transcription');
+      }
+    }
 
     // Staff lines are required for clef and note positioning if available, so attach it first
     if (json.staffLines) { json.staffLines.map(s => StaffLine.fromJson(s, line)); }
@@ -69,19 +152,8 @@ export class PageLine extends Region {
   }
 
   toJson() {
-    if (this.transcriptionName !== null) {
-      console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
-      return {
-        id: this.id,
-        coords: this.coords.toString(),
-        reconstructed: this.reconstructed,
-        transcriptionName: this.transcriptionName,
-        sentence: this.sentence.toJson(),
-        staffLines: this.staffLines.map(s => s.toJson()),
-        symbols: this._symbols.map(s => s.toJson()),
-      };
-    }
-    return {
+
+    const output = {
       id: this.id,
       coords: this.coords.toString(),
       reconstructed: this.reconstructed,
@@ -89,6 +161,15 @@ export class PageLine extends Region {
       staffLines: this.staffLines.map(s => s.toJson()),
       symbols: this._symbols.map(s => s.toJson()),
     };
+    if (this.transcriptionName !== null) {
+      console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
+      Object.assign(output, {transcriptionName: this.transcriptionName});
+    }
+    if (this.hasReadings) {
+      // The default reading should NOT be exported
+      Object.assign(output, {readings: LineReading.dictToJson(this.readings, true)});
+    }
+    return output;
   }
 
   getBlock() { return this.parent as Block; }
@@ -465,8 +546,27 @@ export class PageLine extends Region {
   // TextLine
   // ==========================================================================
 
+  syllableInfoById(id: string, searchReadings = true): {s: Syllable, r: LineReading} {
+    if (searchReadings && this.hasReadings) {
+      for (const readingName of Object.keys(this.readings)) {
+        // console.log('PageLine ' + this.id + ': searching for syllable ' + id + ' in reading ' + readingName);
+        const syl = this.readings[readingName].sentence.syllables.find(s => s.id === id);
+        if (syl) {
+          // console.log('Syllable found!');
+          // console.log(syl);
+          return {s: syl, r: this.readings[readingName]};
+        }
+      }
+      console.log('Syllable with id = ' + id + ' not found in readings. If found' +
+        ' in the current sentence, something is strange, because current sentence' +
+        ' should be at least the default reading.');
+    }
+    const syllable = this.sentence.syllables.find(s => s.id === id);
+    return {s: syllable, r: null};
+  }
+
   syllableById(id: string): Syllable {
-    return this.sentence.syllables.find(s => s.id === id);
+    return this.syllableInfoById(id).s;
   }
 
   cleanSyllables(): void {
@@ -475,5 +575,49 @@ export class PageLine extends Region {
 
   refreshTextIds() {
     this.sentence.refreshIds();
+    // refresh IDs in readings as well
+    if (this.hasReadings) {
+      Object.values(this.readings).forEach(reading => reading.sentence.refreshIds());
+    }
   }
+
+  /* Readings */
+  setActiveReading(readingName: string): void {
+    const reading = this.readings[readingName];
+    if (!reading) {
+      console.log('Reading ' + readingName + ' not available!');
+      return;
+    }
+    this.sentence = reading.sentence;
+    this.coords = reading.coords;
+    this.activeReading = readingName;
+    this.update();
+  }
+
+  setActiveDefaultReading(): void {
+    if (this.hasReadings) {
+      this.setActiveReading(LineReading.defaultReadingName);
+    }
+  }
+
+  get availableReadings(): Array<string> {
+    if (!this.hasReadings) { return []; }
+    return Object.keys(this.readings);
+  }
+
+  get defaultReading(): LineReading {
+    if (!this.hasReadings) {
+      return this.createDefaultReading();
+    }
+    return this.readings[LineReading.defaultReadingName];
+  }
+
+  createDefaultReading(): LineReading {
+    return LineReading.fromJson({
+      readingName: LineReading.defaultReadingName,
+      sentence: this.sentence.toJson(),
+      coords: this.coords.toString()
+    }, this);
+  }
+
 }

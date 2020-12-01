@@ -1,7 +1,7 @@
 import {Region} from './region';
 import {BlockType, EmptyRegionDefinition} from './definitions';
 import {Point, PolyLine} from '../../geometry/geometry';
-import {PageLine} from './pageLine';
+import {LineReading, PageLine} from './pageLine';
 import {IdType} from './id-generator';
 import {Syllable} from './syllable';
 import {Page} from './page';
@@ -136,10 +136,10 @@ export class Block extends Region {
     return null;
   }
 
-  syllableInfoById(id: string): {s: Syllable, l: PageLine} {
+  syllableInfoById(id: string): {s: Syllable, l: PageLine, r: LineReading} {
     for (const tl of this.textLines) {
-      const s = tl.syllableById(id);
-      if (s) { return {s: s, l: tl}; }
+      const sLineInfo = tl.syllableInfoById(id);
+      if (sLineInfo.s) { return {s: sLineInfo.s, r: sLineInfo.r, l: tl}; }
     }
     return null;
   }

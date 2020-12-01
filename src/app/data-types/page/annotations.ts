@@ -2,7 +2,7 @@ import {Syllable} from './syllable';
 import {Note} from './music-region/symbol';
 import {Page} from './page';
 import {Block} from './block';
-import {PageLine} from './pageLine';
+import {LineReading, PageLine} from './pageLine';
 import {UserCommentHolder} from './userComment';
 import {Point} from '../../geometry/geometry';
 import {AnnotationConnectionStruct, AnnotationStruct, AnnotationSyllableConnectorStruct} from '../structs';
@@ -109,6 +109,7 @@ export class SyllableConnector implements UserCommentHolder {
     public readonly syllable: Syllable,
     public readonly neume: Note,
     public readonly textLine: PageLine,
+    public readonly reading: LineReading = null
   ) {}
 
   static fromJson(json: AnnotationSyllableConnectorStruct, connection: Connection, textRegion: Block, musicRegion: Block) {
@@ -118,6 +119,7 @@ export class SyllableConnector implements UserCommentHolder {
       si.s,
       musicRegion.noteById(json.noteID),
       si.l,
+      si.r
     );
   }
 
@@ -128,5 +130,13 @@ export class SyllableConnector implements UserCommentHolder {
       syllableID: this.syllable.id,
       noteID: this.neume.id,
     };
+  }
+
+  get isActive(): boolean {
+    if (this.textLine.hasReadings) {
+      return (this.reading.readingName === this.textLine.activeReading);
+    } else {
+      return true;
+    }
   }
 }
