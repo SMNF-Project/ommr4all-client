@@ -59,7 +59,7 @@ export class LineReading {
   }
 
   static dictToJson(readingsDict) {
-    const json = readingsDict.values().filter(reading => reading.isDefaultReading()).map(readingValue => readingValue.toJson());
+    const json = Object.values(readingsDict).filter(reading => !reading.isDefaultReading()).map(reading => reading.toJson());
     console.log('LineReading.dictToJson: created json ' + json);
     return json;
   }
@@ -67,7 +67,7 @@ export class LineReading {
   toJson() {
     return {
       readingName: this.readingName,
-      coords: this.coords.toJson(),
+      coords: this.coords.toString(),
       sentence: this.sentence.toJson()
     };
   }
@@ -153,11 +153,16 @@ export class PageLine extends Region {
 
   toJson() {
 
+    // Note that the coords and sentence are taken from the default reading,
+    // since there may be a different reading active.
+    // If there are no variant readings, this is generated from the original
+    // sentence and coords, so it is equivalent to just osing this.coords and
+    // this sentence.
     const output = {
       id: this.id,
-      coords: this.coords.toString(),
+      coords: this.defaultReading.coords.toString(),
       reconstructed: this.reconstructed,
-      sentence: this.sentence.toJson(),
+      sentence: this.defaultReading.sentence.toJson(),
       staffLines: this.staffLines.map(s => s.toJson()),
       symbols: this._symbols.map(s => s.toJson()),
     };
@@ -166,7 +171,7 @@ export class PageLine extends Region {
       Object.assign(output, {transcriptionName: this.transcriptionName});
     }
     if (this.hasReadings) {
-      // The default reading should NOT be exported
+      // The default reading should NOT be exported in the readings dict.
       Object.assign(output, {readings: LineReading.dictToJson(this.readings, true)});
     }
     return output;
