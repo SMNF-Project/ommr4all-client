@@ -40,6 +40,8 @@
     "simplify-js": "^1.2.3",
     "svg-pan-zoom": "^3.6.0",
     "tslib": "^1.9.0",
+    "x2js": "^3.4.0",
+    "xml-formatter": "^2.4.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {

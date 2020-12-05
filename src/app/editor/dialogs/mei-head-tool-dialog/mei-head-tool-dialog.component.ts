@@ -1,15 +1,9 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {StepperSelectionEvent} from '@angular/cdk/stepper';
-import {Page} from '../../../data-types/page/page';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ActionsService} from '../../actions/actions.service';
-import {BlockType} from '../../../data-types/page/definitions';
-import {PageLine} from '../../../data-types/page/pageLine';
-import {ActionType} from '../../actions/action-types';
-import {Sentence} from '../../../data-types/page/sentence';
-import {Syllable} from '../../../data-types/page/syllable';
 import {PcGts} from '../../../data-types/page/pcgts';
-import {MEIHeadMeta} from "../../../data-types/page/meta";
+import {MEIHeadMeta} from '../../../data-types/page/meta';
+import {xml2json, json2xml} from '../../../utils/xml2json';
 
 export class MeiHeadToolData {
   pcgts: PcGts;
@@ -22,7 +16,8 @@ export class MeiHeadToolData {
   styleUrls: ['./mei-head-tool-dialog.component.css']
 })
 export class MeiHeadToolDialogComponent implements OnInit {
-  rawText = '';
+  jsonText = '';
+  // xmlText = '';
   preformattedText = '';
 
   constructor(
@@ -40,7 +35,7 @@ export class MeiHeadToolDialogComponent implements OnInit {
   }
 
   private initPreview() {
-    this.preformattedText = this.rawText
+    this.preformattedText = this.jsonText
       .replace(/\n+/gi, ' ')
       .replace(/[\s]+/gi, ' ')
       .replace(/\s*\|\|\s*/gi, '')
@@ -57,12 +52,16 @@ export class MeiHeadToolDialogComponent implements OnInit {
     console.log(this.data);
     const meiHead = this.data.pcgts.meiHeadMeta.data;
     if (!meiHead) {
-      this.rawText = 'No MEI head metadata available.';
+      this.jsonText = 'No MEI head metadata available.';
     } else {
       // this.rawText = meiHead.data;
-      this.rawText = JSON.stringify(meiHead, null, 2);
+      this.jsonText = JSON.stringify(meiHead, null, 2);
+      // this.xmlText = json2xml(this.jsonText);
     }
   }
+
+  get xmlText() { return json2xml(this.jsonText); }
+  set xmlText(value: string) { this.jsonText = xml2json(value); }
 
   close(r: any = false) {
     console.log('MeiHeadToolDialogComponent.close() called');
@@ -72,8 +71,8 @@ export class MeiHeadToolDialogComponent implements OnInit {
   insert() {
     console.log('MeiHeadToolDialogComponent.insert() called');
     // TODO: This is VERY unsafe. Needs some validity checks.
-    if (this.isValidMeiHeadText(this.rawText)) {
-      this.data.pcgts.meiHeadMeta.setDataFromString(this.rawText);
+    if (this.isValidMeiHeadText(this.jsonText)) {
+      this.data.pcgts.meiHeadMeta.setDataFromString(this.jsonText);
     } else {
       console.log('Invalid metadata!');
     }

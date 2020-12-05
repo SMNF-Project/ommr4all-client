@@ -126,6 +126,7 @@ import { NotationStyleViewComponent } from './administrative-view/administrative
 import { AddNotationStyleViewComponent } from './administrative-view/administrative-view-notation-style/add-notation-style-view/add-notation-style-view.component';
 import { BookStatsDialogComponent } from './book-view/book-settings-view/book-stats-dialog/book-stats-dialog.component';
 import { MeiHeadToolDialogComponent } from './editor/dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 registerLocaleData(localeDe, 'de');
 
@@ -284,6 +285,7 @@ const appRoutes: Routes = [
       {enableTracing: !environment.production}
     ),
     MatListModule,
+    MatTabsModule,
   ],
   entryComponents: [
     AddNewDialogComponent,

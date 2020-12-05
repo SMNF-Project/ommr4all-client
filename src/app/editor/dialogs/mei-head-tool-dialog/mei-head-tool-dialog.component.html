@@ -1,13 +1,26 @@
 <h1 mat-dialog-title i18n>MEI head editing tool</h1>
 <div mat-dialog-content>
   <ng-template matStepLabel i18n>Paste text</ng-template>
-  <mat-form-field class="full-width">
-    <textarea matInput placeholder="Paste here"
-              rows="20"
-              cdkTextareaAutosize
-              required [(ngModel)]="rawText"></textarea>
-    <mat-hint i18n>Paste the text you want to insert</mat-hint>
-  </mat-form-field>
+  <mat-tab-group>
+    <mat-tab label="XML">
+      <mat-form-field class="full-width">
+        <textarea matInput placeholder="Paste here"
+                  rows="30"
+                  cdkTextareaAutosize
+                  required [(ngModel)]="xmlText"></textarea>
+        <mat-hint i18n>Paste the MEIhead element.</mat-hint>
+      </mat-form-field>
+    </mat-tab>
+    <mat-tab label="Raw JSON">
+      <mat-form-field class="full-width">
+        <textarea matInput placeholder="Paste here"
+                  rows="30"
+                  cdkTextareaAutosize
+                  required [(ngModel)]="jsonText"></textarea>
+        <mat-hint i18n>Paste the text you want to insert</mat-hint>
+      </mat-form-field>
+    </mat-tab>
+  </mat-tab-group>
 </div>
 <div mat-dialog-actions align="end">
   <div fxLayout="row" fxLayoutGap="5px">
