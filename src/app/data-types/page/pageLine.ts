@@ -58,7 +58,7 @@ export class LineReading {
     return readings;
   }
 
-  static dictToJson(readingsDict) {
+  static dictToJson(readingsDict: { [key: string]: LineReading}) {
     const json = Object.values(readingsDict).filter(
       reading => reading instanceof LineReading).filter(
         reading => !reading.isDefaultReading()).map(reading => reading.toJson());
@@ -91,7 +91,7 @@ export class PageLine extends Region {
   // TextLine
   public sentence = new Sentence();
   public transcriptionName: string = null;
-  public readings = Object.create({}); // Object of LineReadings, keyed by 'reading' property
+  public readings: { [name: string]: LineReading } = Object.create({}); // Object of LineReadings, keyed by 'reading' property
   public hasReadings = false;
   public activeReading: string = null;
 

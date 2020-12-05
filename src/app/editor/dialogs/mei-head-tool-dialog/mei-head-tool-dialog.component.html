@@ -1,0 +1,18 @@
+<h1 mat-dialog-title i18n>MEI head editing tool</h1>
+<div mat-dialog-content>
+  <ng-template matStepLabel i18n>Paste text</ng-template>
+  <mat-form-field class="full-width">
+    <textarea matInput placeholder="Paste here"
+              rows="20"
+              cdkTextareaAutosize
+              required [(ngModel)]="rawText"></textarea>
+    <mat-hint i18n>Paste the text you want to insert</mat-hint>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <div fxLayout="row" fxLayoutGap="5px">
+    <button mat-flat-button color="primary" (click)="insert()" i18n="@@Insert">Insert</button>
+    <button mat-flat-button (click)="close()" i18n="@@Cancel">Cancel</button>
+  </div>
+</div>
+

@@ -46,6 +46,7 @@ export class ToolBarStateService {
   @Output() runCharacterRecognition = new EventEmitter();
   @Output() runClearAllTexts = new EventEmitter();
   @Output() runClearAllSyllableConnections = new EventEmitter();
+  @Output() runMeiHeadTool = new EventEmitter();
 
   @Output() runClearFullPage = new EventEmitter();
   @Output() requestEditPage = new EventEmitter();

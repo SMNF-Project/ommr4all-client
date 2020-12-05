@@ -34,6 +34,7 @@ import {PolyLine} from '../geometry/geometry';
 import {BookPermissionFlag, BookPermissionFlags} from '../data-types/permissions';
 import {Annotations} from '../data-types/page/annotations';
 import {Sentence} from '../data-types/page/sentence';
+import {MeiHeadToolDialogComponent} from './dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
 
 
 @Component({
@@ -103,6 +104,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this._subscription.add(this.toolbarStateService.runLayoutAnalysis.subscribe(() => this.openLayoutAnalysisDialog()));
     this._subscription.add(this.toolbarStateService.editorToolChanged.subscribe(() => this.changeDetector.markForCheck()));
     this._subscription.add(this.toolbarStateService.runLyricsPasteTool.subscribe(() => this.openLyricsPasteTool()));
+    this._subscription.add(this.toolbarStateService.runMeiHeadTool.subscribe(() => this.openMeiHeadTool()));
     this._subscription.add(this.toolbarStateService.requestEditPage.subscribe(() => this.requestEditPage()));
     this._subscription.add(this.toolbarStateService.runAutoSyllable.subscribe(() => this.openPredictionDialog(AlgorithmGroups.Syllables)));
     this._subscription.add(this.editorService.pageStateObs.subscribe(() => {  this.changeDetector.detectChanges(); }));
@@ -315,7 +317,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       data: {
         page: this.editorService.pcgts.page,
       }
-    }).afterClosed().subscribe( (r) => {
+    }).afterClosed().subscribe((r) => {
         if (r) {
           this.toolbarStateService.currentEditorTool = EditorTools.Syllables;
           if (r.assignSyllables) {
@@ -324,5 +326,19 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  private openMeiHeadTool() {
+    this.modalDialog.open(MeiHeadToolDialogComponent, {
+      disableClose: false,
+      width: '600px',
+      data: {
+        pcgts: this.editorService.pcgts,
+      }
+    }).afterClosed().subscribe((r) => {
+      if (r) {
+        console.log('Editor.openMeiHeadTool(): result ' + r);
+      }
+    });
   }
 }

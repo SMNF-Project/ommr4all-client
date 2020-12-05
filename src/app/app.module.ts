@@ -125,6 +125,7 @@ import { AdministrativeViewNotationStyleComponent } from './administrative-view/
 import { NotationStyleViewComponent } from './administrative-view/administrative-view-notation-style/notation-style-view/notation-style-view.component';
 import { AddNotationStyleViewComponent } from './administrative-view/administrative-view-notation-style/add-notation-style-view/add-notation-style-view.component';
 import { BookStatsDialogComponent } from './book-view/book-settings-view/book-stats-dialog/book-stats-dialog.component';
+import { MeiHeadToolDialogComponent } from './editor/dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -246,6 +247,7 @@ const appRoutes: Routes = [
     NotationStyleViewComponent,
     AddNotationStyleViewComponent,
     BookStatsDialogComponent,
+    MeiHeadToolDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -297,6 +299,7 @@ const appRoutes: Routes = [
     OverrideEditLockDialogComponent,
     ConfirmDialogComponent,
     PredictDialogComponent,
+    MeiHeadToolDialogComponent,
   ],
   bootstrap: [AppComponent],
   providers: [

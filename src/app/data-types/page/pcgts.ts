@@ -1,5 +1,5 @@
 import {Page} from './page';
-import {Meta} from './meta';
+import {MEIHeadMeta, Meta} from './meta';
 import {IdGenerator} from './id-generator';
 
 export class PcGts {
@@ -7,6 +7,7 @@ export class PcGts {
   constructor(
     public meta = new Meta(),
     public page = new Page(),
+    public meiHeadMeta = new MEIHeadMeta()
   ) {}
 
   static fromJson(json) {
@@ -16,6 +17,7 @@ export class PcGts {
     return new PcGts(
       Meta.fromJson(json.meta),
       Page.fromJson(json.page),
+      MEIHeadMeta.fromJson(json.meiHeadMeta),
     );
   }
 
@@ -24,6 +26,7 @@ export class PcGts {
     return {
       meta: this.meta.toJson(),
       page: this.page.toJson(),
+      meiHeadMeta: this.meiHeadMeta.toJson(),
       version: PcGts.VERSION,
     };
   }
