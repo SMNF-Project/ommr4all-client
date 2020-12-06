@@ -1,3 +1,5 @@
+import {base64ToXml, xmlToBase64} from '../../utils/xml2json';
+
 export class Meta {
   constructor(
     public creator = '',
@@ -25,40 +27,46 @@ export class Meta {
 
 export class MEIHeadMeta {
   constructor(
-    private _data = null
+    private encoding = 'base64',
+    private _base64 = null
   ) {}
 
   static fromJson(json) {
-    return new MEIHeadMeta(json);
+    return new MEIHeadMeta(json.encoding, json.content);
   }
 
   static isValidMeiHeadText(text: string): boolean {
-    try {
-      const json = JSON.parse(text);
-    } catch (e) {
-      return false;
-    }
+    // instead: XML validation against MEI schema
     return true;
   }
 
   toJson() {
-    return this._data;
+    return {
+      encoding: 'base64',
+      content: this._base64
+    };
   }
 
-  get data() {
-    return this._data;
+  get base64() {
+    return this._base64;
+  }
+  set base64(base64Text: string) {
+    this._base64 = base64Text;
   }
 
-  set data(value) {
-    this._data = value;
+  get xml() {
+    return base64ToXml(this.base64);
+  }
+  set xml(xmlText: string) {
+    this.base64 = xmlToBase64(xmlText);
   }
 
-  setDataFromString(stringData: string) {
-    if (!MEIHeadMeta.isValidMeiHeadText(stringData)) {
+  setDataFromXMLString(xmlText: string) {
+    if (!MEIHeadMeta.isValidMeiHeadText(xmlText)) {
       console.log('MEIHeadMeta: invalid data');
-      console.log(stringData);
+      console.log(xmlText);
       return;
     }
-    this.data = JSON.parse(stringData);
+    this.xml = xmlText;
   }
 }
