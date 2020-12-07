@@ -150,4 +150,25 @@ export class Block extends Region {
   cleanSyllables(): void {
     this.textLines.forEach(tl => tl.cleanSyllables());
   }
+
+  getLineCoords(): PolyLine {
+    // Returns a PolyLine of coords taken as a union of coords
+    // of all the lines in the block.
+    const lineCoords = this.lines.map(l => l.coords.deepCopy().points)
+      .reduce((acc, val) => acc.concat(val), []);
+    // console.log('Block.getLineCoords() after reduce:');
+    // console.log(lineCoords);
+    return new PolyLine(lineCoords);
+  }
+
+  getAllCoords(): PolyLine {
+    // Return a PolyLine of coords taken as a union of coords
+    // of all the lines in the block and the block itself.
+    const lineCoords = this.getLineCoords();
+    if (this.coords.length > 0) {
+      // console.log('Block.getAllCoords: adding own coords to line coords');
+      lineCoords.points.concat(this.coords.deepCopy().points);
+    }
+    return lineCoords;
+  }
 }

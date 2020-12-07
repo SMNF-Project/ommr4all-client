@@ -54,8 +54,11 @@
              matTooltip="View different annotations without editing"
              i18n-matTooltip
              [class.active]="toolBarStateService.currentEditorTool === EditorTools.View"
-             (click)="onEditorTool(EditorTools.View)"
-        >remove_red_eye</mat-icon>
+             (click)="onViewEditorTool()">remove_red_eye</mat-icon>
+        <mat-icon class="button icon"
+                  matTooltip="Edit page"
+                  i18n-matTooltip
+                  (click)="onRequestEditPage()">edit</mat-icon>
         <mat-icon class="button icon" matTooltip="Edit MEI head metadata"
                   i18n-matTooltip
                   (click)="toolBarStateService.runMeiHeadTool.emit()"
@@ -70,6 +73,9 @@
       <div class="title" i18n="@@General">General</div>
     </div>
 
+  </ng-container>
+  <!--  <ng-container *ngIf="((editMode && !viewOnly) || editOnlyMode) && toolBarStateService.currentEditorTool !== EditorTools.View">-->
+  <ng-container *ngIf="((editMode && !viewOnly) || editOnlyMode) && !currentlyViewing">
     <!--Staff Lines Section-->
 
     <div [class.active]="toolBarStateService.currentEditorTool === EditorTools.CreateStaffLines

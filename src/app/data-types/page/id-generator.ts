@@ -9,6 +9,7 @@ export enum IdType {
   Note = 'note',
   Clef = 'clef',
   Accidential = 'accid',
+  Work = 'work',
 }
 
 export abstract class IdGenerator {

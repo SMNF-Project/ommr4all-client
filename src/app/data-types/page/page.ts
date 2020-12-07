@@ -1,6 +1,6 @@
 import {Point, PolyLine, Rect} from '../../geometry/geometry';
 import {StaffLine} from './music-region/staff-line';
-import {BlockType, Constants} from './definitions';
+import {BlockType, BlockTypeUtil, Constants} from './definitions';
 import {Region} from './region';
 import {ReadingOrder} from './reading-order';
 import {Annotations} from './annotations';
@@ -9,7 +9,7 @@ import {PageLine} from './pageLine';
 import {IdType} from './id-generator';
 import {UserComments} from './userComment';
 import {Note} from './music-region/symbol';
-import {Works} from './work';
+import {Work, Works} from './work';
 
 export class Page extends Region {
   private _readingOrder = new ReadingOrder(this);
@@ -48,7 +48,7 @@ export class Page extends Region {
 
   toJson() {
     return {
-      blocks: this.blocks.map(b => b.toJson()),
+      blocks: this.blocks.filter(b => b.type !== BlockType.Work).map(b => b.toJson()),
       imageFilename: this.imageFilename,
       imageWidth: this.imageWidth * this.originalHeight / Constants.GLOBAL_SCALING,
       imageHeight: this.imageHeight * this.originalHeight / Constants.GLOBAL_SCALING,
@@ -62,10 +62,14 @@ export class Page extends Region {
   get readingOrder() { return this._readingOrder; }
   get annotations() { return this._annotations; }
   get userComments() { return this._userComments; }
-  get blocks() { return this._children as Array<Block>; }
-  get textRegions() { return this.blocks.filter(b => b.type !== BlockType.Music); }
-  get musicRegions() { return this.blocks.filter(b => b.type === BlockType.Music); }
+
+  // Work regions are children of the page, but they are not Blocks.
+  get blocks() { return this._children.filter(c => c instanceof Block) as Array<Block>; }
+  get textRegions() { return this.blocks.filter(b => BlockTypeUtil.isText(b.type)); }
+  get musicRegions() { return this.blocks.filter(b => BlockTypeUtil.isMusic(b.type)); }
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
+
+  get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
 
   get availableReadings(): Array<string> {
     const readingNames: Array<string> = [];
@@ -81,10 +85,16 @@ export class Page extends Region {
     return readingNames;
   }
 
+  get availableWorks(): Array<string> {
+    return this.works.map(w => w.workTitle);
+  }
+
   clean() {
     this.blocks.forEach(b => b.lines.forEach(l => l.clean()));
     this.blocks.forEach(b => b.lines.filter(l => l.isEmpty()).forEach(l => l.detachFromParent()));
     this.blocks.filter(b => b.isEmpty()).forEach(b => b.detachFromParent());
+
+    this.works.forEach(w => w.detachFromParent());
   }
 
   textLineById(id: string): PageLine {

@@ -29,6 +29,8 @@ export class ToolBarComponent implements OnInit {
   Locks = PageProgressGroups;
   Flags = BookPermissionFlag;
 
+  public currentlyViewing = false;
+
   constructor(public toolBarStateService: ToolBarStateService,
               public sheetOverlay: SheetOverlayService,
               public editor: EditorService,
@@ -47,9 +49,17 @@ export class ToolBarComponent implements OnInit {
     );
   }
 
-  onRequestEditPage() { this.toolBarStateService.requestEditPage.emit(); }
+  onRequestEditPage() {
+    this.toolBarStateService.requestEditPage.emit();
+    this.currentlyViewing = false;
+  }
 
   onSave() { this.editor.save(); }
+
+  onViewEditorTool() {
+    this.onEditorTool(EditorTools.View);
+    this.currentlyViewing = true;
+  }
 
   onEditorTool(tool: EditorTools) {
     this.toolBarStateService.currentEditorTool = tool;

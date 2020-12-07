@@ -10,6 +10,8 @@ export enum BlockType {
   FolioNumber = 'folioNumber',
 
   Music = 'music',
+
+  Work = 'work',
 }
 
 export class BlockTypeUtil {
@@ -20,7 +22,22 @@ export class BlockTypeUtil {
     dropCapital: 'drop-capital',
     folioNumber: 'folio-number',
     music: 'music',
+    work: 'work',
   };
+
+  static isMusic(type: BlockType) {
+    return type === BlockType.Music;
+  }
+  static isText(type: BlockType) {
+    return (type === BlockType.DropCapital)
+      || (type === BlockType.Lyrics)
+      || (type === BlockType.Paragraph)
+      || (type === BlockType.Heading)
+      || (type === BlockType.FolioNumber);
+  }
+  static isWork(type: BlockType) {
+    return type === BlockType.Work;
+  }
 }
 
 export enum EmptyRegionDefinition {

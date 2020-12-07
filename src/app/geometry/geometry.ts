@@ -5,6 +5,8 @@ const SimplifyJs = require('simplify-js');
 
 const PolyBool = require('polybooljs');
 
+const hull = require('hull.js');
+
 export class Point {
   static fromJSON(p) { return new Point(p.x * Constants.GLOBAL_SCALING, p.y * Constants.GLOBAL_SCALING); }
 
@@ -156,6 +158,35 @@ export class PolyLine {
     } else {
       return PolyLine.multiUnionFilled(PolyLine.fromPolyBool(PolyBool.polygon(segments)), iter - 1);
     }
+  }
+
+  static convexHull(polylines: Array<PolyLine>, concavity: number = 20): PolyLine {
+    // Return a polyline that is the convex hull of the input PolyLines.
+    // console.log('PolyLine.convexHull called!');
+    const pointsFromPolylines = polylines.map(l => l.points);
+    // console.log('Points');
+    // console.log(pointsFromPolylines);
+    let pointsAcc: Array<Point> = [];
+    for (const ps of pointsFromPolylines) {
+      // console.log('     ... ps in pointsFromPolyLines: ');
+      // console.log(ps);
+      pointsAcc = pointsAcc.concat(ps);
+      // console.log('     ... new pointsAcc state: ');
+      // console.log(pointsAcc);
+    }
+    // const pointsAcc = pointsFromPolylines.reduce((acc, val) => acc.concat(val), []);
+    // console.log('Points ACC');
+    // console.log(pointsAcc);
+    const pointsXY = pointsAcc.map(p => [p.x, p.y]);
+    // console.log('Points going into hull:');
+    // console.log(pointsXY);
+    const hullXY = hull(pointsXY, concavity);
+    // console.log('Hull XY');
+    // console.log(hullXY);
+    const hullPoints = hullXY.map(p => new Point(p[0], p[1]));
+    // console.log('Hull Points:');
+    // console.log(hullPoints);
+    return new PolyLine(hullPoints);
   }
 
   private static fromPolyBoolMode(d, mode: SingleSelect): PolyLine {
