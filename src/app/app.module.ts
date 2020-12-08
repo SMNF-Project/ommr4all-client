@@ -127,6 +127,7 @@ import { AddNotationStyleViewComponent } from './administrative-view/administrat
 import { BookStatsDialogComponent } from './book-view/book-settings-view/book-stats-dialog/book-stats-dialog.component';
 import { MeiHeadToolDialogComponent } from './editor/dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import { WorkViewComponent } from './editor/sheet-overlay/views/work-view/work-view.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -249,6 +250,7 @@ const appRoutes: Routes = [
     AddNotationStyleViewComponent,
     BookStatsDialogComponent,
     MeiHeadToolDialogComponent,
+    WorkViewComponent,
   ],
   imports: [
     CommonModule,

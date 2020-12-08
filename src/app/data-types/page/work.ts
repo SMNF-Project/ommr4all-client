@@ -34,6 +34,8 @@ export class Works {
 
 
 export class Work extends Region {
+  private static readonly _concavity = Infinity;
+
   public type: BlockType;
 
   // Note that while a Work points to a bunch of Blocks, it does *NOT* consider these blocks children.
@@ -52,9 +54,9 @@ export class Work extends Region {
     this.blocks = blocks;
     this.type = BlockType.Work;
 
-    this.coords = this.initCoords();
-    console.log('Coords for work ' + this.workTitle + ':');
-    console.log(this.coords);
+    this.coords = this.computeCoordsFromBlocks();
+    // console.log('Coords for work ' + this.workTitle + ':');
+    // console.log(this.coords);
   }
 
   static create(
@@ -75,8 +77,8 @@ export class Work extends Region {
   static fromJson(json, works: Works): Work {
     const page = works.page;
     const blocks = json.blocks.map(blockId => page.blocks.find(b => b.id === blockId));
-    console.log('Work.fromJson: found blocks:');
-    console.log(blocks);
+    // console.log('Work.fromJson: found blocks:');
+    // console.log(blocks);
     const w = Work.create(
       works,
       page,
@@ -94,25 +96,43 @@ export class Work extends Region {
     };
   }
 
+  get page(): Page {
+    return this._works.page;
+  }
+
   setVisible() {
     this.blocks.map(b => b.visible = true);
+    this.visible = true;
   }
 
   setInvisible() {
     this.blocks.map(b => b.visible = false);
+    this.visible = false;
   }
 
-  initCoords(): PolyLine {
+  computeCoordsFromBlocks(): PolyLine {
     // console.log('Work.initCoords: blocks');
     // console.log(this.blocks);
     const blockCoords = this.blocks.map(b => b.getAllCoords());
     // If blocks have no coords:
     // console.log('Work.initCoords: block coords (Array of PolyLines)');
     // console.log(blockCoords);
-    return PolyLine.convexHull(blockCoords);
+    return PolyLine.convexHull(blockCoords, Work._concavity);
+  }
+
+  updateCoords() {
+    this.coords = this.computeCoordsFromBlocks();
   }
 
   _resolveCrossRefs(page: Page) {
+  }
+
+  update() {
+    if (this.updateRequired) {
+      // ...and here is where it would be useful to track
+      // the Blocks as children.
+      this.updateCoords();
+    }
   }
 
 }

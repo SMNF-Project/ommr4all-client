@@ -8,6 +8,13 @@
       [editorTool]="editorTool"
     >
     </g>
+    <g
+      *ngFor="let work of (pageState | async).pcgts.page.works"
+      app-work-view
+      [work]="work"
+      [editorTool]="editorTool"
+    >
+    </g>
     <g app-annotations-view *ngIf="editorTool.viewSettings.showAnnotations"
        [annotations]="(pageState | async).pcgts.page.annotations"
        [editorTool]="editorTool">

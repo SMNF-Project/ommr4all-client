@@ -68,7 +68,7 @@ export class LineViewComponent implements OnInit, AfterContentChecked, OnChanges
     // the view settings. Up until now, because view settings
     // were dealing only with object types and did not affect
     // the inside of the data model, this kind of propagation of
-    // values from the editor to the data was not necessary.
+    // values *from the editor to the data* was not necessary.
     const reading = this.editorTool.viewSettings.activeReading;
     // console.log('line-view.redraw(): setting reading to ' + reading);
     this.line.setActiveReading(reading);

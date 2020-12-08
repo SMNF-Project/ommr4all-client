@@ -11,6 +11,7 @@ import {Syllable} from '../../../data-types/page/syllable';
 import {UserCommentHolder} from '../../../data-types/page/userComment';
 import {ChangeDetectorRef} from '@angular/core';
 import {Page} from '../../../data-types/page/page';
+import {Work} from '../../../data-types/page/work';
 
 const machina: any = require('machina');
 
@@ -66,6 +67,11 @@ export abstract class EditorTool {
   onSymbolMouseUp(event: MouseEvent, s: MusicSymbol) {}
   onSymbolMouseMove(event: MouseEvent, s: MusicSymbol) {}
   onSymbolContextMenu(event: MouseEvent, s: MusicSymbol) {}
+
+  onWorkMouseDown(event: MouseEvent, w: Work) {}
+  onWorkMouseUp(event: MouseEvent, w: Work) {}
+  onWorkMouseMove(event: MouseEvent, w: Work) {}
+  onWorkContextMenu(event: MouseEvent, w: Work) {}
 
   onSyllableMouseDown(event: MouseEvent, syllableConnection: SyllableConnector) {}
   onSyllableMouseUp(event: MouseEvent, connection: Connection, syllableConnector: SyllableConnector) {}
