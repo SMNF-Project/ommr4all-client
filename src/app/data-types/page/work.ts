@@ -8,6 +8,7 @@ import {BlockType} from './definitions';
 
 export class Works {
   public works: Array<Work> = [];
+  private _worksSortedFromTop: Array<Work> = [];
 
   constructor(
     private _page: Page,
@@ -17,8 +18,12 @@ export class Works {
     const works = new Works(
       page
     );
+    console.log('Works.fromJson() json:');
+    console.log(json);
     if (!json) { return works; }
     works.works = json.works.map(w => Work.fromJson(w, works));
+    works.computeOrderOnPage();
+    return works;
   }
 
   toJson() {
@@ -30,11 +35,20 @@ export class Works {
   get page() { return this._page; }
 
   get availableWorks() { return this.works.map(w => w.workTitle); }
+
+  computeOrderOnPage(): void {
+    const minTop = Math.min(...this.works.map(w => w.AABB.top));
+    this._worksSortedFromTop = this.works.sort((w1, w2) => (w1.AABB.top - minTop) - (w2.AABB.top - minTop));
+  }
+
+  indexOfWorkFromTop(work: Work) {
+    return this._worksSortedFromTop.indexOf(work);
+  }
 }
 
 
 export class Work extends Region {
-  private static readonly _concavity = Infinity;
+  private static readonly _concavity = 700;
 
   public type: BlockType;
 
@@ -113,6 +127,18 @@ export class Work extends Region {
   computeCoordsFromBlocks(): PolyLine {
     // console.log('Work.initCoords: blocks');
     // console.log(this.blocks);
+
+    if (!this.blocks) { return new PolyLine([]); }
+
+    // If there is only one blocks with at most one line,
+    // use its coords.
+    if (this.blocks.length === 1) {
+      const b = this.blocks[0];
+      if (b.coords.length > 0) { return b.coords.deepCopy(); }
+      if (b.lines.length === 1) { return b.lines[0].coords.deepCopy(); }
+    }
+
+    // More blocks/more lines: use convex hull.
     const blockCoords = this.blocks.map(b => b.getAllCoords());
     // If blocks have no coords:
     // console.log('Work.initCoords: block coords (Array of PolyLines)');
@@ -122,6 +148,7 @@ export class Work extends Region {
 
   updateCoords() {
     this.coords = this.computeCoordsFromBlocks();
+    // console.log('Work ' + this.workTitle + ': updating coords: ' + this.coords.length);
   }
 
   _resolveCrossRefs(page: Page) {

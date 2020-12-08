@@ -3,6 +3,7 @@ import {EditorTool} from '../editor-tool';
 import {SheetOverlayService} from '../../sheet-overlay.service';
 import {ViewSettings} from '../../views/view';
 import {ViewChangesService} from '../../../actions/view-changes.service';
+import {Work} from '../../../../data-types/page/work';
 
 @Component({
   selector: '[app-view-editor-tool]',  // tslint:disable-line component-selector
@@ -30,6 +31,12 @@ export class ViewComponent extends EditorTool implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  // Add selectability
+  isWorkSelectable(work: Work): boolean {
+    return true;
+    // return super.isWorkSelectable(work);
   }
 
 }

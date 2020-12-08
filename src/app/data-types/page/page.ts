@@ -15,7 +15,7 @@ export class Page extends Region {
   private _readingOrder = new ReadingOrder(this);
   private _annotations = new Annotations(this);
   private _userComments = new UserComments(this);
-  private _works = new Works(this);
+  private _worksContainer = new Works(this);
 
   constructor(
     public imageFilename = '',
@@ -24,6 +24,7 @@ export class Page extends Region {
     public originalHeight = 0,
   ) {
     super(IdType.Page);
+    console.log('Constructing a new page!');
   }
 
   static fromJson(json) {
@@ -38,7 +39,7 @@ export class Page extends Region {
     json.blocks.forEach(b => Block.fromJson(page, b));
     page._readingOrder = ReadingOrder.fromJson(json.readingOrder, page);
     page._annotations = Annotations.fromJson(json.annotations, page);
-    page._works = Works.fromJson(json.works, page);
+    page._worksContainer = Works.fromJson(json.works, page);
     page._userComments = UserComments.fromJson(json.comments, page);
     page._readingOrder._updateReadingOrder();
     page._resolveCrossRefs();
@@ -54,7 +55,7 @@ export class Page extends Region {
       imageHeight: this.imageHeight * this.originalHeight / Constants.GLOBAL_SCALING,
       readingOrder: this._readingOrder.toJson(),
       annotations: this._annotations.toJson(),
-      works: this._works.toJson(),
+      works: this._worksContainer.toJson(),
       comments: this._userComments.toJson(),
     };
   }
@@ -70,6 +71,7 @@ export class Page extends Region {
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
 
   get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
+  get worksContainer() { console.log(this._worksContainer); return this._worksContainer; }
 
   get availableReadings(): Array<string> {
     const readingNames: Array<string> = [];
@@ -90,11 +92,14 @@ export class Page extends Region {
   }
 
   clean() {
+    // Apparently this is cleanup to get rid of empty contents...?
+    console.log('Cleaning the page...works: ' + this.works.length);
     this.blocks.forEach(b => b.lines.forEach(l => l.clean()));
     this.blocks.forEach(b => b.lines.filter(l => l.isEmpty()).forEach(l => l.detachFromParent()));
     this.blocks.filter(b => b.isEmpty()).forEach(b => b.detachFromParent());
 
-    this.works.forEach(w => w.detachFromParent());
+    // Should only detach works that contain no valid blocks.
+    // this.works.forEach(w => w.detachFromParent());
   }
 
   textLineById(id: string): PageLine {

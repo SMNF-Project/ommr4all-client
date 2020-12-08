@@ -88,6 +88,7 @@ export abstract class EditorTool {
   isRegionSelectable(region: Region): boolean { return false; }
   isSymbolSelectable(symbol: MusicSymbol): boolean { return false; }
   isLogicalConnectionSelectable(lc: LogicalConnection): boolean { return false; }
+  isWorkSelectable(work: Work): boolean { return false; }
 
   useCrossHairCursor(): boolean { return false; }
   useMoveCursor() { return false; }
@@ -113,7 +114,8 @@ export abstract class EditorTool {
   set viewSettings(viewSettings: ViewSettings) {
     if (viewSettings) {
       this._viewSettings = viewSettings;
-      this.viewChanges.updateAllLines(this.sheetOverlayService.editorService.pcgts.page);
+      // this.viewChanges.updateAllLines(this.sheetOverlayService.editorService.pcgts.page);
+      this.viewChanges.updateAllViews(this.sheetOverlayService.editorService.pcgts.page);
     }
   }
   get viewSettings() { return this._viewSettings; }

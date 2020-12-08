@@ -43,9 +43,9 @@ export class LineReading {
     // console.log('Reading Sentence from json: ' + json.sentence);
     reading.sentence = Sentence.fromJson(json.sentence);
     reading.readingName = json.readingName;
-    console.log('LineReading created: ' + reading.readingName + ' / ' + json.readingName);
-    console.log(reading);
-    console.log('json: ' + JSON.stringify(json));
+    // console.log('LineReading created: ' + reading.readingName + ' / ' + json.readingName);
+    // console.log(reading);
+    // console.log('json: ' + JSON.stringify(json));
     return reading;
   }
 
@@ -53,8 +53,8 @@ export class LineReading {
     const readings = Object.assign({},
       ...json.map((reading) => ({[reading.readingName]: LineReading.fromJson(reading, line)})
       ));
-    console.log('LineReading.dictFromJson: Created readings: ');
-    console.log(readings);
+    // console.log('LineReading.dictFromJson: Created readings: ');
+    // console.log(readings);
     return readings;
   }
 
@@ -62,7 +62,7 @@ export class LineReading {
     const json = Object.values(readingsDict).filter(
       reading => reading instanceof LineReading).filter(
         reading => !reading.isDefaultReading()).map(reading => reading.toJson());
-    console.log('LineReading.dictToJson: created json ' + json);
+    // console.log('LineReading.dictToJson: created json ' + json);
     return json;
   }
 
@@ -113,7 +113,7 @@ export class PageLine extends Region {
 
     // Transcription name enables multiple text versions for a given text.
     if (json.transcriptionName) {
-      console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
+      // console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
       line.transcriptionName = json.transcriptionName;
     }
     // Readings from data
@@ -126,9 +126,9 @@ export class PageLine extends Region {
     }
 
     if (line.hasReadings) {
-      console.log('PageLine readings ' + line._id);
-      console.log(line.availableReadings);
-      console.log(line.readings);
+      // console.log('PageLine readings ' + line._id);
+      // console.log(line.availableReadings);
+      // console.log(line.readings);
       if (line.readings.hasOwnProperty('Transcription')) {
         console.log('Setting reading to Transcription');
         // DEBUG: For testing.
@@ -169,7 +169,7 @@ export class PageLine extends Region {
       symbols: this._symbols.map(s => s.toJson()),
     };
     if (this.transcriptionName !== null) {
-      console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
+      // console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
       Object.assign(output, {transcriptionName: this.transcriptionName});
     }
     if (this.hasReadings) {

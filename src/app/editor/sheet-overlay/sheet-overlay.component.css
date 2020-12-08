@@ -86,10 +86,10 @@ svg {
   stroke: lightskyblue;
 }
 
-::ng-deep .work.region {
-  fill: deepskyblue;
-  stroke: deepskyblue;
-}
+/*::ng-deep .work.region {*/
+/*  fill: deepskyblue;*/
+/*  stroke: deepskyblue;*/
+/*}*/
 
 .line {
   fill: black;

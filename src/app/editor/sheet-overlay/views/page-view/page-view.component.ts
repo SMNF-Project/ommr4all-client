@@ -69,6 +69,10 @@ export class PageViewComponent implements OnInit, OnDestroy {
 
   private changed(changedView: ChangedView) {
     if (!changedView) { return; }
+    if (changedView.checkChangesWorks.size > 0) {
+      console.log('PageView changed with changed works!');
+      console.log(changedView.checkChangesWorks);
+    }
 
     const blocks = arrayFromSet(changedView.checkChangesBlock);
     const lines = arrayFromSet(changedView.checkChangesLine);

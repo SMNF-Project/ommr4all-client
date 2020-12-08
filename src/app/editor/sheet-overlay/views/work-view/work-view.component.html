@@ -5,6 +5,7 @@
              [class.highlighted]="highlighted"
              [ngClass]="'shading region ' + BlockTypeUtil.css[work.type]"
              [class.selectable]="isWorkSelectable(work)"
+             [attr.fill]="'#' + shading(indexOfWork(work))"
              (mousedown)="onWorkMouseDown($event, work)"
              (mouseup)="onWorkMouseUp($event, work)"
              (mousemove)="onWorkMouseMove($event, work)"

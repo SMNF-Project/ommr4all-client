@@ -186,6 +186,9 @@ export class EditorService implements OnDestroy {
     state.saved = false;
     state.pcgts.clean();
     state.pcgts.refreshIds();
+    // DEBUG
+    console.log('EditorService.save(): saving page:');
+    console.log(state.pcgts.page);
     forkJoin([
         this.http.put(state.pageCom.content_url('statistics'), state.statistics.toJson(), {}),
         this.http.put(state.pageCom.content_url('pcgts'), state.pcgts.toJson(), {}),

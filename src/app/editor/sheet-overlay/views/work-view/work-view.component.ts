@@ -24,7 +24,8 @@ const palette: any = require('google-palette');
   styleUrls: ['./work-view.component.css']
 })
 export class WorkViewComponent implements OnInit, AfterContentChecked, OnChanges {
-  private static _shadingPalette = palette('rainbow', 10);
+  private static _shadingPaletteSize = 6;
+  private static _shadingPalette = palette('cb-Blues', WorkViewComponent._shadingPaletteSize);
 
   BlockType = BlockType;
   BlockTypeUtil = BlockTypeUtil;
@@ -37,31 +38,36 @@ export class WorkViewComponent implements OnInit, AfterContentChecked, OnChanges
     private sheetOverlayService: SheetOverlayService,
   ) {
     this.changeDetector.detach();
+    console.log('WorkView' + this + ' view: constructor, detached!');
   }
 
   ngOnInit() {
     this.changeDetector.detectChanges();
+    console.log('WorkView ' + this + ': ngOnInit, changes get detected!');
   }
 
   ngAfterContentChecked(): void {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('Work view ' + this + ': ngOnChanges called!');
     this.redraw();
   }
 
-  isWorkSelectable(work: Work) { return this.editorTool.isRegionSelectable(work); }
+  isWorkSelectable(work: Work) { return this.editorTool.isWorkSelectable(work); }
 
   get sheetOverlaySelectedWork() { return this.sheetOverlayService.hoveredWork; }
   get highlighted() { return this.sheetOverlaySelectedWork === this.work; }
 
-  indexOfWork(work: Work) { return work.page.works.indexOf(work); }
-  shading(index: number) { return WorkViewComponent._shadingPalette[index % 10]; }
+  indexOfWork(work: Work) { return work.page.worksContainer.indexOfWorkFromTop(work); }
+  shading(index: number) { return WorkViewComponent._shadingPalette[index % WorkViewComponent._shadingPaletteSize]; }
 
   redraw() {
-    console.log('Work view: redraw!');
+    console.log('Work view ' + this.work.workTitle + ': redraw!');
     this.work.update();
+    console.log('Work view ' + this.work.workTitle + ': updated');
     this.changeDetector.detectChanges();
+    console.log('Work view ' + this.work.workTitle + ': called detectChanges()');
   }
 
   onWorkMouseDown(event: MouseEvent, work: Work) {
