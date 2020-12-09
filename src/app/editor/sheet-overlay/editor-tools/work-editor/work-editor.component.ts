@@ -10,6 +10,9 @@ import {EditorTools, ToolBarStateService} from '../../../tool-bar/tool-bar-state
 import {WorkEditorOverlayComponent} from './work-editor-overlay/work-editor-overlay.component';
 import {ActionsService} from '../../../actions/actions.service';
 import {CommandChangeProperty} from '../../../undo/util-commands';
+import {ActionType} from '../../../actions/action-types';
+import {EditorService} from '../../../editor.service';
+import {Page} from '../../../../data-types/page/page';
 
 const machina: any = require('machina');
 
@@ -26,6 +29,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
 
   constructor(
     protected sheetOverlayService: SheetOverlayService,
+    protected editorService: EditorService,
     private workEditorService: WorkEditorService,
     private toolBarService: ToolBarStateService,
     private actions: ActionsService,
@@ -76,6 +80,25 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     this._subscriptions.unsubscribe();
   }
 
+  onSelectNext(): void {
+    if (!this.currentWork) {
+      this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.firstWork));
+    } else {
+      this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.currentWork.nextWorkInReadingOrder));
+    }
+  }
+
+  onSelectPrevious(): void {
+    if (!this.currentWork) {
+      this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.lastWork));
+    } else {
+      this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.currentWork.prevWorkInReadingOrder));
+    }
+  }
+
+  get _page(): Page { return this.editorService.pcgts.page; }
+  get firstWork(): Work { return this._page.worksContainer.firstWork; }
+  get lastWork(): Work { return this._page.worksContainer.lastWork; }
   get visible() { return this.toolBarService.currentEditorTool === EditorTools.Work; }
 
   receivePageMouseEvents(): boolean { return true; }
@@ -95,4 +118,23 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     // console.log('WorkEditorComponent is visible? ' + this.visible); // this works fine
     // super.onWorkMouseUp(event, work);
   }
+
+  onKeyup(event: KeyboardEvent) {
+    if (this.state === 'active') {
+      if (event.code === 'Escape') {
+        // this.actions.startAction(ActionType.LyricsDeselect);
+        this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, null));
+        // this.actions.finishAction();
+        event.preventDefault();
+      } else if (event.code === 'Tab') {
+        if (event.shiftKey) {
+          this.onSelectPrevious();
+        } else {
+          this.onSelectNext();
+        }
+        event.preventDefault();
+      }
+    }
+  }
+
 }

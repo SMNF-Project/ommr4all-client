@@ -32,9 +32,30 @@ export class Works {
     };
   }
 
+  get length(): number { return this.works.length; }
   get page() { return this._page; }
-
   get availableWorks() { return this.works.map(w => w.workTitle); }
+  get worksInReadingOrder() { return this._worksSortedFromTop; }
+  get firstWork(): Work {
+    if (this.length === 0) { return null; }
+    return this._worksSortedFromTop[0];
+  }
+  get lastWork(): Work {
+    if (this.length === 0) { return null; }
+    return this._worksSortedFromTop[this.length - 1];
+  }
+
+  getNextWork(work: Work): Work {
+    const idx = this.indexOfWorkFromTop(work);
+    if (idx === this.length) { return null; }
+    return this.worksInReadingOrder[idx + 1];
+  }
+
+  getPrevWork(work: Work): Work {
+    const idx = this.indexOfWorkFromTop(work);
+    if (idx === 0) { return null; }
+    return this.worksInReadingOrder[idx - 1];
+  }
 
   computeOrderOnPage(): void {
     const minTop = Math.min(...this.works.map(w => w.AABB.top));
@@ -113,6 +134,17 @@ export class Work extends Region {
   get page(): Page {
     return this._works.page;
   }
+
+  get worksContainer(): Works {
+    return this._works;
+  }
+
+  get workReadingOrderIndex(): number {
+    return this._works.indexOfWorkFromTop(this);
+  }
+
+  get nextWorkInReadingOrder(): Work { return this.worksContainer.getNextWork(this); }
+  get prevWorkInReadingOrder(): Work { return this.worksContainer.getPrevWork(this); }
 
   setVisible() {
     this.blocks.map(b => b.visible = true);
