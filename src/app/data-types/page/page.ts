@@ -71,7 +71,7 @@ export class Page extends Region {
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
 
   get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
-  get worksContainer() { console.log(this._worksContainer); return this._worksContainer; }
+  get worksContainer() { return this._worksContainer; }
 
   get availableReadings(): Array<string> {
     const readingNames: Array<string> = [];
@@ -98,7 +98,7 @@ export class Page extends Region {
     this.blocks.forEach(b => b.lines.filter(l => l.isEmpty()).forEach(l => l.detachFromParent()));
     this.blocks.filter(b => b.isEmpty()).forEach(b => b.detachFromParent());
 
-    // Should only detach works that contain no valid blocks.
+    // Should only detach works that contain no valid blocks??
     // this.works.forEach(w => w.detachFromParent());
   }
 

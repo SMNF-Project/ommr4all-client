@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {EditorTool} from '../editor-tool';
 import {SheetOverlayService} from '../../sheet-overlay.service';
 import {ViewSettings} from '../../views/view';
@@ -16,7 +16,8 @@ const machina: any = require('machina');
 @Component({
   selector: '[app-work-editor-tool]',  // tslint:disable-line component-selector
   templateUrl: './work-editor.component.html',
-  styleUrls: ['./work-editor.component.css']
+  styleUrls: ['./work-editor.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy {
   @Input() workEditorOverlay: WorkEditorOverlayComponent;
@@ -79,22 +80,19 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
 
   receivePageMouseEvents(): boolean { return true; }
 
-  // ************************************************************************
-  // What follows is work-view functionality. This will eventually be spun off into
-  // a work-editor tool which will have also the functionality to *create* works.
-
   // Add selectability
-  isWorkSelectable(work: Work): boolean {
-    // console.log('ViewTool: Work ' + work.workTitle + ' is selectable!');
-    return true;
-    // return super.isWorkSelectable(work);
-  }
+  isWorkSelectable(work: Work): boolean { return true; }
 
   onWorkMouseUp(event: MouseEvent, work: Work) {
     // DEBUG
     console.log('WorkEditorComponent: Detected click on work: ' + work.workTitle);
-    // TODO: Here the appropriate actions should be called.
+    console.log(this);
     this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, work));
+    console.log('Current work: ');
+    console.log(this.currentWork);
+    // this.workEditorOverlay.work = work;
+    // this.currentWork = work;
+    // console.log('WorkEditorComponent is visible? ' + this.visible); // this works fine
     // super.onWorkMouseUp(event, work);
   }
 }

@@ -45,7 +45,6 @@ export class ChangedView {
     } else if (c instanceof Syllable) {
       this.checkChangesSyllables.add(c as Syllable);
     } else if (c instanceof Work) {
-      console.log('Adding Work ' + c.workTitle + ' to ChangedView!');
       this.checkChangesWorks.add(c as Work);
     }
   }

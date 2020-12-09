@@ -1,4 +1,12 @@
-import {AfterContentChecked, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  AfterContentChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {Work} from '../../../../../data-types/page/work';
 import {SheetOverlayService} from '../../../sheet-overlay.service';
@@ -8,14 +16,24 @@ import {ViewChangesService} from '../../../../actions/view-changes.service';
 @Component({
   selector: 'app-work-editor-overlay',
   templateUrl: './work-editor-overlay.component.html',
-  styleUrls: ['./work-editor-overlay.component.css']
+  styleUrls: ['./work-editor-overlay.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterContentChecked {
   private _subscription = new Subscription();
   private _work: Work = null;
   @Input() set work(w: Work) {
-    if (w === this._work) { return; }
+    // DEBUG
+    console.log('WorkEditorOverlayComponent: Setting work to:');
+    console.log(w);
+
+    if (w === this._work) { console.log(' ...same work already set!'); return; }
     this._work = w;
+
+    console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
+    if (this.work) { console.log('   Top, left, right, width: ' + [this.top, this.left, this.right, this.width]);
+    } else { console.log('    no work is set'); }
+
   }
   get work() { return this._work; }
   get workInfo() { return this.work.workInfo; }
@@ -34,9 +52,19 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     public sheetOverlayService: SheetOverlayService,
     private viewChanges: ViewChangesService,
     private changeDetector: ChangeDetectorRef,
-  ) { }
+  ) {
+    console.log('WorkEditorOverlayComponent constructor called!'); // DEBUG
+    console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
+    if (this.work) { console.log('   Top, left, right, width: ' + [this.top, this.left, this.right, this.width]);
+    } else { console.log('    no work is set'); }
+  }
 
   ngOnInit() {
+    console.log('WorkEditorOverlayComponent ngOnInit called!'); // DEBUG
+    console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
+    if (this.work) { console.log('   Top, left, right, width: ' + [this.top, this.left, this.right, this.width]);
+    } else { console.log('    no work is set'); }
+
     this._subscription.add(this.viewChanges.changed.subscribe((vc) => {
       if (vc.checkChangesWorks.has(this._work)) {
         this.changeDetector.markForCheck();
