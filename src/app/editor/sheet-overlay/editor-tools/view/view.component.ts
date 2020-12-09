@@ -35,8 +35,12 @@ export class ViewComponent extends EditorTool implements OnInit {
 
   // Add selectability
   isWorkSelectable(work: Work): boolean {
+    // console.log('ViewTool: Work ' + work.workTitle + ' is selectable!');
     return true;
     // return super.isWorkSelectable(work);
   }
+
+  receivePageMouseEvents(): boolean { return true; }
+
 
 }

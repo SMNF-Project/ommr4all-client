@@ -55,8 +55,6 @@ svg {
 ::ng-deep .shading-opaque {
   opacity: 0.1;
 }
-::ng-deep .shading.selectable {
-}
 ::ng-deep .shading.selectable:hover {
   opacity: 0.7;
 }

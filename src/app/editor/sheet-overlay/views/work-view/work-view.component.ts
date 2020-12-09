@@ -38,19 +38,19 @@ export class WorkViewComponent implements OnInit, AfterContentChecked, OnChanges
     private sheetOverlayService: SheetOverlayService,
   ) {
     this.changeDetector.detach();
-    console.log('WorkView' + this + ' view: constructor, detached!');
+    // console.log('WorkView' + this + ' view: constructor, detached!');
   }
 
   ngOnInit() {
     this.changeDetector.detectChanges();
-    console.log('WorkView ' + this + ': ngOnInit, changes get detected!');
+    // console.log('WorkView ' + this + ': ngOnInit, changes get detected!');
   }
 
   ngAfterContentChecked(): void {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('Work view ' + this + ': ngOnChanges called!');
+    // console.log('Work view ' + this + ': ngOnChanges called!');
     this.redraw();
   }
 
@@ -63,11 +63,11 @@ export class WorkViewComponent implements OnInit, AfterContentChecked, OnChanges
   shading(index: number) { return WorkViewComponent._shadingPalette[index % WorkViewComponent._shadingPaletteSize]; }
 
   redraw() {
-    console.log('Work view ' + this.work.workTitle + ': redraw!');
+    // console.log('Work view ' + this.work.workTitle + ': redraw!');
     this.work.update();
-    console.log('Work view ' + this.work.workTitle + ': updated');
+    // console.log('Work view ' + this.work.workTitle + ': updated');
     this.changeDetector.detectChanges();
-    console.log('Work view ' + this.work.workTitle + ': called detectChanges()');
+    // console.log('Work view ' + this.work.workTitle + ': called detectChanges()');
   }
 
   onWorkMouseDown(event: MouseEvent, work: Work) {
