@@ -86,6 +86,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     } else {
       this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.currentWork.nextWorkInReadingOrder));
     }
+    this.actions.finishAction();
   }
 
   onSelectPrevious(): void {
@@ -94,6 +95,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     } else {
       this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, this.currentWork.prevWorkInReadingOrder));
     }
+    this.actions.finishAction();
   }
 
   get _page(): Page { return this.editorService.pcgts.page; }
@@ -111,6 +113,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     console.log('WorkEditorComponent: Detected click on work: ' + work.workTitle);
     console.log(this);
     this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, work));
+    this.actions.finishAction();
     console.log('Current work: ');
     console.log(this.currentWork);
     // this.workEditorOverlay.work = work;
@@ -124,6 +127,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
       if (event.code === 'Escape') {
         // this.actions.startAction(ActionType.LyricsDeselect);
         this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, null));
+        this.actions.finishAction();
         // this.actions.finishAction();
         event.preventDefault();
       } else if (event.code === 'Tab') {

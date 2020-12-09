@@ -11,6 +11,11 @@
     <ul>
       <li>Work title: {{ workInfo.title }}</li>
       <li>No. of blocks: {{ workInfo.nBlocks }}</li>
+      <li *ngIf="workInfo.hasOwnProperty('cantusId')">
+        Cantus ID: <a href="http://cantusindex.org/id/{{ workInfo.cantusId}}"
+                      target="_blank">
+        {{ workInfo.cantusId }}</a>
+      </li>
     </ul>
     </mat-label>
   </div>

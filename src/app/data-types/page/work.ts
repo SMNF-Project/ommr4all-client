@@ -81,12 +81,14 @@ export class Work extends Region {
   constructor(
     private _works: Works,
     public workTitle: string,
-    public blocks: Array<Block> = []
+    public blocks: Array<Block> = [],
+    public meta: {[key: string]: any} = {},
   ) {
     super(IdType.Work);
     this._works = _works;
     this.workTitle = workTitle;
     this.blocks = blocks;
+    if (!meta) { this.meta = {}; } else { this.meta = meta; }
     this.type = BlockType.Work;
 
     this.coords = this.computeCoordsFromBlocks();
@@ -100,8 +102,9 @@ export class Work extends Region {
     workTitle: string,
     blocks: Array<Block> = [],
     id = '',
+    meta = {},
   ) {
-    const work = new Work(works, workTitle, blocks);
+    const work = new Work(works, workTitle, blocks, meta);
     work._id = id;
     // The work is a child of the page, so that its redrawing etc. is done properly,
     // but it is NOT a block (yet). This is differentiated in the Page in the get blocks() function.
@@ -119,7 +122,8 @@ export class Work extends Region {
       page,
       json.workTitle,
       blocks,
-      json.id
+      json.id,
+      json.meta,
     );
     return w;
   }
@@ -127,7 +131,8 @@ export class Work extends Region {
   toJson() {
     return {
       workTitle: this.workTitle,
-      blocks: this.blocks.map(b => b.id)
+      blocks: this.blocks.map(b => b.id),
+      meta: this.meta
     };
   }
 
@@ -195,10 +200,13 @@ export class Work extends Region {
   }
 
   get workInfo() {
-    return {
-      title: this.workTitle,
-      nBlocks: this.blocks.length,
-    };
+    const workInfo: {[key: string]: any} = {};
+    workInfo.title = this.workTitle;
+    workInfo.nBlocks = this.blocks.length;
+    if (this.meta.hasOwnProperty('cantusId')) {
+      workInfo.cantusId = this.meta.cantusId;
+    }
+    return workInfo;
   }
 
 }
