@@ -45,6 +45,8 @@ import {Block} from '../../data-types/page/block';
 import {TextEditorOverlayComponent} from './editor-tools/text-editor/text-editor-overlay/text-editor-overlay.component';
 import {ReadingOrderContextMenuComponent} from './context-menus/reading-order-context-menu/reading-order-context-menu.component';
 import {SymbolContextMenuComponent} from './context-menus/symbol-context-menu/symbol-context-menu.component';
+import {WorkEditorComponent} from './editor-tools/work-editor/work-editor.component';
+import {WorkEditorOverlayComponent} from './editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
 
 
 @Component({
@@ -66,8 +68,10 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
   @ViewChild(ReadingOrderContextMenuComponent, {static: true}) readingOrderContextMenu: ReadingOrderContextMenuComponent;
   @ViewChild(SymbolContextMenuComponent, {static: true}) symbolContextMenu: SymbolContextMenuComponent;
   @ViewChild(TextEditorOverlayComponent, {static: true}) textEditorOverlay: TextEditorOverlayComponent;
+  @ViewChild(WorkEditorOverlayComponent, {static: true}) workEditorOverlay: WorkEditorOverlayComponent;
 
   @ViewChild(ViewComponent, {static: true}) viewTool: ViewComponent;
+  @ViewChild(WorkEditorComponent, {static: true}) workEditor: WorkEditorComponent;
   @ViewChild(LineEditorComponent, {static: true}) lineEditor: LineEditorComponent;
   @ViewChild(StaffGrouperComponent, {static: true}) staffGrouper: StaffGrouperComponent;
   @ViewChild(StaffSplitterComponent, {static: true}) staffSplitter: StaffSplitterComponent;
@@ -139,6 +143,7 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
     this._subscriptions.add(this.lineEditor.lineDeleted.subscribe(line => this.lineDeleted(line)));
     this._subscriptions.add(this.toolBarStateService.editorToolChanged.subscribe((v) => { this.onToolChanged(v); }));
     this._editors.set(EditorTools.View, this.viewTool);
+    this._editors.set(EditorTools.Work, this.workEditor);
     this._editors.set(EditorTools.CreateStaffLines, this.lineEditor);
     this._editors.set(EditorTools.GroupStaffLines, this.staffGrouper);
     this._editors.set(EditorTools.SplitStaffLines, this.staffSplitter);

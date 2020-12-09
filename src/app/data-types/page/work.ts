@@ -162,4 +162,11 @@ export class Work extends Region {
     }
   }
 
+  get workInfo() {
+    return {
+      title: this.workTitle,
+      nBlocks: this.blocks.length,
+    };
+  }
+
 }

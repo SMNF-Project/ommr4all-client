@@ -1,0 +1,14 @@
+<div
+  *ngIf="work"
+  id="work-editor-overlay"
+  [style.left]="left + 'px'"
+  [style.top]="top + 'px'"
+  [style.min-width]="width + 'px'"
+>
+  <div class="full-width">
+    <ul>
+      <li>Work title: {{ workInfo.title }}</li>
+      <li>No. of blocks: {{ workInfo.nBlocks }}</li>
+    </ul>
+  </div>
+</div>

@@ -61,6 +61,13 @@ export class ToolBarComponent implements OnInit {
     this.currentlyViewing = true;
   }
 
+  onWorkEditorTool() {
+    this.onEditorTool(EditorTools.Work);
+    // This is not exactly true, since the WorkEditor will be able
+    // to induce changes (add/modify works and their data).
+    this.currentlyViewing = true;
+  }
+
   onEditorTool(tool: EditorTools) {
     this.toolBarStateService.currentEditorTool = tool;
   }

@@ -56,13 +56,17 @@
              [class.active]="toolBarStateService.currentEditorTool === EditorTools.View"
              (click)="onViewEditorTool()">remove_red_eye</mat-icon>
         <mat-icon class="button icon"
+                  matTooltip="Edit work data"
+                  i18n-matTooltip
+                  [class.active]="toolBarStateService.currentEditorTool === EditorTools.Work"
+                  (click)="onWorkEditorTool()">menu_book</mat-icon>
+        <mat-icon class="button icon"
                   matTooltip="Edit page"
                   i18n-matTooltip
                   (click)="onRequestEditPage()">edit</mat-icon>
         <mat-icon class="button icon" matTooltip="Edit MEI head metadata"
                   i18n-matTooltip
-                  (click)="toolBarStateService.runMeiHeadTool.emit()"
-        >import_contacts</mat-icon>
+                  (click)="toolBarStateService.runMeiHeadTool.emit()">comment</mat-icon>
         <mat-icon class="button icon locked"
              matTooltip="Mark all steps as finished"
              i18n-matTooltip

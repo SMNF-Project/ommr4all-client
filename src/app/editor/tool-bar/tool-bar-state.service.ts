@@ -17,6 +17,8 @@ export enum EditorTools {
 
   Lyrics,
   Syllables,
+
+  Work,
 }
 
 export const editorToolToProgressGroup = [
@@ -69,6 +71,9 @@ export class ToolBarStateService {
   }
 
   set currentEditorTool(v: EditorTools) {
+    // DEBUG
+    console.log('ToolbarStateService: setting current editor tool: ');
+    console.log(v);
     if (this._currentEditorTool !== v) {
       this.editorToolChanged.emit({prev: this._currentEditorTool, next: v});
       this._currentEditorTool = v;

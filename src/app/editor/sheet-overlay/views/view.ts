@@ -8,14 +8,14 @@ export class ViewSettings {
     public showReadingOrder = false,
     public showAnnotations = false,
     public showComments = true,
+    public showWorks = false,
 
     public showBackground = true,
     public showSymbolCenterOnly = false,
 
     public activeReading = 'Transcription',
-    public availableReadings: Array<string> = [],
+    public availableReadings: Array<string> = []
 
-    public showWorks = false
   ) {
   }
 

@@ -65,12 +65,12 @@ export class MeiHeadToolDialogComponent implements OnInit {
   }
 
   close(r: any = false) {
-    console.log('MeiHeadToolDialogComponent.close() called');
+    // console.log('MeiHeadToolDialogComponent.close() called');
     this.dialogRef.close(r);
   }
 
   insert() {
-    console.log('MeiHeadToolDialogComponent.insert() called');
+    // console.log('MeiHeadToolDialogComponent.insert() called');
     // TODO: This is VERY unsafe right now. Needs some validity checks.
     if (this.isValidMeiHeadText(this.xmlText)) {
       this.data.pcgts.meiHeadMeta.setDataFromXMLString(this.xmlText);

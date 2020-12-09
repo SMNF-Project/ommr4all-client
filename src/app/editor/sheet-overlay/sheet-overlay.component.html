@@ -40,6 +40,7 @@
         <g app-layout-lasso-area [regionTypeContextMenu]="regionTypeContextMenu" ></g>
         <g app-syllable-editor ></g>
         <g app-view-editor-tool ></g>
+        <g app-work-editor-tool [workEditorOverlay]="workEditorOverlay"></g>
       </g>
     </svg>
   </div>
@@ -73,6 +74,15 @@
         [pan]="svgPan"
         [viewWidth]="width"
       ></app-text-editor-overlay>
+    </div>
+    <div class="svg-overlay">
+      <app-work-editor-overlay
+        *ngIf="workEditor.currentWork && workEditor.visible"
+        [work]="workEditor.currentWork"
+        [zoom]="svgZoom"
+        [pan]="svgPan"
+        [viewWidth]="width"
+      ></app-work-editor-overlay>
     </div>
   </div>
 </div>
