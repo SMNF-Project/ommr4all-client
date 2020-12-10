@@ -62,6 +62,22 @@ export class Sentence {
     return t;
   }
 
+  get textWithoutConnectors() {
+    let t = '';
+    this.syllables.forEach(s => {
+      if (s.connection === SyllableConnectionType.New) {
+        if (t.length === 0) {
+          t += s.text;
+        } else {
+          t += ' ' + s.text;
+        }
+      } else {
+        t += s.text;
+      }
+    });
+    return t;
+  }
+
   static textToSyllables(text: string): Array<Syllable> {
     // always start with a 'new' syllable even tough it might be empty.
     // a possible drop capital expects a new syllable

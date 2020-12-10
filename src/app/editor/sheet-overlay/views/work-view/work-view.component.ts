@@ -56,7 +56,7 @@ export class WorkViewComponent implements OnInit, AfterContentChecked, OnChanges
 
   isWorkSelectable(work: Work) { return this.editorTool.isWorkSelectable(work); }
 
-  get sheetOverlaySelectedWork() { return this.sheetOverlayService.hoveredWork; }
+  get sheetOverlaySelectedWork() { return this.sheetOverlayService.selectedWork; }
   get highlighted() { return this.sheetOverlaySelectedWork === this.work; }
 
   indexOfWork(work: Work) { return work.page.worksContainer.indexOfWorkFromTop(work); }

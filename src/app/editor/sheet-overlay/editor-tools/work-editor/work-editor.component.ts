@@ -44,7 +44,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
         false,
         false,
         false,
-        true,
+        false,
         true,
         true,
       )

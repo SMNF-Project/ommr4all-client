@@ -6,17 +6,31 @@
   [style.min-width]="width + 'px'"
 >
   <div class="full-width">
-    <mat-label>
-    <h3>Work detail: {{ workInfo.title }}</h3>
+    <h3>{{ workInfo.title }}</h3>
+    <mat-divider></mat-divider>
     <ul>
-      <li>Work title: {{ workInfo.title }}</li>
-      <li>No. of blocks: {{ workInfo.nBlocks }}</li>
+      <!--<li>Work title: {{ workInfo.title }}</li>-->
+      <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
       <li *ngIf="workInfo.hasOwnProperty('cantusId')">
         Cantus ID: <a href="http://cantusindex.org/id/{{ workInfo.cantusId}}"
                       target="_blank">
         {{ workInfo.cantusId }}</a>
       </li>
+      <li>Text readings:
+
+        <div mat-dialog-content>
+        <mat-tab-group>
+          <mat-tab *ngFor="let readingName of work.availableReadings"
+            label="{{ readingName }}"
+          >
+            {{ work.getText(readingOrder, readingName) }}
+          </mat-tab>
+        </mat-tab-group>
+        </div>
+
+      </li>
+      <!-- Here should be perhaps a tabbed choice of readings? -->
+      <!-- <li>Work text:<br>{{ workText }}</li>-->
     </ul>
-    </mat-label>
   </div>
 </div>

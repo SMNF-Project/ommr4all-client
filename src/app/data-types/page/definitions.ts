@@ -38,6 +38,15 @@ export class BlockTypeUtil {
   static isWork(type: BlockType) {
     return type === BlockType.Work;
   }
+  static isLyrics(type: BlockType) {
+    return (type === BlockType.DropCapital)
+      || (type === BlockType.Lyrics);
+  }
+  static isReadingsCapableText(type: BlockType) {
+    return (type === BlockType.Lyrics)
+      // || (type === BlockType.DropCapital)
+      || (type === BlockType.Paragraph);
+  }
 }
 
 export enum EmptyRegionDefinition {

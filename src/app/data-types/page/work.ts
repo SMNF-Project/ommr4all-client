@@ -3,7 +3,9 @@ import {Page} from './page';
 import {Region} from './region';
 import {IdType} from './id-generator';
 import {PolyLine} from '../../geometry/geometry';
-import {BlockType} from './definitions';
+import {BlockType, BlockTypeUtil} from './definitions';
+import {ReadingOrder} from './reading-order';
+import {LineReading} from './pageLine';
 
 
 export class Works {
@@ -151,6 +153,45 @@ export class Work extends Region {
   get nextWorkInReadingOrder(): Work { return this.worksContainer.getNextWork(this); }
   get prevWorkInReadingOrder(): Work { return this.worksContainer.getPrevWork(this); }
 
+  get hasLyrics(): boolean {
+    const lyricsBlocks = this.blocks.filter(b => BlockTypeUtil.isLyrics(b.type));
+    // console.log('Work.hasLyrics(): ');
+    // console.log(lyricsBlocks);
+    // console.log(!!lyricsBlocks);
+    return (lyricsBlocks.length > 0);
+  }
+
+  getAvailableReadings(): Array<string> {
+    /* Returns a list of readingNames that can be set on *all* constituent lines. */
+    const allReadingsPerLine: Array<Array<string>> = [];
+    const readingCapableBlocks = this.blocks.filter(b => BlockTypeUtil.isReadingsCapableText(b.type));
+    readingCapableBlocks.forEach(b => {
+      // For each line in block: get all available readings.
+      b.textLines.forEach(l => allReadingsPerLine.push(l.availableReadings));
+    });
+    console.log('Work.availableReadings: ' + this.workTitle + ': allReadingsPerLine');
+    console.log(allReadingsPerLine);
+
+    // If there is an empty array, there is no universally available reading.
+    if (allReadingsPerLine.includes([])) { return []; }
+
+    const allPotentialReadings = [...new Set(allReadingsPerLine.reduce((acc, val) => acc.concat(val), []))];
+    const availableReadings = allPotentialReadings.filter(
+      r => allReadingsPerLine.filter(
+        rs => rs.includes(r)).length === allReadingsPerLine.length);
+    console.log('    Non-trivial available readings for work ' + this.workTitle);
+    console.log(availableReadings);
+    return availableReadings;
+  }
+
+  get availableReadings(): Array<string> {
+    const availableReadings = this.getAvailableReadings();
+    if (availableReadings.length === 0) {
+      return [LineReading.defaultReadingName ];
+    }
+    return availableReadings;
+  }
+
   setVisible() {
     this.blocks.map(b => b.visible = true);
     this.visible = true;
@@ -207,6 +248,67 @@ export class Work extends Region {
       workInfo.cantusId = this.meta.cantusId;
     }
     return workInfo;
+  }
+
+  collectTextLines(readingOrder: ReadingOrder = null) {
+    /* Returns an array of text lines within the work. */
+    const textLines = this.blocks.map(b => b.textLines).reduce((acc, val) => acc.concat(val), []);
+    console.log('Work.collectTextLines(): potential lines:');
+    console.log(textLines);
+    if (! readingOrder) {
+      console.log('    Collecting lines: no reading order.');
+      return textLines;
+    } else if (! this.hasLyrics) {
+      console.log('    Collecting lines: reading order but no lyrics.');
+      return textLines;
+    } else {
+      console.log('    Collecting lines: according to reading order.');
+      return readingOrder.readingOrder.filter(l => textLines.includes(l));
+    }
+  }
+
+  getText(readingOrder: ReadingOrder = null,
+          readingName: string = null,
+          sentenceConnector: string = ' / '): string {
+    /* Collects the text within the given Work.
+     *
+     * If a ReadingOrder is given, collects the text in the ReadingOrder, otherwise
+     * returns text ordered the way that the blocks and lines are ordered in the work.
+     *
+     * If a readingName is given, selects this reading from the lines and fails
+     * if the reading is not present in each line. If no readingName is given,
+     * reads from the current sentence member of the lines. */
+    const textLines = this.collectTextLines(readingOrder);
+    console.log('Work.getText(): collected lines: ');
+    console.log(textLines);
+
+    let text = '';
+    textLines.forEach(l => {
+      if (!readingName) {
+        const lineText = l.sentence.textWithoutConnectors;
+        if (text === '') {
+          text += lineText;
+        } else {
+          text += sentenceConnector + lineText;
+        }
+      } else if ((!l.hasReadings) && (readingName === LineReading.defaultReadingName)) {
+        console.log('Text line does not have readings but requested reading is default; returning sentence');
+        const lineText = l.sentence.textWithoutConnectors;
+        if (text === '') {
+          text += lineText;
+        } else {
+          text += sentenceConnector + lineText;
+        }
+      } else {
+        if ((!l.hasReadings) || (!l.readings.hasOwnProperty(readingName)) ) {
+          console.error('Requested reading ' + readingName + ' but this is not available in line ' + l.id + '. Returning UNAVAILABLE.');
+          return '[ERROR] Reading ' + readingName + ' not available for work ' + this.workTitle;
+        }
+        const lineText = l.readings[readingName].sentence.textWithoutConnectors;
+        if (text === '') { text += lineText; } else { text += sentenceConnector + lineText; }
+      }
+    });
+    return text;
   }
 
 }
