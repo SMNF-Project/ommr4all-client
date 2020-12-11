@@ -29,7 +29,7 @@ export class ToolBarComponent implements OnInit {
   Locks = PageProgressGroups;
   Flags = BookPermissionFlag;
 
-  public currentlyViewing = false;
+  public currentlyViewing = true;
 
   constructor(public toolBarStateService: ToolBarStateService,
               public sheetOverlay: SheetOverlayService,

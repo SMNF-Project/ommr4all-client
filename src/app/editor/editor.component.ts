@@ -331,7 +331,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   private openMeiHeadTool() {
     this.modalDialog.open(MeiHeadToolDialogComponent, {
       disableClose: false,
-      width: '600px',
+      width: '1400px',
+      panelClass: 'mei-head-tool-modalbox',
       data: {
         pcgts: this.editorService.pcgts,
       }

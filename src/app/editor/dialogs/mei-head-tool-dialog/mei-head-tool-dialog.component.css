@@ -1,3 +1,11 @@
 .full-width {
-  width: 100%;
+  width: 250%;
+}
+
+.mei-head-tool-modalbox {
+  width: 250%;
+}
+
+app-mei-head-tool-dialog {
+  width: 250%;
 }

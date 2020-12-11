@@ -34,7 +34,7 @@ export class ViewPropertyWidgetComponent implements OnInit {
   set showStaffLines(show: boolean) {
     if (show === this.showStaffLines) { return; }
     this.viewSettings.showStaffLines = show;
-    if (show) { this.viewSettings.showWorks = false; }
+    // if (show) { this.viewSettings.showWorks = false; }
     this.viewSettingsChange.emit(this.viewSettings);
   }
   set showSymbols(show: boolean) {
@@ -67,7 +67,7 @@ export class ViewPropertyWidgetComponent implements OnInit {
   set showReadingOrder(show: boolean) {
     if (this.showReadingOrder === show) { return; }
     this.viewSettings.showReadingOrder = show;
-    if (show) { this.viewSettings.showWorks = false; }
+    // if (show) { this.viewSettings.showWorks = false; }
     this.viewSettingsChange.emit(this.viewSettings);
   }
 
@@ -115,7 +115,7 @@ export class ViewPropertyWidgetComponent implements OnInit {
     // this.viewSettings.showAnnotations = false;
     if (show) {
       this.viewSettings.showBoundingBoxes = false;
-      this.viewSettings.showStaffLines = false;
+      // this.viewSettings.showStaffLines = false;
       this.viewSettings.showStaffGroupShading = false;
       this.viewSettings.showLayout = false;
       this.viewSettings.showSymbols = false;

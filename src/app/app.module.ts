@@ -131,6 +131,7 @@ import { WorkViewComponent } from './editor/sheet-overlay/views/work-view/work-v
 import { WorkDetailDialogComponent } from './editor/dialogs/work-detail-dialog/work-detail-dialog.component';
 import { WorkEditorComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor.component';
 import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
+import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
 
 registerLocaleData(localeDe, 'de');
 
@@ -294,6 +295,7 @@ const appRoutes: Routes = [
     ),
     MatListModule,
     MatTabsModule,
+    HighlightModule,
   ],
   entryComponents: [
     AddNewDialogComponent,
@@ -315,6 +317,14 @@ const appRoutes: Routes = [
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HIGHLIGHT_OPTIONS,
+      useValue: {
+        coreLibraryLoader: () => import('highlight.js/lib/core'),
+        languages: {
+          xml: () => import('highlight.js/lib/languages/xml')
+        }
+      }
+    }
   ],
 })
 export class AppModule { }
