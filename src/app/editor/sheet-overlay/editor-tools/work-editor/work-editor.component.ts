@@ -13,6 +13,7 @@ import {CommandChangeProperty} from '../../../undo/util-commands';
 import {ActionType} from '../../../actions/action-types';
 import {EditorService} from '../../../editor.service';
 import {Page} from '../../../../data-types/page/page';
+import {UserCommentHolder} from '../../../../data-types/page/userComment';
 
 const machina: any = require('machina');
 
@@ -97,6 +98,8 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     }
     this.actions.finishAction();
   }
+
+  get selectedCommentHolder(): UserCommentHolder { return this.currentWork; }
 
   get _page(): Page { return this.editorService.pcgts.page; }
   get firstWork(): Work { return this._page.worksContainer.firstWork; }
