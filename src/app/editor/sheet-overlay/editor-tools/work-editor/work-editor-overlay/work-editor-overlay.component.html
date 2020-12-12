@@ -8,7 +8,7 @@
   <div class="full-width">
     <h3>{{ workInfo.title }}</h3>
     <mat-divider></mat-divider>
-    <ul>
+    <ul style="list-style: none;">
       <!--<li>Work title: {{ workInfo.title }}</li>-->
       <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
       <li *ngIf="workInfo.hasOwnProperty('cantusId')">
@@ -16,6 +16,7 @@
                       target="_blank">
         {{ workInfo.cantusId }}</a>
       </li>
+      <li *ngIf="comment">Comment: {{ comment.text }}</li>
       <li>Text readings:
 
         <div mat-dialog-content>

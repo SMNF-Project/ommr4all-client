@@ -13,7 +13,7 @@ import {CommandChangeProperty} from '../../../undo/util-commands';
 import {ActionType} from '../../../actions/action-types';
 import {EditorService} from '../../../editor.service';
 import {Page} from '../../../../data-types/page/page';
-import {UserCommentHolder} from '../../../../data-types/page/userComment';
+import {UserCommentHolder, UserComments} from '../../../../data-types/page/userComment';
 
 const machina: any = require('machina');
 
@@ -46,7 +46,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
         false,
         false,
         false,
-        true,
+        false,
         true,
       )
     );
@@ -105,6 +105,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
   get firstWork(): Work { return this._page.worksContainer.firstWork; }
   get lastWork(): Work { return this._page.worksContainer.lastWork; }
   get visible() { return this.toolBarService.currentEditorTool === EditorTools.Work; }
+  get comments(): UserComments { return this._page.userComments; }
 
   receivePageMouseEvents(): boolean { return true; }
 

@@ -12,6 +12,9 @@ import {Work} from '../../../../../data-types/page/work';
 import {SheetOverlayService} from '../../../sheet-overlay.service';
 import {ActionsService} from '../../../../actions/actions.service';
 import {ViewChangesService} from '../../../../actions/view-changes.service';
+import {EditorService} from '../../../../editor.service';
+import {Page} from '../../../../../data-types/page/page';
+import {UserComment, UserComments} from '../../../../../data-types/page/userComment';
 
 @Component({
   selector: 'app-work-editor-overlay',
@@ -47,12 +50,17 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   get height() { return this.aabb.bottom - this.aabb.top; }
   get width() { return this.right - this.left; }
 
+  get _page(): Page { return this.editorService.pcgts.page; }
+  get _allComments(): UserComments { return this._page.userComments; }
+  get comment(): UserComment { return this._allComments.getByHolder(this.work); }
+
   get readingOrder() { return this.sheetOverlayService.editorService.pcgts.page.readingOrder; }
 
   constructor(
     public sheetOverlayService: SheetOverlayService,
     private viewChanges: ViewChangesService,
     private changeDetector: ChangeDetectorRef,
+    private editorService: EditorService
   ) {
     // console.log('WorkEditorOverlayComponent constructor called!'); // DEBUG
     // console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);

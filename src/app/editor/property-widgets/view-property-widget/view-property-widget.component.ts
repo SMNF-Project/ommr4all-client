@@ -120,8 +120,6 @@ export class ViewPropertyWidgetComponent implements OnInit {
       this.viewSettings.showLayout = false;
       this.viewSettings.showSymbols = false;
       this.viewSettings.showReadingOrder = false;
-    } else {
-      this.viewSettings.showLayout = true;
     }
 
     this.viewSettingsChange.emit(this.viewSettings);
