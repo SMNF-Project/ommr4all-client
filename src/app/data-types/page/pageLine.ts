@@ -7,6 +7,7 @@ import {BlockType, EmptyRegionDefinition, GraphicalConnectionType, MusicSymbolPo
 import {Syllable} from './syllable';
 import {Accidental, Clef, Note, MusicSymbol} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
+import {defaultFormatUtc} from 'moment';
 
 export class LogicalConnection {
   constructor(
@@ -34,6 +35,17 @@ export class LineReading {
     if (parent) {
       this._line = parent;
     }
+  }
+
+  static create(sentence: Sentence,
+                coords: PolyLine,
+                line: PageLine = null,
+                readingName = LineReading.defaultReadingName): LineReading {
+    const r = new LineReading(line);
+    r.sentence = sentence;
+    r.coords = coords;
+    r.readingName = readingName;
+    return r;
   }
 
   static fromJson(json, line: PageLine = null) {
@@ -66,6 +78,14 @@ export class LineReading {
     return json;
   }
 
+  static createDefaultDict(sentence: Sentence,
+                           coords: PolyLine,
+                           line: PageLine = null): { [key: string]: LineReading } {
+    const r = LineReading.create(sentence, coords, line);
+    const rName = LineReading.defaultReadingName;
+    return Object.assign({}, {[rName]: r});
+  }
+
   toJson() {
     return {
       readingName: this.readingName,
@@ -89,7 +109,18 @@ export class PageLine extends Region {
   public reconstructed = false;
 
   // TextLine
-  public sentence = new Sentence();
+  // public sentence = new Sentence();
+  get sentence() {
+    if (this.hasReadings) { return this.readings[this.activeReading].sentence; } else { return new Sentence(); }
+  }
+  set sentence(s: Sentence) {
+    if (this.hasReadings) {
+      this.readings[this.activeReading].sentence = s;
+    } else {
+      console.error('Cannot assign sentence to line that does not expose readings! Doing nothing.');
+    }
+  }
+
   public transcriptionName: string = null;
   public readings: { [name: string]: LineReading } = Object.create({}); // Object of LineReadings, keyed by 'reading' property
   public hasReadings = false;
@@ -107,33 +138,30 @@ export class PageLine extends Region {
     const line = new PageLine();
     line._id = json.id;
     line.attachToParent(block);
-    line.coords = PolyLine.fromString(json.coords);
-    line.sentence = Sentence.fromJson(json.sentence);
+    const coords = PolyLine.fromString(json.coords);
+    line.coords = coords;
     line.reconstructed = json.reconstructed === true;
 
-    // Transcription name enables multiple text versions for a given text.
+    const sentence = Sentence.fromJson(json.sentence);
+
+    // Transcription name used to enable multiple text versions for a copy of a line.
     if (json.transcriptionName) {
       // console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
       line.transcriptionName = json.transcriptionName;
     }
-    // Readings from data
+
+    // Readings from data.
+    // Note: changed this so that a line always looks like it has readings.
     if (json.readings) {
       line.readings = LineReading.dictFromJson(json.readings, line);
       line.hasReadings = true;
       // Add default reading
-      line.readings[LineReading.defaultReadingName] = line.createDefaultReading();
+      line.readings[LineReading.defaultReadingName] = LineReading.create(sentence, coords, line);
       line.activeReading = LineReading.defaultReadingName;
-    }
-
-    if (line.hasReadings) {
-      // console.log('PageLine readings ' + line._id);
-      // console.log(line.availableReadings);
-      // console.log(line.readings);
-      if (line.readings.hasOwnProperty('Transcription')) {
-        console.log('Setting reading to Transcription');
-        // DEBUG: For testing.
-        line.setActiveReading('Transcription');
-      }
+    } else {
+      line.readings = LineReading.createDefaultDict(sentence, coords, line);
+      line.hasReadings = true;
+      line.activeReading = LineReading.defaultReadingName;
     }
 
     // Staff lines are required for clef and note positioning if available, so attach it first
@@ -602,7 +630,7 @@ export class PageLine extends Region {
     // However, this seems to work by virtue of reference assignment:
     // changes to the active reading are made directly to the Sentence
     // inside readings[activeReading].
-    this.sentence = reading.sentence;
+    // this.sentence = reading.sentence; -- this is now unnecessary, since this.sentence is a getter
     this.coords = reading.coords;
     this.activeReading = readingName;
     this.update();
