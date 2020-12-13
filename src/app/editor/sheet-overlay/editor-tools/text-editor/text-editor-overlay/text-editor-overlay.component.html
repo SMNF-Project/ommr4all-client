@@ -4,20 +4,36 @@
   [style.left]="left + 'px'"
   [style.top]="top + 'px'"
   [style.min-width]="width + 'px'"
+  cdkDrag
 >
-  <div
-    *ngIf="blockType === Mode.Lyrics"
-    class="full-width"
-    >
-    <textarea autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
-           (wheel)="$event.preventDefault()"
-    ></textarea>
+
+  <div mat-dialog-content>
+    <mat-tab-group (selectedTabChange)="setActiveReading($event.tab.textLabel)">
+      <mat-tab *ngFor="let readingName of line.availableReadings" label="{{ readingName }}">
+
+        <div
+            *ngIf="blockType === Mode.Lyrics"
+            class="full-width">
+              <textarea autocomplete="off"
+                        #input name="text"
+                        type="text"
+                        [(ngModel)]="currentText"
+                        (wheel)="$event.preventDefault()"></textarea>
+        </div>
+
+        <div
+          *ngIf="blockType !== Mode.Lyrics"
+          class="full-width">
+          <textarea autocomplete="off"
+                    #input name="text"
+                    type="text"
+                    [(ngModel)]="currentText"
+                    (wheel)="$event.preventDefault()"></textarea>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
-  <div
-    *ngIf="blockType !== Mode.Lyrics">
-    <textarea autocomplete="off" #input name="text" type="text" [(ngModel)]="currentText"
-           (wheel)="$event.preventDefault()"
-    ></textarea>
-  </div>
+
   <app-virtual-keyboard (buttonClicked)="insertAtCaret($event)" [url]="virtualKeyboardUrl" [storePermitted]="virtualKeyboardStoringPermitted"></app-virtual-keyboard>
+
 </div>

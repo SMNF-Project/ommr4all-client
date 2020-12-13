@@ -57,6 +57,10 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     this.changeSyllables(text);
   }
 
+  setActiveReading(readingName: string) {
+    this.line.setActiveReading(readingName);
+  }
+
   get virtualKeyboardStoringPermitted() { return this.sheetOverlayService.editorService.bookMeta.hasPermission(BookPermissionFlag.Write); }
 
   constructor(
