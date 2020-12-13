@@ -8,6 +8,9 @@
 >
 
   <div mat-dialog-content>
+    <mat-panel-title><b>{{ line.id }}</b></mat-panel-title>
+    <mat-divider></mat-divider>
+    <span>Available readings: {{ line.availableReadings.length }}</span>
     <mat-tab-group (selectedTabChange)="setActiveReading($event.tab.textLabel)">
       <mat-tab *ngFor="let readingName of line.availableReadings" label="{{ readingName }}">
 
@@ -36,8 +39,24 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-  </div>
 
-  <app-virtual-keyboard (buttonClicked)="insertAtCaret($event)" [url]="virtualKeyboardUrl" [storePermitted]="virtualKeyboardStoringPermitted"></app-virtual-keyboard>
+    <mat-slide-toggle [(ngModel)]="showVirtualKeyboard">Virtual keyboard</mat-slide-toggle>
+    <app-virtual-keyboard *ngIf="showVirtualKeyboard" (buttonClicked)="insertAtCaret($event)" [url]="virtualKeyboardUrl" [storePermitted]="virtualKeyboardStoringPermitted"></app-virtual-keyboard>
+
+    <!-- UI for adding a reading -->
+    <div>
+      <mat-form-field>
+        <mat-label>Add reading:</mat-label>
+        <input placeholder="Reading name" label="newReadingName" matInput
+               [(ngModel)]="currentReadingNameToAdd">
+        <mat-icon class="button icon"
+                  matTooltip="Add reading"
+                  matSuffix
+                  (click)="addCurrentReading()">
+          add
+        </mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
 
 </div>

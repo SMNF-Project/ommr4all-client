@@ -125,6 +125,11 @@ export class PageLine extends Region {
   public readings: { [name: string]: LineReading } = Object.create({}); // Object of LineReadings, keyed by 'reading' property
   public hasReadings = false;
   public activeReading: string = null;
+  private _activeReadingLockedByEditor = false;
+  get activeReadingLockedByEditor(): boolean { return this._activeReadingLockedByEditor; }
+  set activeReadingLockedByEditor(value: boolean) { this._activeReadingLockedByEditor = value; }
+  public lockActiveReading() { this.activeReadingLockedByEditor = true; }
+  public unlockActiveReading() { this.activeReadingLockedByEditor = false; }
 
   // MusicLine
   private _symbols: Array<MusicSymbol> = [];
@@ -621,6 +626,9 @@ export class PageLine extends Region {
     if (!this.hasReadings) {
       return;
     }
+    if (this.activeReadingLockedByEditor) {
+      return;
+    }
     const reading = this.readings[readingName];
     if (!reading) {
       console.log('PageLine.setActiveReading: Reading ' + readingName + ' not available!');
@@ -631,7 +639,7 @@ export class PageLine extends Region {
     // changes to the active reading are made directly to the Sentence
     // inside readings[activeReading].
     // this.sentence = reading.sentence; -- this is now unnecessary, since this.sentence is a getter
-    this.coords = reading.coords;
+    // this.coords = reading.coords;
     this.activeReading = readingName;
     this.update();
   }
@@ -668,6 +676,30 @@ export class PageLine extends Region {
       sentence: this.sentence.toJson(),
       coords: this.coords.toString()
     }, this);
+  }
+
+  addReading(readingName: string,
+             sentence: Sentence = new Sentence(),
+             coords: PolyLine = new PolyLine([])): void {
+    if (this.isReadingAvailable(readingName)) {
+      console.log('Error: Trying to add reading that already exists: ' + readingName);
+      return;
+    }
+    const r = LineReading.create(sentence, coords, this, readingName);
+    Object.assign(this.readings, {[readingName]: r});
+    this.update();
+  }
+
+  removeReading(readingName: string) {
+    if (!this.isReadingAvailable(readingName)) {
+      console.log('Error: cannot remove reading that does not exist: ' + readingName);
+      return;
+    }
+    if (readingName === this.activeReading) {
+      this.setActiveDefaultReading();
+    }
+    delete this.readings[readingName];
+    this.update();
   }
 
 }

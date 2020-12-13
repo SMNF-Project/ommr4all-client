@@ -37,11 +37,14 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   @Input() viewWidth = 0;
 
   get sentence() { return this._line.sentence; }
+
   get aabb() { return this._line.AABB; }
   get blockType() { return this._line.getBlock().type; }
-
   @ViewChild('input', {static: false}) inputText: ElementRef;
+
   Mode = BlockType;
+
+  public showVirtualKeyboard = false;
 
   get top() { return Math.max(0, this.aabb.bottom * this.zoom + this.pan.y); }
   get left() { return Math.max(0, this.aabb.left * this.zoom + this.pan.x); }
@@ -57,8 +60,21 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     this.changeSyllables(text);
   }
 
+  public currentReadingNameToAdd: string = null;
+
+  addCurrentReading(): void {
+    if (!this.currentReadingNameToAdd) { return; }
+    this.actions.addNewReading(this.currentReadingNameToAdd, this.line);
+    this.setActiveReading(this.currentReadingNameToAdd);
+    // console.log('Would add new reading: ' + this.currentReadingNameToAdd);
+    this.currentReadingNameToAdd = null;
+  }
+
   setActiveReading(readingName: string) {
+    this.line.unlockActiveReading();
     this.line.setActiveReading(readingName);
+    this.line.lockActiveReading();
+    console.log('TextEditorOverlay.setActiveReading to ' + readingName);
   }
 
   get virtualKeyboardStoringPermitted() { return this.sheetOverlayService.editorService.bookMeta.hasPermission(BookPermissionFlag.Write); }
@@ -79,10 +95,12 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     if (this.inputText) {
       this.inputText.nativeElement.focus();
     }
+    this.line.lockActiveReading();
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this.line.unlockActiveReading();
   }
 
 
@@ -92,6 +110,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   get virtualKeyboardUrl() { return this.sheetOverlayService.editorService.bookCom.virtualKeyboardUrl(); }
 
   changeSyllables(to: string): void {
+    console.log('Setting to reading ' + this._line.activeReading + ' a new sentence from text: ' + to);
     const newSentence = new Sentence(Sentence.textToSyllables(to));
     this.actions.changeLyrics(this._line, newSentence);
   }

@@ -132,6 +132,7 @@ import { WorkDetailDialogComponent } from './editor/dialogs/work-detail-dialog/w
 import { WorkEditorComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor.component';
 import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
 import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 registerLocaleData(localeDe, 'de');
 
@@ -296,6 +297,7 @@ const appRoutes: Routes = [
     MatListModule,
     MatTabsModule,
     HighlightModule,
+    MatExpansionModule,
   ],
   entryComponents: [
     AddNewDialogComponent,

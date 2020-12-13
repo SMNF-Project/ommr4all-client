@@ -34,7 +34,7 @@ import {Annotations, Connection, SyllableConnector} from '../../data-types/page/
 import {Syllable} from '../../data-types/page/syllable';
 import {ActionType} from './action-types';
 import {Block} from '../../data-types/page/block';
-import {PageLine} from '../../data-types/page/pageLine';
+import {LineReading, PageLine} from '../../data-types/page/pageLine';
 import {Region} from '../../data-types/page/region';
 import {ViewChangesService} from './view-changes.service';
 import {RequestChangedViewElements} from './changed-view-elements';
@@ -378,6 +378,16 @@ export class ActionsService {
   changeNeumeStart(n: Note, start: boolean) {
     this._actionCaller.pushChangedViewElement(n);
     if (n) { this._actionCaller.runCommand(new CommandChangeProperty(n, 'isNeumeStart', n.isNeumeStart, start)); }
+  }
+
+  addNewReading(readingName: string, line: PageLine) {
+    const reading = LineReading.create(new Sentence(), new PolyLine([]), line, readingName);
+    this._actionCaller.pushChangedViewElement(line);
+    this._actionCaller.runCommand(new CommandChangeProperty(
+      line.readings,
+      readingName,
+      undefined,
+      reading));
   }
 
   // annotations
