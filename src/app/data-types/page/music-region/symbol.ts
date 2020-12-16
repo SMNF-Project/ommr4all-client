@@ -1,4 +1,12 @@
-import {AccidentalType, ClefType, GraphicalConnectionType, MusicSymbolPositionInStaff, NoteType, SymbolType} from '../definitions';
+import {
+  AccidentalType,
+  ClefType,
+  GraphicalConnectionType,
+  MusicSymbolPositionInStaff,
+  NoteType, PitchConstants,
+  PitchName,
+  SymbolType
+} from '../definitions';
 import {Point} from 'src/app/geometry/geometry';
 import {Syllable} from '../syllable';
 import {IdGenerator, IdType} from '../id-generator';
@@ -281,8 +289,29 @@ export class Note extends MusicSymbol {
     }
     return null;
   }
-}
 
+  computePitchAndOctave(clef: Clef): [string, number] {
+    let relativeOffset = this.staffPositionOffset - clef.staffPositionOffset;
+    if (clef.type === ClefType.Clef_F) {
+      relativeOffset += 3;
+    }
+    const pitchIndex = relativeOffset + 2;
+    const pname = PitchName[pitchIndex % 7];
+    // The middle C denoted by the C clef is 4, there are 7 pitches in an octave.
+    // Theoretically everything falls into octave 3 or 4 or 5 in plainchant, but
+    // let's just do this properly and not have to worry about it later.
+    const octave = Math.floor((pitchIndex + (PitchConstants.MIDDLE_C_OCTAVE * 7)) / 7);
+    return [pname, octave];
+  }
+
+  get clef() {
+    return this._staff.symbols.find(s => s instanceof Clef) as Clef;
+  }
+
+  get pname() { return this.computePitchAndOctave(this.clef)[0]; }
+  get octave() { return this.computePitchAndOctave(this.clef)[1]; }
+
+}
 
 export class Clef extends MusicSymbol {
   constructor(
