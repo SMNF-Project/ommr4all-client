@@ -3,11 +3,10 @@ import {Sentence} from './sentence';
 import {Point, PolyLine, Size} from '../../geometry/geometry';
 import {IdType} from './id-generator';
 import {Block} from './block';
-import {BlockType, EmptyRegionDefinition, GraphicalConnectionType, MusicSymbolPositionInStaff, SymbolType,} from './definitions';
+import {BlockType, EmptyRegionDefinition, MusicSymbolPositionInStaff, SymbolType} from './definitions';
 import {Syllable} from './syllable';
-import {Accidental, Clef, Note, MusicSymbol} from './music-region/symbol';
+import {Accidental, Clef, MusicSymbol, Note} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
-import {defaultFormatUtc} from 'moment';
 
 export class LogicalConnection {
   constructor(
@@ -253,6 +252,14 @@ export class PageLine extends Region {
 
   clean() {
     this.staffLines.filter(l => l.coords.length <= 1).forEach(l => l.detachFromParent());
+    this.cleanReadings();
+  }
+  cleanReadings() {
+    this.availableReadings.forEach((readingName) => {
+      // clean if the reading is set to null
+      if (!this.readings[readingName]) { delete this.readings[readingName]; }
+      // clean readings that exist but have no syllables? let's not do that.
+    });
   }
 
   isNotEmpty(flags = EmptyRegionDefinition.Default) {

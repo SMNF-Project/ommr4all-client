@@ -15,7 +15,7 @@ import {
 } from '../undo/data-type-commands';
 import {Point, PolyLine} from '../../geometry/geometry';
 import {copyList, copySet} from '../../utils/copy';
-import {CommandChangeArray, CommandChangeProperty, CommandChangeSet} from '../undo/util-commands';
+import {CommandCallFunction, CommandChangeArray, CommandChangeProperty, CommandChangeSet} from '../undo/util-commands';
 import {
   AccidentalType,
   BlockType,
@@ -388,6 +388,18 @@ export class ActionsService {
       readingName,
       undefined,
       reading));
+  }
+
+  removeReading(readingName: string, line: PageLine) {
+    if (!line.isReadingAvailable(readingName)) { return; }
+    this._actionCaller.pushChangedViewElement(line);
+    this._actionCaller.runCommand(new CommandChangeProperty(
+      line.readings,
+      readingName,
+      line.readings[readingName],
+      null
+    ));
+    this._actionCaller.runCommand(new CommandCallFunction(() => line.clean()));
   }
 
   // annotations

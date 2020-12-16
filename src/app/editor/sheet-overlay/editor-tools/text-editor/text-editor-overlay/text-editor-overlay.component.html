@@ -43,18 +43,23 @@
     <mat-slide-toggle [(ngModel)]="showVirtualKeyboard">Virtual keyboard</mat-slide-toggle>
     <app-virtual-keyboard *ngIf="showVirtualKeyboard" (buttonClicked)="insertAtCaret($event)" [url]="virtualKeyboardUrl" [storePermitted]="virtualKeyboardStoringPermitted"></app-virtual-keyboard>
 
-    <!-- UI for adding a reading -->
+    <!-- UI for adding and removing readings -->
     <div>
+      <mat-divider></mat-divider>
       <mat-form-field>
-        <mat-label>Add reading:</mat-label>
+<!--        <mat-divider matSuffix [vertical]="true"></mat-divider>-->
+<!--        <mat-label>Add reading:</mat-label>-->
         <input placeholder="Reading name" label="newReadingName" matInput
                [(ngModel)]="currentReadingNameToAdd">
-        <mat-icon class="button icon"
-                  matTooltip="Add reading"
-                  matSuffix
-                  (click)="addCurrentReading()">
-          add
-        </mat-icon>
+        <button mat-flat-button matSuffix class="key" (click)="addCurrentReading()">
+          <mat-icon class="button icon"
+                    matTooltip="Add reading">add</mat-icon>
+        </button>
+
+        <button mat-flat-button matSuffix class="key" (click)="removeReading(activeReading)">
+          <mat-icon class="button icon" matTooltip="Delete current reading">delete</mat-icon>
+        </button>
+
       </mat-form-field>
     </div>
   </div>

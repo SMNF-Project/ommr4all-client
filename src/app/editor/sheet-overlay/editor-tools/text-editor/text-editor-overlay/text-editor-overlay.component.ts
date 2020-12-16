@@ -13,7 +13,7 @@ import {SheetOverlayService} from '../../../sheet-overlay.service';
 import {ActionsService} from '../../../../actions/actions.service';
 import {BlockType} from '../../../../../data-types/page/definitions';
 import {Sentence} from '../../../../../data-types/page/sentence';
-import {PageLine} from '../../../../../data-types/page/pageLine';
+import {LineReading, PageLine} from '../../../../../data-types/page/pageLine';
 import {Subscription} from 'rxjs';
 import {ViewChangesService} from '../../../../actions/view-changes.service';
 import {BookPermissionFlag} from '../../../../../data-types/permissions';
@@ -61,6 +61,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   }
 
   public currentReadingNameToAdd: string = null;
+  get defaultReadingName() { return LineReading.defaultReadingName; }
 
   addCurrentReading(): void {
     if (!this.currentReadingNameToAdd) { return; }
@@ -70,6 +71,20 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     this.currentReadingNameToAdd = null;
   }
 
+  removeReading(readingName: string): void {
+    console.log('TextEditorOverlay Removing reading: ' + readingName);
+    if (!this.line.isReadingAvailable(readingName)) { console.log('...reading unavailable'); return; }
+    if (readingName === LineReading.defaultReadingName) {
+      console.log('Cannot remove default reading!');
+      return;
+    }
+    this.line.unlockActiveReading();
+    this.setActiveReading(this.defaultReadingName);
+    this.line.lockActiveReading();
+    this.actions.removeReading(readingName, this.line);
+  }
+
+  get activeReading() { return this.line.activeReading; }
   setActiveReading(readingName: string) {
     this.line.unlockActiveReading();
     this.line.setActiveReading(readingName);
