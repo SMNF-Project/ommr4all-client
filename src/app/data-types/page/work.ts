@@ -3,7 +3,7 @@ import {Page} from './page';
 import {Region} from './region';
 import {IdType} from './id-generator';
 import {PolyLine} from '../../geometry/geometry';
-import {BlockType, BlockTypeUtil, PitchName} from './definitions';
+import {BlockType, BlockTypeUtil} from './definitions';
 import {ReadingOrder} from './reading-order';
 import {LineReading} from './pageLine';
 import {Pitch} from './music-region/symbol';
@@ -275,7 +275,7 @@ export class Work extends Region {
 
   collectMusicLines() {
     /* Returns an array of music lines within the work, sorted from top to bottom. */
-    const musicLines = this.blocks.map(b => b.musicLines).reduce((acc, val) => acc.concat(val), []);
+    const musicLines = this.blocks.map(b => b.musicLines).reduce((acc, val) => acc.concat(val), []).filter(l => l.blockType === BlockType.Music);
     return musicLines.sort((a, b) => a.AABB.top - b.AABB.top);
   }
 
@@ -343,21 +343,17 @@ export class Work extends Region {
   }
 
   getVolpianoString(): string {
-    if (this._volpianoString) {
-      console.log('Work.getVolpianoString(): returning from cache');
-      return this._volpianoString;
-    }
-    console.log('Work.getVolpianoString(): computing');
-    const pitches = this.getPitches();
+    // if (this._volpianoString) {
+    //   console.log('Work.getVolpianoString(): returning from cache');
+    //   return this._volpianoString;
+    // }
     let volpiano = '1---';
-    for (const p of pitches) {
-      if (p === undefined) {
-        console.warn('Undefined pitch! Volpiano state: ' + volpiano);
-        continue;
-      }
-      const v = p.volpiano;
-      volpiano = volpiano + v + '-';
-      console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
+    for (const line of this.collectMusicLines()) {
+      console.log('Line: ');
+      console.log(line);
+      const lineVolpiano = line.getVolpianoString(false);
+      console.log('Line Volpiano: ' + lineVolpiano);
+      volpiano = volpiano + lineVolpiano + '7-';
     }
     this._volpianoString = volpiano;
     return volpiano;

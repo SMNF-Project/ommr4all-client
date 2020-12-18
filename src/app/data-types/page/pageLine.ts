@@ -3,7 +3,7 @@ import {Sentence} from './sentence';
 import {Point, PolyLine, Size} from '../../geometry/geometry';
 import {IdType} from './id-generator';
 import {Block} from './block';
-import {BlockType, EmptyRegionDefinition, MusicSymbolPositionInStaff, SymbolType} from './definitions';
+import {BlockType, EmptyRegionDefinition, MusicSymbolPositionInStaff, PitchName, SymbolType} from './definitions';
 import {Syllable} from './syllable';
 import {Accidental, Clef, MusicSymbol, Note, Pitch} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
@@ -528,6 +528,22 @@ export class PageLine extends Region {
 
   getPitches(): Array<Pitch> {
     return this.symbols.filter(s => s instanceof Note).map(s => s as Note).map(s => Pitch.pitchFromNote(s));
+  }
+
+  getVolpianoString(addStartingClef = false): string {
+    let volpiano = '';
+    if (addStartingClef) { volpiano = volpiano + '1--'; }
+    const pitches = this.getPitches();
+    for (const p of pitches) {
+      if (p === undefined) {
+        console.warn('Undefined pitch! Volpiano state: ' + volpiano);
+        continue;
+      }
+      const v = p.volpiano;
+      volpiano = volpiano + v + '-';
+      // console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
+    }
+    return volpiano;
   }
 
   /*

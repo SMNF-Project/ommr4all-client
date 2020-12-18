@@ -33,14 +33,15 @@
       <li><b>Melody:</b>
         <div>
           <span>Volpiano: </span>
-          <span>{{ work.getVolpianoString() }}</span>
+          <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
         </div>
-        <div>
-          <span>Pitch names (Debug): </span>
-          <ng-container *ngFor="let pitch of work.getPitches()">
-            <span>{{ pitch.pitchLetter }}{{ pitch.octave }}-</span>
-          </ng-container>
-        </div>
+<!--        <div>-->
+<!--          <span>Pitch names (Debug): </span>-->
+<!--          <ng-container *ngFor="let pitch of work.getPitches()">-->
+<!--            <span>{{ pitch.pitchLetter }}{{ pitch.octave }}-</span>-->
+<!--          </ng-container>-->
+<!--        </div>-->
+        <div>--</div>
       </li>
     </ul>
   </div>

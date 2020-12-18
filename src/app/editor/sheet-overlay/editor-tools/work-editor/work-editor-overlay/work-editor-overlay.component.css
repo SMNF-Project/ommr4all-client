@@ -8,6 +8,13 @@
   width: 600px;
 }
 
+.volpiano-melody {
+  font-family: 'Volpiano', sans-serif;
+  font-size: 28px;
+  float: left;
+  margin: 0px;
+}
+
 input {
   min-width: 0;
   width: 100%;
