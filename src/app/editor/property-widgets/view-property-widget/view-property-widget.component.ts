@@ -27,8 +27,8 @@ export class ViewPropertyWidgetComponent implements OnInit {
   get showComments() { return this.viewSettings.showComments; }
   get showBackground() { return this.viewSettings.showBackground; }
   get showSymbolsCenterOnly() { return this.viewSettings.showSymbolCenterOnly; }
-  get activeReading() { return this.viewSettings.activeReading; }
-  get availableReadings() { return this.viewSettings.availableReadings; }
+  // get activeReading() { return this.viewSettings.activeReading; }
+  // get availableReadings() { return this.viewSettings.availableReadings; }
   get showWorks() { return this.viewSettings.showWorks; }
 
   set showStaffLines(show: boolean) {
@@ -95,17 +95,17 @@ export class ViewPropertyWidgetComponent implements OnInit {
     this.viewSettingsChange.emit(this.viewSettings);
   }
 
-  set activeReading(reading: string) {
-    if (this.activeReading === reading) { return; }
-    this.viewSettings.activeReading = reading;
-    this.viewSettingsChange.emit(this.viewSettings);
-  }
-
-  set availableReadings(readings: Array<string>) {
-    if (readings === this.availableReadings) { return; }
-    this.availableReadings = readings;
-    this.viewSettingsChange.emit(this.viewSettings);
-  }
+  // set activeReading(reading: string) {
+  //   if (this.activeReading === reading) { return; }
+  //   this.viewSettings.activeReading = reading;
+  //   this.viewSettingsChange.emit(this.viewSettings);
+  // }
+  //
+  // set availableReadings(readings: Array<string>) {
+  //   if (readings === this.availableReadings) { return; }
+  //   this.availableReadings = readings;
+  //   this.viewSettingsChange.emit(this.viewSettings);
+  // }
 
   set showWorks(show: boolean) {
     this.viewSettings.showWorks = show;

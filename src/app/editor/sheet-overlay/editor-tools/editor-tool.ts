@@ -39,7 +39,7 @@ export abstract class EditorTool {
     });
     this._viewSettings = _defaultViewSettings.copy();
     // Setting up the elements that are dependent on what is *in* the data
-    this._viewSettings.availableReadings = sheetOverlayService.editorService.pageStateVal.pcgts.page.availableReadings;
+    // this._viewSettings.availableReadings = sheetOverlayService.editorService.pageStateVal.pcgts.page.availableReadings;
   }
 
   redraw() {

@@ -5,7 +5,7 @@ import {IdType} from './id-generator';
 import {Block} from './block';
 import {BlockType, EmptyRegionDefinition, MusicSymbolPositionInStaff, SymbolType} from './definitions';
 import {Syllable} from './syllable';
-import {Accidental, Clef, MusicSymbol, Note} from './music-region/symbol';
+import {Accidental, Clef, MusicSymbol, Note, Pitch} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
 
 export class LogicalConnection {
@@ -524,6 +524,10 @@ export class PageLine extends Region {
       });
     }
     return bestS;
+  }
+
+  getPitches(): Array<Pitch> {
+    return this.symbols.filter(s => s instanceof Note).map(s => s as Note).map(s => Pitch.pitchFromNote(s));
   }
 
   /*

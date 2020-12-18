@@ -26,7 +26,10 @@ const machina: any = require('machina');
 export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy {
   @Input() workEditorOverlay: WorkEditorOverlayComponent;
   private _subscriptions = new Subscription();
-  public currentWork: Work = null;
+  private _currentWork: Work = null;
+  get currentWork() { return this._currentWork; }
+  set currentWork(work: Work) { if (work) { work.invalidateCaches(); } this._currentWork = work; }
+  // public currentWork: Work = null;
 
   constructor(
     protected sheetOverlayService: SheetOverlayService,

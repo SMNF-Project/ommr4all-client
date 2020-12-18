@@ -3,7 +3,7 @@ import {
   ClefType,
   GraphicalConnectionType,
   MusicSymbolPositionInStaff,
-  NoteType, PitchConstants,
+  NoteType, Octave, PitchConstants,
   PitchName,
   SymbolType
 } from '../definitions';
@@ -12,6 +12,7 @@ import {Syllable} from '../syllable';
 import {IdGenerator, IdType} from '../id-generator';
 import {PageLine} from '../pageLine';
 import {UserCommentHolder} from '../userComment';
+import {VolpianoConstants} from '../../../utils/volpiano-notation';
 
 type MusicLine = PageLine;
 
@@ -103,7 +104,7 @@ export abstract class MusicSymbol implements UserCommentHolder {
     return snappedCoord;
   }
 
-  protected get positionInStaff() {
+  get positionInStaff() {  // why was this protected?
     return this._staff.positionInStaff(this.coord) + this.staffPositionOffset;
   }
 
@@ -205,6 +206,8 @@ export class Accidental extends MusicSymbol {
 
 
 export class Note extends MusicSymbol {
+  private _pitch: Pitch = undefined;
+
   constructor(
     staff: MusicLine,
     public type = NoteType.Normal,
@@ -232,6 +235,48 @@ export class Note extends MusicSymbol {
       json.fixedSorting || false,
     );
     return note;
+  }
+
+  static computePitchAndOctave(note: Note, clef: Clef): [string, number] {
+    // console.log('Computing pitch and octave for note: ');
+    // console.log(note);
+    // console.log('  clef:');
+    // console.log(clef);
+
+    if ((clef === undefined) || (clef === null)) {
+      console.log('Note.computePitchAndOctave(): Clef is undefined! Note:');
+      console.log(note);
+      return [undefined, undefined];
+    }
+    if (note.positionInStaff === MusicSymbolPositionInStaff.Undefined) {
+      console.log('Note.computePitchAndOctave(): Note position in staff is undefined! Note:');
+      console.log(note);
+      return [undefined, undefined];
+    }
+    if (clef.positionInStaff === MusicSymbolPositionInStaff.Undefined) {
+      console.log('Note.computePitchAndOctave(): Clef position in staff is undefined! clef:');
+      console.log(clef);
+      return [undefined, undefined];
+    }
+    // console.log('  note.staffPositionOffset: ' + note.positionInStaff);
+    // console.log('  clef.staffPositionOffset: ' + clef.positionInStaff);
+    let relativeOffset = note.positionInStaff - clef.positionInStaff;
+    // console.log('  relativeOffset: ' + relativeOffset);
+    if (clef.type === ClefType.Clef_F) {
+      relativeOffset += 3;
+    }
+    const pitchIndex = relativeOffset + 2;
+    // console.log('  pitchIndex: ' + pitchIndex);
+    const adjPitchIndex = ((pitchIndex % 7) + 7) % 7;
+    // console.log('  adjPitchIndex: ' + adjPitchIndex);
+    const pname = PitchName[adjPitchIndex]; // javascript negative modulo...
+    // console.log('  pname: ' + pname);
+    // The middle C denoted by the C clef is 4, there are 7 pitches in an octave.
+    // Theoretically everything falls into octave 3 or 4 or 5 in plainchant, but
+    // let's just do this properly and not have to worry about it later.
+    const octave = Math.floor((relativeOffset + (PitchConstants.MIDDLE_C_OCTAVE * 7)) / 7);
+    // console.log('  Result: pname ' + PitchName[pname] + ', octave: ' +  octave);
+    return [pname, octave];
   }
 
   get subType() { return this.type; }
@@ -290,27 +335,23 @@ export class Note extends MusicSymbol {
     return null;
   }
 
-  computePitchAndOctave(clef: Clef): [string, number] {
-    let relativeOffset = this.staffPositionOffset - clef.staffPositionOffset;
-    if (clef.type === ClefType.Clef_F) {
-      relativeOffset += 3;
-    }
-    const pitchIndex = relativeOffset + 2;
-    const pname = PitchName[pitchIndex % 7];
-    // The middle C denoted by the C clef is 4, there are 7 pitches in an octave.
-    // Theoretically everything falls into octave 3 or 4 or 5 in plainchant, but
-    // let's just do this properly and not have to worry about it later.
-    const octave = Math.floor((pitchIndex + (PitchConstants.MIDDLE_C_OCTAVE * 7)) / 7);
-    return [pname, octave];
-  }
-
   get clef() {
+    // return this.getPrevByType(Clef);
     return this._staff.symbols.find(s => s instanceof Clef) as Clef;
   }
 
-  get pname() { return this.computePitchAndOctave(this.clef)[0]; }
-  get octave() { return this.computePitchAndOctave(this.clef)[1]; }
+  get pitch(): Pitch { if (this._pitch === undefined) { this.initPitch(); } return this._pitch; }
+  get pname(): PitchName { return this.pitch.pname; }
+  get octave(): number { return this.pitch.octave; }
 
+  initPitch(): void {
+    this._pitch = Pitch.pitchFromNote(this);
+  }
+
+  toVolpiano(): string {
+    const pitchString = this._pitch.volpiano;
+    return pitchString + '-';
+  }
 }
 
 export class Clef extends MusicSymbol {
@@ -357,4 +398,41 @@ export class Clef extends MusicSymbol {
       positionInStaff: this.positionInStaff,
     };
   }
+}
+
+
+export class Pitch {
+
+  static pitchFromNote(s: Note): Pitch {
+    const pnameAndOctave = Note.computePitchAndOctave(s, s.clef);
+    return new Pitch(PitchName[pnameAndOctave[0]], pnameAndOctave[1]);
+  }
+
+  static MIDIPitch(p: PitchName, o: number) {
+    // TODO: this is probably wrong...
+    const octaveBase = o * 12;
+    const midiPitch = octaveBase + (p + 2 ) % 7;
+    console.log('MIDI pitch: from pname=' + p + ', oct=' + o + ': octaveBase=' + octaveBase + ', midiPitch=' + midiPitch);
+    return midiPitch;
+  }
+
+  static volpianoPitch(p: PitchName, o: number) {
+    if ((p === undefined) || (o === undefined)) {
+      return '!';
+    }
+    return VolpianoConstants.VOLPIANO_PITCH_FROM_PNAME_AND_OCTAVE[o][p];
+  }
+
+  constructor(
+    private _pname: PitchName,
+    private _octave: number,
+  ) {}
+
+  get pname(): PitchName { return this._pname; }
+  get octave(): number { return this._octave; }
+
+  get pitchLetter(): string { return PitchName[this._pname]; }
+  get midi(): number { return Pitch.MIDIPitch(this.pname, this.octave); }
+  get volpiano(): string { return Pitch.volpianoPitch(this.pname, this.octave); }
+
 }

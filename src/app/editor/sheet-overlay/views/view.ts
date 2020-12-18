@@ -1,3 +1,5 @@
+import {LineReading} from '../../../data-types/page/pageLine';
+
 export class ViewSettings {
   constructor(
     public showStaffLines = true,
@@ -13,8 +15,8 @@ export class ViewSettings {
     public showBackground = true,
     public showSymbolCenterOnly = false,
 
-    public activeReading = 'Transcription',
-    public availableReadings: Array<string> = []
+    // public activeReading = LineReading.defaultReadingName,
+    // public availableReadings: Array<string> = []
 
   ) {
   }

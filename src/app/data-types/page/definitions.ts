@@ -146,3 +146,4 @@ export class PitchConstants {
   static readonly MIDDLE_C_OCTAVE = 4;
 }
 
+export class Octave extends Number {}

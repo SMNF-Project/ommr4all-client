@@ -3,9 +3,10 @@ import {Page} from './page';
 import {Region} from './region';
 import {IdType} from './id-generator';
 import {PolyLine} from '../../geometry/geometry';
-import {BlockType, BlockTypeUtil} from './definitions';
+import {BlockType, BlockTypeUtil, PitchName} from './definitions';
 import {ReadingOrder} from './reading-order';
 import {LineReading} from './pageLine';
+import {Pitch} from './music-region/symbol';
 
 
 export class Works {
@@ -74,6 +75,10 @@ export class Work extends Region {
   private static readonly _concavity = 700;
 
   public type: BlockType;
+
+  // For melody rendering
+  private _volpianoString = null;
+  private _pitches = null;
 
   // Note that while a Work points to a bunch of Blocks, it does *NOT* consider these blocks children.
   // Works are derived objects from Blocks, kind of like Annotations. We don't want Works to become
@@ -169,8 +174,8 @@ export class Work extends Region {
       // For each line in block: get all available readings.
       b.textLines.forEach(l => allReadingsPerLine.push(l.availableReadings));
     });
-    console.log('Work.availableReadings: ' + this.workTitle + ': allReadingsPerLine');
-    console.log(allReadingsPerLine);
+    // console.log('Work.availableReadings: ' + this.workTitle + ': allReadingsPerLine');
+    // console.log(allReadingsPerLine);
 
     // If there is an empty array, there is no universally available reading.
     if (allReadingsPerLine.includes([])) { return []; }
@@ -179,8 +184,8 @@ export class Work extends Region {
     const availableReadings = allPotentialReadings.filter(
       r => allReadingsPerLine.filter(
         rs => rs.includes(r)).length === allReadingsPerLine.length);
-    console.log('    Non-trivial available readings for work ' + this.workTitle);
-    console.log(availableReadings);
+    // console.log('    Non-trivial available readings for work ' + this.workTitle);
+    // console.log(availableReadings);
     return availableReadings;
   }
 
@@ -251,20 +256,27 @@ export class Work extends Region {
   }
 
   collectTextLines(readingOrder: ReadingOrder = null) {
-    /* Returns an array of text lines within the work. */
+    /* Returns an array of text lines within the work, sorted by reading order.
+     * If reading order is not given, uses the ordering of blocks and of lines in blocks. */
     const textLines = this.blocks.map(b => b.textLines).reduce((acc, val) => acc.concat(val), []);
-    console.log('Work.collectTextLines(): potential lines:');
-    console.log(textLines);
+    // console.log('Work.collectTextLines(): potential lines:');
+    // console.log(textLines);
     if (! readingOrder) {
-      console.log('    Collecting lines: no reading order.');
+      // console.log('    Collecting lines: no reading order.');
       return textLines;
     } else if (! this.hasLyrics) {
-      console.log('    Collecting lines: reading order but no lyrics.');
+      // console.log('    Collecting lines: reading order but no lyrics.');
       return textLines;
     } else {
-      console.log('    Collecting lines: according to reading order.');
+      // console.log('    Collecting lines: according to reading order.');
       return readingOrder.readingOrder.filter(l => textLines.includes(l));
     }
+  }
+
+  collectMusicLines() {
+    /* Returns an array of music lines within the work, sorted from top to bottom. */
+    const musicLines = this.blocks.map(b => b.musicLines).reduce((acc, val) => acc.concat(val), []);
+    return musicLines.sort((a, b) => a.AABB.top - b.AABB.top);
   }
 
   getText(readingOrder: ReadingOrder = null,
@@ -279,8 +291,8 @@ export class Work extends Region {
      * if the reading is not present in each line. If no readingName is given,
      * reads from the current sentence member of the lines. */
     const textLines = this.collectTextLines(readingOrder);
-    console.log('Work.getText(): collected lines: ');
-    console.log(textLines);
+    // console.log('Work.getText(): collected lines: ');
+    // console.log(textLines);
 
     let text = '';
     textLines.forEach(l => {
@@ -309,6 +321,46 @@ export class Work extends Region {
       }
     });
     return text;
+  }
+
+  invalidateCaches() {
+    this._pitches = null;
+    this._volpianoString = null;
+  }
+
+  getPitches(): Array<Pitch> {
+    if (this._pitches) {
+      console.log('Work.getPitches(): work ' + this.workTitle + ' returning from cache');
+      return this._pitches;
+    }
+    console.log('Work.getPitches(): work ' + this.workTitle + ' computing');
+    const musicLines = this.collectMusicLines();
+    const pitches = musicLines.map(l => l.getPitches()).reduce((acc, val) => acc.concat(val), []);
+    // const pitches = musicLines[0].getPitches();
+    console.log('Work.getPitches(): work ' + this.workTitle);
+    console.log(pitches);
+    return pitches;
+  }
+
+  getVolpianoString(): string {
+    if (this._volpianoString) {
+      console.log('Work.getVolpianoString(): returning from cache');
+      return this._volpianoString;
+    }
+    console.log('Work.getVolpianoString(): computing');
+    const pitches = this.getPitches();
+    let volpiano = '1---';
+    for (const p of pitches) {
+      if (p === undefined) {
+        console.warn('Undefined pitch! Volpiano state: ' + volpiano);
+        continue;
+      }
+      const v = p.volpiano;
+      volpiano = volpiano + v + '-';
+      console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
+    }
+    this._volpianoString = volpiano;
+    return volpiano;
   }
 
 }

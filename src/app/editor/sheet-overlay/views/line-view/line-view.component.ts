@@ -69,9 +69,9 @@ export class LineViewComponent implements OnInit, AfterContentChecked, OnChanges
     // were dealing only with object types and did not affect
     // the inside of the data model, this kind of propagation of
     // values *from the editor to the data* was not necessary.
-    const reading = this.editorTool.viewSettings.activeReading;
+    // const reading = this.editorTool.viewSettings.activeReading;
     // console.log('line-view.redraw(): setting reading to ' + reading);
-    this.line.setActiveReading(reading);
+    // this.line.setActiveReading(reading);
 
     this.line.update();
     this.changeDetector.detectChanges();

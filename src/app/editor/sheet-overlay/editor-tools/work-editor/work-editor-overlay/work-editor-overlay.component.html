@@ -18,21 +18,30 @@
         {{ workInfo.cantusId }}</a>
       </li>
       <li *ngIf="comment">Comment: {{ comment.text }}</li>
-      <li>Text readings:
+      <li><b>Text readings:</b>
 
         <div mat-dialog-content>
         <mat-tab-group>
           <mat-tab *ngFor="let readingName of work.availableReadings"
-            label="{{ readingName }}"
-          >
+            label="{{ readingName }}">
             {{ work.getText(readingOrder, readingName) }}
           </mat-tab>
         </mat-tab-group>
         </div>
 
       </li>
-      <!-- Here should be perhaps a tabbed choice of readings? -->
-      <!-- <li>Work text:<br>{{ workText }}</li>-->
+      <li><b>Melody:</b>
+        <div>
+          <span>Volpiano: </span>
+          <span>{{ work.getVolpianoString() }}</span>
+        </div>
+        <div>
+          <span>Pitch names (Debug): </span>
+          <ng-container *ngFor="let pitch of work.getPitches()">
+            <span>{{ pitch.pitchLetter }}{{ pitch.octave }}-</span>
+          </ng-container>
+        </div>
+      </li>
     </ul>
   </div>
 </div>
