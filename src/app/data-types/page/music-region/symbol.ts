@@ -228,7 +228,7 @@ export class Note extends MusicSymbol {
       json.noteType,
       Point.fromString(json.coord),
       json._positionInStaff,
-      json.graphicalConnection === GraphicalConnectionType.Gaped ? GraphicalConnectionType.Gaped : GraphicalConnectionType.Looped,
+      json.graphicalConnection === GraphicalConnectionType.Looped ? GraphicalConnectionType.Looped : GraphicalConnectionType.Gaped,
       json.graphicalConnection === GraphicalConnectionType.NeumeStart,
       json.syllable,
       json.id,
@@ -324,6 +324,7 @@ export class Note extends MusicSymbol {
   }
 
   getSyllableConnectionNote(): Note {
+    // Find the closest preceding note that can by virtue of its placement in neumes be the start of a syllable.
     if (this.isSyllableConnectionAllowed()) { return this; }
     const notes = this.staff.symbols.filter(n => n instanceof Note);
     let idx = notes.indexOf(this);
@@ -333,6 +334,22 @@ export class Note extends MusicSymbol {
       if (n.isSyllableConnectionAllowed()) { return n as Note; }
     }
     return null;
+  }
+
+  findSyllable(): Syllable {
+    // Returns the Syllable(s) that this note is connected to in annotations.
+    // There can be more than one syllable, due to Readings. For now we just
+    // get the syllable of the default reading.
+    // The behavior of Annotations.findSyllableConnectorByNote, used here,
+    // only returns the first connected Syllable found.
+    // If there is no syllable connected with the note, returns null.
+    if (!this.isSyllableConnectionAllowed()) { return null; }
+    const annotations = this._staff.block.page.annotations;
+    const sc = annotations.findSyllableConnectorByNote(this);
+    if (!sc) {
+      return null;
+    }
+    return sc.syllable;
   }
 
   get clef() {

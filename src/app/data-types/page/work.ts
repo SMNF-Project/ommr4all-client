@@ -348,12 +348,20 @@ export class Work extends Region {
     //   return this._volpianoString;
     // }
     let volpiano = '1---';
-    for (const line of this.collectMusicLines()) {
-      console.log('Line: ');
-      console.log(line);
+    const musicLines = this.collectMusicLines();
+    for (const line of musicLines) {
+      // console.log('Line: ');
+      // console.log(line);
       const lineVolpiano = line.getVolpianoString(false);
-      console.log('Line Volpiano: ' + lineVolpiano);
-      volpiano = volpiano + lineVolpiano + '7-';
+      console.log('Line ' + line.id + ' Volpiano: ' + lineVolpiano);
+      volpiano = volpiano + lineVolpiano;
+
+      // Line ending connector
+      if (line !== musicLines[musicLines.length - 1]) {
+        volpiano = volpiano + '7-';
+      } else {
+        volpiano = volpiano + '---4';
+      }
     }
     this._volpianoString = volpiano;
     return volpiano;

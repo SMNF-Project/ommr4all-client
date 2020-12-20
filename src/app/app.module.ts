@@ -128,7 +128,6 @@ import { BookStatsDialogComponent } from './book-view/book-settings-view/book-st
 import { MeiHeadToolDialogComponent } from './editor/dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import { WorkViewComponent } from './editor/sheet-overlay/views/work-view/work-view.component';
-import { WorkDetailDialogComponent } from './editor/dialogs/work-detail-dialog/work-detail-dialog.component';
 import { WorkEditorComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor.component';
 import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
 import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
@@ -256,7 +255,6 @@ const appRoutes: Routes = [
     BookStatsDialogComponent,
     MeiHeadToolDialogComponent,
     WorkViewComponent,
-    WorkDetailDialogComponent,
     WorkEditorComponent,
     WorkEditorOverlayComponent,
   ],

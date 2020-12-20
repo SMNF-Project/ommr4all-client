@@ -3,7 +3,14 @@ import {Sentence} from './sentence';
 import {Point, PolyLine, Size} from '../../geometry/geometry';
 import {IdType} from './id-generator';
 import {Block} from './block';
-import {BlockType, EmptyRegionDefinition, MusicSymbolPositionInStaff, PitchName, SymbolType} from './definitions';
+import {
+  BlockType,
+  EmptyRegionDefinition,
+  GraphicalConnectionType,
+  MusicSymbolPositionInStaff,
+  PitchName, SyllableConnectionType,
+  SymbolType
+} from './definitions';
 import {Syllable} from './syllable';
 import {Accidental, Clef, MusicSymbol, Note, Pitch} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
@@ -134,6 +141,9 @@ export class PageLine extends Region {
   private _symbols: Array<MusicSymbol> = [];
   private _avgStaffLineDistance = 0;
   private _logicalConnections: Array<LogicalConnection> = [];
+
+  // Caches
+  private _volpianoLine = null;
 
   // =============================================================================
   // General
@@ -533,14 +543,44 @@ export class PageLine extends Region {
   getVolpianoString(addStartingClef = false): string {
     let volpiano = '';
     if (addStartingClef) { volpiano = volpiano + '1--'; }
-    const pitches = this.getPitches();
-    for (const p of pitches) {
+    // Here we should rather read symbol by symbol to catch accidentals.
+    // Clef changes are also not handled very well.
+
+    // TODO: incorporate syllables into volpiano export & rendering.
+    // In volpiano, lyrics have to be aligned by div.
+    // That probably means we should be returning an array of volpiano strings
+    // per syllable.
+    // Immediate concern: assign appropriate connectors -- volpiano spacing.
+    for (const s of this.symbols) {
+      if (!(s instanceof Note)) { continue; }
+      const p = s.pitch;
       if (p === undefined) {
         console.warn('Undefined pitch! Volpiano state: ' + volpiano);
         continue;
       }
       const v = p.volpiano;
-      volpiano = volpiano + v + '-';
+
+      // add the appropriate number of connecting spaces.
+      // Same neume: 0, new neume: 1, new syllable: 2, new word: 3
+      let connector = '-';
+      // console.log('symbol ' + s.id + ': graphical connection ' + s.graphicalConnection);
+      if (s.syllable !== null) {
+        console.log('    Note ' + s.id + ' has directly assigned syllable: ' + s.syllable.id);
+        connector = '--';
+      } else if (s.findSyllable() !== null) {
+        const syl = s.findSyllable();
+        console.log('    Note ' + s.id + ' has found syllable: ' + syl.id);
+        if (syl.connection === SyllableConnectionType.New) {
+          connector = '---';
+        } else {
+          connector = '--';
+        }
+
+      }
+      if (s.graphicalConnection === GraphicalConnectionType.Looped) {
+        connector = '';
+      }
+      volpiano = volpiano + connector + v;
       // console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
     }
     return volpiano;
