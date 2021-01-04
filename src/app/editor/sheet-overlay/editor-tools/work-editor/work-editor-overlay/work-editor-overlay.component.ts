@@ -43,6 +43,8 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   @Input() pan = {x: 0, y: 0};
   @Input() viewWidth = 0;
 
+  public showVolpianoString = false;
+
   get aabb() { return this._work.AABB; }
   get top() { return Math.max(0, (this.aabb.top + this.height / 2.0) * this.zoom + this.pan.y); }
   get left() { return Math.max(0, this.aabb.left * this.zoom + this.pan.x); }

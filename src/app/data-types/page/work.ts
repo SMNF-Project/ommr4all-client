@@ -166,6 +166,11 @@ export class Work extends Region {
     return (lyricsBlocks.length > 0);
   }
 
+  get hasMusic(): boolean {
+    const musicBlocks = this.blocks.filter(b => BlockTypeUtil.isMusic(b.type));
+    return (musicBlocks.length > 0);
+  }
+
   getAvailableReadings(): Array<string> {
     /* Returns a list of readingNames that can be set on *all* constituent lines. */
     const allReadingsPerLine: Array<Array<string>> = [];

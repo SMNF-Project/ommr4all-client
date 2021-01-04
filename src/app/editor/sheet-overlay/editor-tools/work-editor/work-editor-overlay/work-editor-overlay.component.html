@@ -30,9 +30,9 @@
         </div>
 
       </li>
+      <ng-container *ngIf="work.hasMusic">
       <li><b>Melody:</b>
         <div class="volpiano-container">
-          <span>Volpiano: </span>
           <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
         </div>
 <!--        <div>-->
@@ -41,8 +41,24 @@
 <!--            <span>{{ pitch.pitchLetter }}{{ pitch.octave }}-</span>-->
 <!--          </ng-container>-->
 <!--        </div>-->
-        <div>--</div>
+        <mat-slide-toggle [(ngModel)]="showVolpianoString">Show Volpiano string</mat-slide-toggle>
+        <div *ngIf="showVolpianoString">
+          <textarea autocomplete="off"
+                    #input name="text"
+                    type="text"
+                    readonly
+                    (wheel)="$event.preventDefault()"
+                    (mousedown)="$event.stopPropagation()"
+            >{{ work.getVolpianoString() }}
+          </textarea>
+        </div>
       </li>
+      </ng-container>
+      <ng-container *ngIf="!work.hasMusic">
+        <li>
+          <span><i>No music.</i></span>
+        </li>
+      </ng-container>
     </ul>
   </div>
 </div>
