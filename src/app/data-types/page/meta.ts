@@ -32,6 +32,9 @@ export class MEIHeadMeta {
   ) {}
 
   static fromJson(json) {
+    if (!json) {
+      return new MEIHeadMeta('base64', '');
+    }
     return new MEIHeadMeta(json.encoding, json.content);
   }
 
