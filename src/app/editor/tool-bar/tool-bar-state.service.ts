@@ -75,8 +75,11 @@ export class ToolBarStateService {
     console.log('ToolbarStateService: setting current editor tool: ');
     console.log(v);
     if (this._currentEditorTool !== v) {
+      console.log('ToolbarStateService: the tool is changing! Prev: ' + this._currentEditorTool);
       this.editorToolChanged.emit({prev: this._currentEditorTool, next: v});
       this._currentEditorTool = v;
+    } else {
+      console.log('ToolbarStateService: the tool is the same as current tool: ' + this._currentEditorTool);
     }
   }
 
@@ -90,5 +93,10 @@ export class ToolBarStateService {
       this.editorSymbolChanged.emit(v);
       this._currentEditorSymbol = v;
     }
+  }
+
+  isCurrentToolReadOnly(): boolean {
+    return (this._currentEditorTool === EditorTools.View) ||
+      (this._currentEditorTool === EditorTools.Work);
   }
 }

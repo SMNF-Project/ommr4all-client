@@ -23,7 +23,7 @@
 
     <!--General Section-->
 
-    <div [class.active]="toolBarStateService.currentEditorTool === EditorTools.View">
+    <div [class.active]="toolBarStateService.isCurrentToolReadOnly()">
       <div class="buttons-container">
         <div class="button icon" (click)="onSave()"
              *ngIf="!editOnlyMode"
