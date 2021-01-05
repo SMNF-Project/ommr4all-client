@@ -672,6 +672,11 @@ export class PageLine extends Region {
     return {s: syllable, r: null};
   }
 
+  getReadingOfSyllable(s: Syllable): LineReading {
+    const si = this.syllableInfoById(s.id);
+    return si.r;
+  }
+
   syllableById(id: string): Syllable {
     return this.syllableInfoById(id).s;
   }

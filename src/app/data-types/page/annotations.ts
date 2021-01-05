@@ -110,10 +110,24 @@ export class SyllableConnector implements UserCommentHolder {
     public readonly neume: Note,
     public readonly textLine: PageLine,
     public readonly reading: LineReading = null
-  ) {}
+  ) {
+    if (reading === null) {
+      console.log('Constructing SyllableConnector with null reading!');
+      console.log(textLine.id + '_' + neume.id + '_' + syllable.id);
+    }
+    this._connection = _connection;
+    this.syllable = syllable;
+    this.neume = neume;
+    this.textLine = textLine;
+    this.reading = reading;
+  }
 
   static fromJson(json: AnnotationSyllableConnectorStruct, connection: Connection, textRegion: Block, musicRegion: Block) {
     const si = textRegion.syllableInfoById(json.syllableID);
+    if (!si.r) {
+      console.log('Bug warning: SyllableConnector.fromJson has no reading. This should not happen.');
+      console.log(si);
+    }
     return new SyllableConnector(
       connection,
       si.s,
@@ -133,6 +147,10 @@ export class SyllableConnector implements UserCommentHolder {
   }
 
   get isActive(): boolean {
+    if (this.reading === null) {
+      console.log('BUG: SyllableConnector has null reading!');
+      console.log(this);
+    }
     if (this.textLine.hasReadings) {
       return (this.reading.readingName === this.textLine.activeReading);
     } else {

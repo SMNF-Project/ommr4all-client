@@ -441,7 +441,7 @@ export class ActionsService {
     const syl = connection.syllableConnectors.find(sc => sc.syllable === s);
     if (syl) { return syl; }
     this.caller.pushChangedViewElement(n, s, tl, connection.musicRegion, connection.textRegion);
-    this.pushToArray(connection.syllableConnectors, new SyllableConnector(connection, s, n, tl));
+    this.pushToArray(connection.syllableConnectors, new SyllableConnector(connection, s, n, tl, tl.getReadingOfSyllable(s)));
     return connection.syllableConnectors[connection.syllableConnectors.length - 1];
   }
 

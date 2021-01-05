@@ -148,7 +148,10 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
             const closestNote = this.page.closesLogicalComponentToPosition(pos);
             if (closestNote && closestNote === this._prepareInsertConnection && closestNote.isSyllableConnectionAllowed()) {
               this.actions.startAction(ActionType.SyllablesAddToNeume);
-              const c = this.actions.annotationAddSyllableNeumeConnection(this.page.annotations, closestNote, this.syllabelEditorService.currentSyllable);
+              const c = this.actions.annotationAddSyllableNeumeConnection(
+                this.page.annotations,
+                closestNote,
+                this.syllabelEditorService.currentSyllable);
               this.actions.freeMoveSyllable(this.page, c, pos);
               this._selectNext();
               this.actions.finishAction();
