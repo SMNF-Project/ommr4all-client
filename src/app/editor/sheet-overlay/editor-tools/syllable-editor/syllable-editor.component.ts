@@ -16,6 +16,7 @@ import {SyllableClickEvent} from '../../../property-widgets/syllable-property-wi
 import {PageLine} from '../../../../data-types/page/pageLine';
 import {copyList} from '../../../../utils/copy';
 import {Block} from '../../../../data-types/page/block';
+import {SyllablesActiveReadingChanged} from '../../../property-widgets/syllable-property-widget/syllable-property-widget.component';
 
 const machina: any = require('machina');
 
@@ -271,6 +272,12 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
     if (event.connector) {
       this.selectedSyllableConnection = event.connector;
     }
+  }
+
+  onActiveReadingChanged(event: SyllablesActiveReadingChanged) {
+    console.log('Syllable editor: handling active reading change event: ' + event.readingName);
+    this.states.transition('idle');
+    this.states.handle('activate');
   }
 
   onKeydown(event: KeyboardEvent) {

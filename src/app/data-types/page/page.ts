@@ -87,6 +87,15 @@ export class Page extends Region {
     return readingNames;
   }
 
+  setActiveReading(readingName: string) {
+    console.log('Page.setActiveReading: Setting active reading on page to ' + readingName);
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        tl.setActiveReading(readingName);
+      }
+    }
+  }
+
   get availableWorks(): Array<string> {
     return this.works.map(w => w.workTitle);
   }
