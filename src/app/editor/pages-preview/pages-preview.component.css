@@ -16,6 +16,10 @@
   border-radius: 5px;
 }
 
+.page-preview.selected-page {
+  border: 2px solid red;
+}
+
 .page-preview-image {
   width: 100%;
 }

@@ -54,5 +54,9 @@ export class PagesPreviewComponent {
     this.changeDetector.markForCheck();
   }
 
+  _getCurrentPage() {
+    console.log('Getting current page: ' + this._currentPage.page);
+    return this._currentPage; }
+
   pageId(index, item) { return item.page.page.page; }
 }

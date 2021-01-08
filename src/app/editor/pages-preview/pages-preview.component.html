@@ -8,6 +8,8 @@
     <app-page-preview [page]="page.page" [progress]="page.progress"
                       (click)="onPageClick(page.page)"
                       class="page-preview"
+                      id="page-preview-{{ page.page.page }}"
+                      [class.selected-page]="_getCurrentPage().page === page.page.page"
     ></app-page-preview>
   </div>
 </div>
