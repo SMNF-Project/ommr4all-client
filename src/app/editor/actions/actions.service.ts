@@ -381,7 +381,7 @@ export class ActionsService {
   }
 
   addNewReading(readingName: string, line: PageLine) {
-    const reading = LineReading.create(new Sentence(), new PolyLine([]), line, readingName);
+    const reading = LineReading.create(new Sentence(), line, readingName);
     this._actionCaller.pushChangedViewElement(line);
     this._actionCaller.runCommand(new CommandChangeProperty(
       line.readings,

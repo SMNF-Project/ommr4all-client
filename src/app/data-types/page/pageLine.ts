@@ -33,7 +33,6 @@ export class LineReading {
 
   public readingName = null;
   public sentence = new Sentence();
-  public coords = null;
 
   private readonly _line = null;
 
@@ -44,20 +43,16 @@ export class LineReading {
   }
 
   static create(sentence: Sentence,
-                coords: PolyLine,
                 line: PageLine = null,
                 readingName = LineReading.defaultReadingName): LineReading {
     const r = new LineReading(line);
     r.sentence = sentence;
-    r.coords = coords;
     r.readingName = readingName;
     return r;
   }
 
   static fromJson(json, line: PageLine = null) {
     const reading = new LineReading(line);
-    // console.log('Reading PolyLine from coords: ' + json.coords);
-    reading.coords = PolyLine.fromString(json.coords);
     // console.log('Reading Sentence from json: ' + json.sentence);
     reading.sentence = Sentence.fromJson(json.sentence);
     reading.readingName = json.readingName;
@@ -85,9 +80,8 @@ export class LineReading {
   }
 
   static createDefaultDict(sentence: Sentence,
-                           coords: PolyLine,
                            line: PageLine = null): { [key: string]: LineReading } {
-    const r = LineReading.create(sentence, coords, line);
+    const r = LineReading.create(sentence, line);
     const rName = LineReading.defaultReadingName;
     return Object.assign({}, {[rName]: r});
   }
@@ -95,7 +89,6 @@ export class LineReading {
   toJson() {
     return {
       readingName: this.readingName,
-      coords: this.coords.toString(),
       sentence: this.sentence.toJson()
     };
   }
@@ -170,10 +163,10 @@ export class PageLine extends Region {
       line.readings = LineReading.dictFromJson(json.readings, line);
       line.hasReadings = true;
       // Add default reading
-      line.readings[LineReading.defaultReadingName] = LineReading.create(sentence, coords, line);
+      line.readings[LineReading.defaultReadingName] = LineReading.create(sentence, line);
       line.activeReading = LineReading.defaultReadingName;
     } else {
-      line.readings = LineReading.createDefaultDict(sentence, coords, line);
+      line.readings = LineReading.createDefaultDict(sentence, line);
       line.hasReadings = true;
       line.activeReading = LineReading.defaultReadingName;
     }
@@ -204,7 +197,7 @@ export class PageLine extends Region {
     // this sentence.
     const output = {
       id: this.id,
-      coords: this.defaultReading.coords.toString(),
+      coords: this.coords.toString(),
       reconstructed: this.reconstructed,
       sentence: this.defaultReading.sentence.toJson(),
       staffLines: this.staffLines.map(s => s.toJson()),
@@ -667,6 +660,7 @@ export class PageLine extends Region {
       console.log('Syllable with id = ' + id + ' not found in readings. If found' +
         ' in the current sentence, something is strange, because current sentence' +
         ' should be at least the default reading.');
+      return {s: null, r: null};
     }
     const syllable = this.sentence.syllables.find(s => s.id === id);
     return {s: syllable, r: null};
@@ -675,6 +669,9 @@ export class PageLine extends Region {
   getReadingOfSyllable(s: Syllable): LineReading {
     const si = this.syllableInfoById(s.id);
     return si.r;
+  }
+  getReadingNameOfSyllable(s: Syllable): string {
+    return this.getReadingOfSyllable(s).readingName;
   }
 
   syllableById(id: string): Syllable {
@@ -751,13 +748,12 @@ export class PageLine extends Region {
   }
 
   addReading(readingName: string,
-             sentence: Sentence = new Sentence(),
-             coords: PolyLine = new PolyLine([])): void {
+             sentence: Sentence = new Sentence()): void {
     if (this.isReadingAvailable(readingName)) {
       console.log('Error: Trying to add reading that already exists: ' + readingName);
       return;
     }
-    const r = LineReading.create(sentence, coords, this, readingName);
+    const r = LineReading.create(sentence, this, readingName);
     Object.assign(this.readings, {[readingName]: r});
     this.update();
   }
