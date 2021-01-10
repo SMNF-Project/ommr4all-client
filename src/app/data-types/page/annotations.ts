@@ -40,6 +40,26 @@ export class Annotations {
     return null;
   }
 
+  findAllSyllableConnectorsByNote(note: Note): Array<SyllableConnector> {
+    if (!note) { return null; }
+    for (const c of this.connections.filter(con => con.musicRegion === note.staff.getBlock())) {
+      const scArray = c.syllableConnectors.filter(s => s.neume === note);
+      if (scArray) { return scArray; }
+    }
+    return null;
+  }
+
+  findSyllableConnectorByNoteAndReading(note: Note, reading: LineReading): SyllableConnector {
+    if (!note) { return null; }
+    if (!reading) { return null; }
+    for (const c of this.connections.filter(con => con.musicRegion === note.staff.getBlock())) {
+      const scArray = c.syllableConnectors.filter(s => s.neume === note);
+      const sc = scArray.find(s => s.reading === reading);
+      if (sc) { return sc; }
+    }
+    return null;
+  }
+
   findSyllableConnectorBySyllable(syllable: Syllable): SyllableConnector {
     if (!syllable) { return null; }
     for (const c of this.connections) {

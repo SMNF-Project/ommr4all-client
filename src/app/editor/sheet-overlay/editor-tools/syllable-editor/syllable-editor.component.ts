@@ -153,6 +153,7 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
                 this.page.annotations,
                 closestNote,
                 this.syllabelEditorService.currentSyllable);
+              // Why is this here? To deal with out-of-order connector creation.
               this.actions.freeMoveSyllable(this.page, c, pos);
               this._selectNext();
               this.actions.finishAction();
@@ -241,6 +242,7 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
   }
 
   onSymbolMouseUp(event: MouseEvent, symbol: MusicSymbol) {
+    console.log('SyllableEditorComponent: Calling onSymbolMouseUp');
     if (this.state === 'active' || this.state === 'selected') {
       this.states.handle('active');
       if (symbol instanceof Note && this.syllabelEditorService.currentSyllable) {
@@ -251,6 +253,10 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
           this._selectNext();
           this.actions.finishAction();
           event.preventDefault();
+          // DEBUG re: #25
+          console.log('Sentence after adding connector with syllable ' + this.syllabelEditorService.currentSyllable);
+          const syllableLocation = this.page.syllableLocationById(this.syllabelEditorService.currentSyllable.id);
+          console.log(syllableLocation.sentence.text);
         }
       }
     }

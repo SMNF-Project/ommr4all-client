@@ -723,6 +723,7 @@ export class ActionsService {
     if (!sentence || !syllable || !sentence.hasSyllable(syllable)) { return; }
     this.changeArray(sentence.syllables, sentence.syllables, sentence.syllables.filter(s => s !== syllable));
   }
+
   insertSyllable(sentence: Sentence, syllable: Syllable, targetSyllable: Syllable = null, pos: number = 1) {
     if (pos < 0) { pos = 0; }
     if (!sentence || !syllable) { return; }
@@ -737,9 +738,14 @@ export class ActionsService {
     }
     this.changeArray(sentence.syllables, sentence.syllables, syllables);
   }
+
   moveSyllable(target: PageLine, source: PageLine, syllable: Syllable, targetSyllable: Syllable = null, pos: number = 1) {
     const targetSentence = target.sentence;
     const sourceSentence = source.sentence;
+    // DEBUG
+    // if (targetSyllable !== null) { console.log('moveSyllable: syllable ' + syllable.text + ', targetSyllable: ' + targetSyllable.text + ', pos: ' + pos); }
+    // console.log('  targetSentence: ' + targetSentence.text);
+    // console.log('  sourceSentence: ' + sourceSentence.text);
     if (!sourceSentence.hasSyllable(syllable)) { return; }
     if (!targetSentence || ! sourceSentence || !syllable) { return; }
     this.removeSyllable(sourceSentence, syllable);
@@ -749,27 +755,41 @@ export class ActionsService {
       this.updateSyllablePrefixOfLine(source);
     }
   }
+
   freeMoveSyllable(page: Page, syllableConnector: SyllableConnector, pos: Point): SyllableConnector {
+    // DEBUG
+    // console.log('freeMoveSyllable: connector ' + syllableConnector.id + ' at point ' + pos.toString());
+    // console.log('Sentence: ' + page.syllableLocationById(syllableConnector.syllable.id).sentence.text);
+    // console.log('Reading: ' + page.syllableLocationById(syllableConnector.syllable.id).reading.readingName);
+
     const closestNote = page.closesLogicalComponentToPosition(pos);
     if (!closestNote || !closestNote.isSyllableConnectionAllowed()) {
       return null;  // nothing we can do here
     }
+    // console.log('Found closest note: ' + closestNote.id + ', pitch: ' + closestNote.pname);
 
     const containingLines = page.allTextLinesWithType(BlockType.Lyrics).filter(l => l.AABB.containsPoint(pos));
     const targetLine = containingLines.length > 0 ? containingLines[0] : null;
+    // DEBUG
+    // if (targetLine !== null) { console.log('Found target line: ' + targetLine.id); }
     return this.moveSyllableToNote(page, syllableConnector, closestNote, targetLine);
   }
+
   moveSyllableToNote(page: Page, syllableConnector: SyllableConnector, note: Note, targetTextLine: PageLine): SyllableConnector {
     const notes = note.staff.filterSymbols(SymbolType.Note).map(s => s as Note)
       .filter(n => n.isSyllableConnectionAllowed());
     let closestConnector: SyllableConnector = null;
+    // console.log('moveSyllableToNote: looking for index of note from ' + notes.indexOf(note));
     for (let i = notes.indexOf(note) - 1; i >= 0; i--) {
-      closestConnector = page.annotations.findSyllableConnectorByNote(notes[i] as Note);
+      // closestConnector = page.annotations.findSyllableConnectorByNote(notes[i] as Note);
+      closestConnector = page.annotations.findSyllableConnectorByNoteAndReading(notes[i] as Note, syllableConnector.reading);
       if (closestConnector && closestConnector.textLine === targetTextLine) {
         break;
       }
       closestConnector = null;
     }
+    // DEBUG
+    // if (closestConnector !== null) { console.log('Found previous closest connector: ' + closestConnector.syllable.id + '/' + closestConnector.neume.id); }
 
     if (closestConnector) {
       return this.moveSyllableAndSyllableConnector(syllableConnector, note, closestConnector.textLine, closestConnector.syllable, 1);
@@ -784,6 +804,9 @@ export class ActionsService {
 
   moveSyllableAndSyllableConnector(syllable: SyllableConnector, targetNote: Note, target: PageLine,
                                    targetSyllable: Syllable = null, pos: number = 1) {
+    // if (targetSyllable !== null) {
+    //     console.log('moveSyllableAndSyllableConnector: syllable ' + syllable.syllable.text + ', targetSyllable: ' + targetSyllable.text);
+    // }
     this.moveSyllable(target, syllable.textLine, syllable.syllable, targetSyllable, pos);
     this.connectionRemoveSyllableConnector(syllable);
     return this.annotationAddSyllableNeumeConnection(target.block.page.annotations, targetNote, syllable.syllable);

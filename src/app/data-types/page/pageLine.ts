@@ -657,8 +657,9 @@ export class PageLine extends Region {
           return {s: syl, r: this.readings[readingName]};
         }
       }
-      console.log('Syllable with id = ' + id + ' not found in readings. If found' +
-        ' in the current sentence, something is strange, because current sentence' +
+      console.log('syllableInfoById: Syllable with id = ' + id + ' not found in readings. ' +
+        ' (Line: ' + this.id + ')' +
+        ' If found in the current sentence, something is strange, because current sentence' +
         ' should be at least the default reading.');
       return {s: null, r: null};
     }

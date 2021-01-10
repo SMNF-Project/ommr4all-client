@@ -48,6 +48,24 @@ export class SyllablePropertyWidgetComponent implements OnInit, DoCheck {
 
   @ViewChild('textInput', {static: false}) textElem: ElementRef;
 
+  processSyllableClicked(event: SyllableClickEvent) {
+    // Filtering the click event based on the active reading. Refactor lower?
+    let readingName = null;
+    if (event.connector) {
+      readingName = event.connector.textLine.getReadingNameOfSyllable(event.syllable);
+    } else {
+      // This is quite inefficient, since it iterates through all syllables until
+      // the right one is found. Maybe syllables should have a backlink to their Sentence
+      // and the sentence to their line? Can be null by default.
+      readingName = this.page.syllableInfoById(event.syllable.id).r.readingName;
+    }
+    if (readingName === this.activeReading) {
+      this.syllableClicked.emit(event);
+    } else {
+      console.log('SyllablePropertyWidget: Click event on syllable from a line that does not have active reading. Ignoring.');
+    }
+  }
+
   getPrevPageLine() {
     const pageLine = this.page.readingOrder.readingOrder.filter(pl => pl.sentence.hasSyllable(this.syllable))[0];
     if (!pageLine) { return false; }  // must not happen

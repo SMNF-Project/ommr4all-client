@@ -5,11 +5,13 @@ import {Region} from './region';
 import {ReadingOrder} from './reading-order';
 import {Annotations} from './annotations';
 import {Block} from './block';
-import {PageLine} from './pageLine';
+import {LineReading, PageLine} from './pageLine';
 import {IdType} from './id-generator';
 import {UserComments} from './userComment';
 import {Note} from './music-region/symbol';
 import {Work, Works} from './work';
+import {Syllable} from './syllable';
+import {Sentence} from './sentence';
 
 export class Page extends Region {
   private _readingOrder = new ReadingOrder(this);
@@ -118,6 +120,39 @@ export class Page extends Region {
       }
     }
     return null;
+  }
+
+  syllableInfoById(id: string): { s: Syllable, r: LineReading } {
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        const si = tl.syllableInfoById(id);
+        if (si.s !== null) {
+          return si;
+        }
+      }
+    }
+    console.warn('page.syllableInfoById: syllable with id=' + id + ' not found in page!');
+    return {s: null, r: null};
+  }
+
+  syllableLocationById(id: string): { s: Syllable,
+    sentence: Sentence, reading: LineReading, textLine: PageLine, block: Block } {
+    /* Finds a syllable and returns its chain of containers. */
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        const si = tl.syllableInfoById(id);
+        if (si.s != null) {
+          return {
+            s: si.s,
+            sentence: si.r.sentence,
+            reading: si.r,
+            textLine: tl,
+            block: tr};
+        }
+      }
+    }
+    console.warn('page.syllableLocationById: syllable with id=' + id + ' not found in page!');
+    return {s: null, sentence: null, reading: null, textLine: null, block: null};
   }
 
   _resolveCrossRefs() {

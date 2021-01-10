@@ -13,7 +13,8 @@
   [lyricLines]="lyricLines"
   [annotations]="page.annotations"
   [selectedSyllableConnection]="selectedSyllableConnection"
-  (syllableClicked)="syllableClicked.emit($event)"
+  [activeReading]="activeReading"
+  (syllableClicked)="processSyllableClicked($event)"
 ></app-full-lyrics-view>
 <div *ngIf="syllable">
   <mat-divider></mat-divider>
