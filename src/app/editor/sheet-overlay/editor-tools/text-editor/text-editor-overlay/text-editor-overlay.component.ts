@@ -66,7 +66,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   addCurrentReading(): void {
     if (!this.currentReadingNameToAdd) { return; }
     this.actions.addNewReading(this.currentReadingNameToAdd, this.line);
-    this.setActiveReading(this.currentReadingNameToAdd);
+    this.activeReading = this.currentReadingNameToAdd;
     // console.log('Would add new reading: ' + this.currentReadingNameToAdd);
     this.currentReadingNameToAdd = null;
   }
@@ -79,18 +79,21 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
       return;
     }
     this.line.unlockActiveReading();
-    this.setActiveReading(this.defaultReadingName);
+    this.activeReading = this.defaultReadingName;
     this.line.lockActiveReading();
     this.actions.removeReading(readingName, this.line);
   }
 
   get activeReading() { return this.line.activeReading; }
-  setActiveReading(readingName: string) {
+  set activeReading(readingName: string) {
     this.line.unlockActiveReading();
     this.line.setActiveReading(readingName);
     this.line.lockActiveReading();
     console.log('TextEditorOverlay.setActiveReading to ' + readingName);
   }
+
+  get activeReadingIndex() { return this.line.availableReadings.indexOf(this.activeReading); }
+  set activeReadingIndex(idx: number) { this.activeReading = this.line.availableReadings[idx]; }
 
   get virtualKeyboardStoringPermitted() { return this.sheetOverlayService.editorService.bookMeta.hasPermission(BookPermissionFlag.Write); }
 

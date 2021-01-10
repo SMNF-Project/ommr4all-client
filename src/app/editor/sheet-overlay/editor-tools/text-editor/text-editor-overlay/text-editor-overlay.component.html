@@ -11,7 +11,8 @@
     <mat-panel-title><b>{{ line.id }}</b></mat-panel-title>
     <mat-divider></mat-divider>
     <span>Available readings: {{ line.availableReadings.length }}</span>
-    <mat-tab-group (selectedTabChange)="setActiveReading($event.tab.textLabel)">
+    <mat-tab-group [(selectedIndex)]="activeReadingIndex">
+<!--      (selectedTabChange)="setActiveReading($event.tab.textLabel)" -->
       <mat-tab *ngFor="let readingName of line.availableReadings" label="{{ readingName }}">
 
         <div
