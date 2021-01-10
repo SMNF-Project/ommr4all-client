@@ -119,6 +119,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
     this.line.unlockActiveReading();
+    this.line.setActiveDefaultReading();
   }
 
 
