@@ -35,6 +35,7 @@ import {BookPermissionFlag, BookPermissionFlags} from '../data-types/permissions
 import {Annotations} from '../data-types/page/annotations';
 import {Sentence} from '../data-types/page/sentence';
 import {MeiHeadToolDialogComponent} from './dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
+import {SyllablePropertyWidgetComponent} from './property-widgets/syllable-property-widget/syllable-property-widget.component';
 
 
 @Component({
@@ -47,6 +48,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   private _subscription = new Subscription();
   @ViewChild(SheetOverlayComponent, {static: false}) sheetOverlayComponent: SheetOverlayComponent;
   @ViewChild(NotePropertyWidgetComponent, {static: false}) notePropertyWidget: NotePropertyWidgetComponent;
+  @ViewChild(SyllablePropertyWidgetComponent, {static: false}) syllablePropertyWidget: SyllablePropertyWidgetComponent;
 
   readonly TaskStatusCodes = TaskStatusCodes;
   readonly ET = EditorTools;
@@ -81,6 +83,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.autoSaver.destroy();
       this.autoSaver = new AutoSaver(actions, editorService, serverState);
     });
+    this.editorService._editor = this;
   }
 
   ngOnDestroy(): void {

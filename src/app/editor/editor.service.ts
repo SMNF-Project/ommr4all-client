@@ -14,6 +14,7 @@ import {PredictData} from './dialogs/predict-dialog/predict-dialog.component';
 import {BookPermissionFlag} from '../data-types/permissions';
 import {AnnotationStruct} from '../data-types/structs';
 import {ApiError, apiErrorFromHttpErrorResponse} from '../utils/api-error';
+import {EditorComponent} from './editor.component';
 
 export class PageState {
   constructor(
@@ -74,6 +75,8 @@ export class EditorService implements OnDestroy {
   private _automaticSymbolsLoading = false;
   private _apiError: ApiError;
   private _lastPageCommunication: PageCommunication = null;
+
+  _editor: EditorComponent;
 
   private _resetState() {
     const progress = new PageEditingProgress();

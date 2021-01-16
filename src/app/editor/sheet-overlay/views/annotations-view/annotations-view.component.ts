@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Annotations, Connection, SyllableConnector} from '../../../../data-types/page/annotations';
 import {EditorTool} from '../../editor-tools/editor-tool';
+import {SyllableEditorComponent} from '../../editor-tools/syllable-editor/syllable-editor.component';
 
 @Component({
   selector: '[app-annotations-view]',  // tslint:disable-line component-selector
@@ -18,24 +19,22 @@ export class AnnotationsViewComponent implements OnInit, OnChanges {
     changeDetector.detach();
   }
 
+  isSyllableConnectorVisible(syllableConenctor: SyllableConnector): boolean {
+    // If the syllable property widget is visible, check for active reading there.
+    let show = true;
+    if (this.editorTool instanceof SyllableEditorComponent) {
+      // DEBUG
+      console.log('Syllable connector visibility: SyllableEditor is active, checking' +
+        ' against active reading set in property widget.');
+      const syllablePropertyWidget = this.editorTool.sheetOverlayService._sheetOverlayComponent.editorService._editor.syllablePropertyWidget;
+      const activeReading = syllablePropertyWidget.activeReading;
+      show = show && (activeReading === syllableConenctor.reading.readingName);
+    }
+    show = show && (syllableConenctor.isActive);
+    return show;
+  }
+
   ngOnInit() {
-    // TODO: Here the annotations to display should be filtered
-    // The ViewSettings are in the ViewSettings of the editor tool.
-    // This needs to be defined properly.
-    //
-    // The problem with only displaying annotations is that each line
-    // also gets rendered. Therefore, we get multiple regions drawn.
-    // Ideally, the entire *line* is excluded from rendering.
-    // This means adding a masking mechanism, some "visibility"
-    // property set on different pcgts objects.
-    //
-    // The proper place to set this is in the Region class, from which
-    // all visible PcGts classes inherit.
-    // You would then always check in the corresponding templates whether
-    // the children of a region that get rendered are visible, e.g.:
-    // *ngIf="line.visible"
-    //
-    // Let's first check how the hiding of regions is handled, though.
     this.redraw();
   }
 

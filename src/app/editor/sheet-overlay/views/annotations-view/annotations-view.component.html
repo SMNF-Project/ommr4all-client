@@ -2,17 +2,17 @@
   <!-- Do not show annotations for Regions that are not visible. -->
   <ng-container *ngIf="connection.musicRegion.visible">
     <ng-container *ngIf="connection.textRegion.visible">
-      <g *ngFor="let syllable of connection.syllableConnectors">
-        <ng-container *ngIf="syllable.textLine.visible">
-          <ng-container *ngIf="syllable.isActive">
+      <g *ngFor="let syllableConnector of connection.syllableConnectors">
+        <ng-container *ngIf="syllableConnector.textLine.visible">
+          <ng-container *ngIf="isSyllableConnectorVisible(syllableConnector)">
             <text
-              [attr.x]="syllable.neume.coord.x"
-              [attr.y]="syllable.textLine.AABB.vcenter()"
-              [attr.font-size]="syllable.textLine.AABB.size.h / 2"
-              [class.selected]="syllable === editorTool.selectedSyllableConnection"
-              (mousedown)="onSyllableMouseDown($event, syllable)"
-              (mouseup)="onSyllableMouseUp($event, connection, syllable)"
-            >{{ syllable.syllable.visibleText }}</text>
+              [attr.x]="syllableConnector.neume.coord.x"
+              [attr.y]="syllableConnector.textLine.AABB.vcenter()"
+              [attr.font-size]="syllableConnector.textLine.AABB.size.h / 2"
+              [class.selected]="syllableConnector === editorTool.selectedSyllableConnection"
+              (mousedown)="onSyllableMouseDown($event, syllableConnector)"
+              (mouseup)="onSyllableMouseUp($event, connection, syllableConnector)"
+            >{{ syllableConnector.syllable.visibleText }}</text>
           </ng-container>
         </ng-container>
       </g>

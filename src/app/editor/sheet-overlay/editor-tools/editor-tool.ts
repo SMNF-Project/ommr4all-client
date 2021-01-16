@@ -107,6 +107,7 @@ export abstract class EditorTool {
   get syllableToInsert(): Syllable { return null; }
   get selectedCommentHolder(): UserCommentHolder { return null; }
   get selectedLine(): PageLine { return null; }
+  get selectedWork(): Work { return null; }
 
 
   // view of editor tool

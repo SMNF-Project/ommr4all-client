@@ -56,6 +56,8 @@ export class SheetOverlayService {
   }
 
   get selectedWork() {
+    // NOTE: why is this *here* and no other selectedSomething() method? Shouldn't this be
+    // in the WorkEditorTool?
     if (this._sheetOverlayComponent.tool === EditorTools.Work) {
       const _workEditor = this._sheetOverlayComponent.currentEditorTool as WorkEditorComponent;
       return _workEditor.currentWork;
