@@ -132,6 +132,7 @@ import { WorkEditorComponent } from './editor/sheet-overlay/editor-tools/work-ed
 import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
 import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { WorkCreatorComponent } from './editor/sheet-overlay/editor-tools/work-creator/work-creator.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -257,6 +258,7 @@ const appRoutes: Routes = [
     WorkViewComponent,
     WorkEditorComponent,
     WorkEditorOverlayComponent,
+    WorkCreatorComponent,
   ],
   imports: [
     CommonModule,

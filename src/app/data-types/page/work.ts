@@ -65,8 +65,13 @@ export class Works {
     this._worksSortedFromTop = this.works.sort((w1, w2) => (w1.AABB.top - minTop) - (w2.AABB.top - minTop));
   }
 
-  indexOfWorkFromTop(work: Work) {
+  indexOfWorkFromTop(work: Work): number {
     return this._worksSortedFromTop.indexOf(work);
+  }
+
+  addWork(work: Work): void {
+    this.worksInReadingOrder.push(work);
+    this.computeOrderOnPage();
   }
 }
 
@@ -93,6 +98,7 @@ export class Work extends Region {
   ) {
     super(IdType.Work);
     this._works = _works;
+    // Note that the work does *NOT* add itself to the container.
     this.workTitle = workTitle;
     this.blocks = blocks;
     if (!meta) { this.meta = {}; } else { this.meta = meta; }
@@ -117,6 +123,24 @@ export class Work extends Region {
     // but it is NOT a block (yet). This is differentiated in the Page in the get blocks() function.
     parent.attachChild(work);
     return work;
+  }
+
+  static generateTitleFromBlocks(blocks: Array<Block>): string {
+    // Derive the title from the first three words of the blocks.
+    // Since we do not necessarily have the reading order available,
+    // just find the topmost block with text.
+    if (blocks === null || blocks.length === 0) { return null; }
+    const textBlocks = blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph));
+    const minTop = Math.min(...textBlocks.map(w => w.AABB.top));
+    const textBlocksFromTop = textBlocks.sort((w1, w2) => (w1.AABB.top - minTop) - (w2.AABB.top - minTop));
+    const firstBlock = textBlocksFromTop[0];
+    const firstLine = firstBlock.textLines[0];
+    // Just uses whatever reading is active, for now.
+    const words = firstLine.sentence.textWithoutConnectors.split(' ');
+    const nTitleWords = Math.min(3, words.length);
+    const titleWords = words.slice(0, nTitleWords);
+    const title = titleWords.join(' ');
+    return title;
   }
 
   static fromJson(json, works: Works): Work {

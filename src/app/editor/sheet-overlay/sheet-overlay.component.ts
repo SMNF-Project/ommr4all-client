@@ -47,6 +47,7 @@ import {ReadingOrderContextMenuComponent} from './context-menus/reading-order-co
 import {SymbolContextMenuComponent} from './context-menus/symbol-context-menu/symbol-context-menu.component';
 import {WorkEditorComponent} from './editor-tools/work-editor/work-editor.component';
 import {WorkEditorOverlayComponent} from './editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
+import {WorkCreatorComponent} from './editor-tools/work-creator/work-creator.component';
 
 
 @Component({
@@ -72,6 +73,7 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
 
   @ViewChild(ViewComponent, {static: true}) viewTool: ViewComponent;
   @ViewChild(WorkEditorComponent, {static: true}) workEditor: WorkEditorComponent;
+  @ViewChild(WorkCreatorComponent, {static: true}) workCreator: WorkCreatorComponent;
   @ViewChild(LineEditorComponent, {static: true}) lineEditor: LineEditorComponent;
   @ViewChild(StaffGrouperComponent, {static: true}) staffGrouper: StaffGrouperComponent;
   @ViewChild(StaffSplitterComponent, {static: true}) staffSplitter: StaffSplitterComponent;
@@ -144,6 +146,7 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
     this._subscriptions.add(this.toolBarStateService.editorToolChanged.subscribe((v) => { this.onToolChanged(v); }));
     this._editors.set(EditorTools.View, this.viewTool);
     this._editors.set(EditorTools.Work, this.workEditor);
+    this._editors.set(EditorTools.WorkCreator, this.workCreator);
     this._editors.set(EditorTools.CreateStaffLines, this.lineEditor);
     this._editors.set(EditorTools.GroupStaffLines, this.staffGrouper);
     this._editors.set(EditorTools.SplitStaffLines, this.staffSplitter);

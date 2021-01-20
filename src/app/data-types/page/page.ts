@@ -282,6 +282,16 @@ export class Page extends Region {
     return outLines;
   }
 
+  listBlocksInRect(rect: Rect): Block[] {
+    const outBlocks: Block[] = [];
+    for (const block of this.blocks) {
+      if (block.AABB.intersetcsWithRect(rect)) {
+        outBlocks.push(block);
+      }
+    }
+    return outBlocks;
+  }
+
   staffLinePointsInRect(rect: Rect): {points: Set<Point>, staffLines: Set<StaffLine>} {
     const points = new Set<Point>();
     const staffLines = new Set<StaffLine>();

@@ -19,6 +19,7 @@ export enum EditorTools {
   Syllables,
 
   Work,
+  WorkCreator,
 }
 
 export const editorToolToProgressGroup = [
@@ -78,6 +79,7 @@ export class ToolBarStateService {
       console.log('ToolbarStateService: the tool is changing! Prev: ' + this._currentEditorTool);
       this.editorToolChanged.emit({prev: this._currentEditorTool, next: v});
       this._currentEditorTool = v;
+      console.log('ToolbarStateService: Current editor tool set to: ' + this._currentEditorTool);
     } else {
       console.log('ToolbarStateService: the tool is the same as current tool: ' + this._currentEditorTool);
     }
