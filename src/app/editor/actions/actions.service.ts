@@ -7,8 +7,8 @@ import {
   CommandChangeSyllable,
   CommandCreateBlock,
   CommandCreateLine,
-  CommandCreateStaffLine,
-  CommandDeleteStaffLine,
+  CommandCreateStaffLine, CommandCreateWork,
+  CommandDeleteStaffLine, CommandDeleteWork,
   CommandDetachSymbol,
   CommandMoveInReadingOrder,
   CommandUpdateReadingOrder
@@ -42,6 +42,7 @@ import {Sentence} from '../../data-types/page/sentence';
 import {UserComment, UserCommentHolder, UserComments} from '../../data-types/page/userComment';
 import {PageEditingProgress, PageProgressGroups} from '../../data-types/page-editing-progress';
 import {CommandSetLock} from '../undo/lock-commands';
+import {Work} from '../../data-types/page/work';
 
 const leven = require('leven');
 
@@ -400,6 +401,19 @@ export class ActionsService {
       null
     ));
     this._actionCaller.runCommand(new CommandCallFunction(() => line.clean()));
+  }
+
+  addNewWork(page: Page, workTitle: string, blocks: Array<Block>) {
+    this.caller.pushChangedViewElement(page);
+    const cmd = new CommandCreateWork(page, workTitle, blocks);
+    this.caller.runCommand(cmd);
+    return cmd.work;
+  }
+
+  removeWork(work: Work, page: Page) {
+    this.caller.pushChangedViewElement(page);
+    const cmd = new CommandDeleteWork(work, page);
+    this.caller.runCommand(cmd);
   }
 
   // annotations

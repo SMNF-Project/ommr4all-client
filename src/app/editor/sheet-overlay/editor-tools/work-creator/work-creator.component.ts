@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {Rect} from '../../../../geometry/geometry';
 import {EditorTool} from '../editor-tool';
 import {SelectionBoxComponent} from '../../editors/selection-box/selection-box.component';
@@ -22,6 +14,7 @@ import {ActionType} from '../../../actions/action-types';
 import {CommandChangeProperty} from '../../../undo/util-commands';
 import {PageLine} from '../../../../data-types/page/pageLine';
 import {Work} from '../../../../data-types/page/work';
+import {BlockType} from '../../../../data-types/page/definitions';
 
 const machina: any = require('machina');
 
@@ -90,13 +83,14 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
   }
 
   updateBlocksSelection(blocks: Array<Block>) {
-    this.actions.startAction(ActionType.LayoutSelect);
-    this.actions.run(new CommandChangeProperty(
-      this,
-      'blocksSelectedForWorkCreation',
-      this.blocksSelectedForWorkCreation,
-      blocks));
-    this.actions.finishAction();
+    this._blocksSelectedForWorkCreation = blocks;
+    // this.actions.startAction(ActionType.LayoutSelect);
+    // this.actions.run(new CommandChangeProperty(
+    //   this,
+    //   'blocksSelectedForWorkCreation',
+    //   this.blocksSelectedForWorkCreation,
+    //   blocks));
+    // this.actions.finishAction();
   }
 
   get visible() { return this.toolBarStateService.currentEditorTool === EditorTools.WorkCreator; }
@@ -114,6 +108,11 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
     // This method actually builds the work.
     const blocks = this.editorService.pcgts.page.listBlocksInRect(rect);
     if (blocks.length > 0) {
+      if (blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph)).length < 1) {
+        console.log('Cannot create work without lyrics or paragraph blocks! (This is just a placeholder check.');
+        return;
+      }
+      // Check for duplicates?
       console.log('WorkCreator: Building Work with blocks: ');
       console.log(blocks.map(b => b.id));
       this.updateBlocksSelection(blocks);
@@ -126,15 +125,12 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
     // Create work title
     const workTitle = Work.generateTitleFromBlocks(this.blocksSelectedForWorkCreation);
     // Create work
-    const w = Work.create(this.editorService.pcgts.page.worksContainer,
+    this.actions.startAction(ActionType.WorkAdded);
+    this.actions.addNewWork(
       this.editorService.pcgts.page,
       workTitle,
-      this.blocksSelectedForWorkCreation
-      );
-    // Add to Works
-    this.editorService.pcgts.page.worksContainer.addWork(w);
-    // Update page
-    this.editorService.pcgts.page.update();
+      this.blocksSelectedForWorkCreation);
+    this.actions.finishAction();
   }
 
   onSelectionUpdated(rect: Rect) {
@@ -173,12 +169,12 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
 
   isLineSelectable(line: PageLine): boolean {
     // Maybe blocks should not be selectable if they are already part of a different work?
-    console.log('WorkCreator: isLineSelectable? ' + line.id);
+    // console.log('WorkCreator: isLineSelectable? ' + line.id);
     // return true;
     if (this.selectionBox.states.state === 'drag') {
       return true;
     }
-    console.log('Line ' + line.id + ' not selectable: selection box state is ' + this.selectionBox.states.state);
+    // console.log('Line ' + line.id + ' not selectable: selection box state is ' + this.selectionBox.states.state);
     return false;
   }
 

@@ -70,8 +70,35 @@ export class Works {
   }
 
   addWork(work: Work): void {
-    this.worksInReadingOrder.push(work);
+    // Check if work is valid
+    if (work.blocks === null) { console.log('Adding invalid work with no blocks! Title: ' + work.workTitle); return; }
+    if (work.blocks === []) { console.log('Adding invalid work with no blocks! Title: ' + work.workTitle); return; }
+    if (this.containsIdenticalWork(work)) { console.log('Adding work ' + work.workTitle + ' identical to existing work.'); return; }
+
+    this.works.push(work);
     this.computeOrderOnPage();
+  }
+
+  removeWork(work: Work): void {
+    console.log('Before removing work: ' + this.works.length + ' works');
+    const idx = this.works.indexOf(work);
+    if (idx === -1) {
+      return;
+    }
+    this.works.splice(idx, 1);
+    // Remove from page
+    if (this.page) { this.page.detachChild(work); }
+    this.computeOrderOnPage();
+    console.log('After removing work: ' + this.works.length + ' works');
+  }
+
+  containsIdenticalWork(work: Work): boolean {
+    for (const w of this.works) {
+      if (work.sortedBlocks === w.sortedBlocks) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -130,8 +157,11 @@ export class Work extends Region {
     // Since we do not necessarily have the reading order available,
     // just find the topmost block with text.
     if (blocks === null || blocks.length === 0) { return null; }
+    // TODO: Check if the right blocks are available.
     const textBlocks = blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph));
+    // TODO: INstead of this, maybe compute a reading order of the given blocks?
     const minTop = Math.min(...textBlocks.map(w => w.AABB.top));
+    // TODO: Handle text from drop capital blocks.
     const textBlocksFromTop = textBlocks.sort((w1, w2) => (w1.AABB.top - minTop) - (w2.AABB.top - minTop));
     const firstBlock = textBlocksFromTop[0];
     const firstLine = firstBlock.textLines[0];
@@ -177,6 +207,10 @@ export class Work extends Region {
 
   get workReadingOrderIndex(): number {
     return this._works.indexOfWorkFromTop(this);
+  }
+
+  get sortedBlocks(): Array<Block> {
+    return this.blocks.sort((a, b) => a.AABB.top - b.AABB.top);
   }
 
   get nextWorkInReadingOrder(): Work { return this.worksContainer.getNextWork(this); }
