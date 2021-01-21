@@ -558,11 +558,11 @@ export class PageLine extends Region {
       let connector = '-';
       // console.log('symbol ' + s.id + ': graphical connection ' + s.graphicalConnection);
       if (s.syllable !== null) {
-        console.log('    Note ' + s.id + ' has directly assigned syllable: ' + s.syllable.id);
+        // console.log('    Note ' + s.id + ' has directly assigned syllable: ' + s.syllable.id);
         connector = '--';
       } else if (s.findSyllable() !== null) {
         const syl = s.findSyllable();
-        console.log('    Note ' + s.id + ' has found syllable: ' + syl.id);
+        // console.log('    Note ' + s.id + ' has found syllable: ' + syl.id);
         if (syl.connection === SyllableConnectionType.New) {
           connector = '---';
         } else {

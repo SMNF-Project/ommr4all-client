@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  AfterContentChecked, AfterViewChecked, AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import {EditorTool} from '../editor-tool';
 import {SheetOverlayService} from '../../sheet-overlay.service';
 import {ViewSettings} from '../../views/view';
@@ -24,7 +32,7 @@ const machina: any = require('machina');
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy {
-  @Input() workEditorOverlay: WorkEditorOverlayComponent;
+  // @Input() workEditorOverlay: WorkEditorOverlayComponent;
   private _subscriptions = new Subscription();
   private _currentWork: Work = null;
   get currentWork() { return this._currentWork; }
@@ -146,6 +154,20 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
         event.preventDefault();
       }
     }
+  }
+
+  cancelSelection() {
+    // this.actions.startAction(ActionType.WorkDeselect);
+    // this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, null));
+    // this.actions.finishAction();
+    this.currentWork = null;
+  }
+
+  deleteWork(work: Work): void {
+    console.log('WorkEditor: deleteWork ' + work.workTitle);
+    this.actions.removeWork(work, this.editorService.pcgts.page);
+    this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, null));
+    // this.actions.finishAction();
   }
 
 }

@@ -129,7 +129,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   get virtualKeyboardUrl() { return this.sheetOverlayService.editorService.bookCom.virtualKeyboardUrl(); }
 
   changeSyllables(to: string): void {
-    console.log('Setting to reading ' + this._line.activeReading + ' a new sentence from text: ' + to);
+    console.log('TextEditorOverlay.changeSyllables: Setting to reading ' + this._line.activeReading + ' a new sentence from text: ' + to);
     const newSentence = new Sentence(Sentence.textToSyllables(to));
     this.actions.changeLyrics(this._line, newSentence);
   }

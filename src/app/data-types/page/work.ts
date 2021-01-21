@@ -393,15 +393,15 @@ export class Work extends Region {
 
   getPitches(): Array<Pitch> {
     if (this._pitches) {
-      console.log('Work.getPitches(): work ' + this.workTitle + ' returning from cache');
+      // console.log('Work.getPitches(): work ' + this.workTitle + ' returning from cache');
       return this._pitches;
     }
-    console.log('Work.getPitches(): work ' + this.workTitle + ' computing');
+    // console.log('Work.getPitches(): work ' + this.workTitle + ' computing');
     const musicLines = this.collectMusicLines();
     const pitches = musicLines.map(l => l.getPitches()).reduce((acc, val) => acc.concat(val), []);
     // const pitches = musicLines[0].getPitches();
-    console.log('Work.getPitches(): work ' + this.workTitle);
-    console.log(pitches);
+    // console.log('Work.getPitches(): work ' + this.workTitle);
+    // console.log(pitches);
     return pitches;
   }
 

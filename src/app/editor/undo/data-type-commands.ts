@@ -89,7 +89,7 @@ export class CommandDeleteWork extends Command {
 
   do() { this.page.worksContainer.removeWork(this.work); }
   undo() { this.page.worksContainer.addWork(this.work); }
-  isIdentity(): boolean { return false; }
+  isIdentity(): boolean { return (!this.work); }
 }
 
 export class CommandAttachRegion extends Command {

@@ -2,10 +2,10 @@ import {
   AfterContentChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
+  Component, EventEmitter,
   Input,
   OnDestroy,
-  OnInit
+  OnInit, Output
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {Work} from '../../../../../data-types/page/work';
@@ -15,9 +15,12 @@ import {ViewChangesService} from '../../../../actions/view-changes.service';
 import {EditorService} from '../../../../editor.service';
 import {Page} from '../../../../../data-types/page/page';
 import {UserComment, UserComments} from '../../../../../data-types/page/userComment';
+import {CommandChangeProperty} from '../../../../undo/util-commands';
+
+
 
 @Component({
-  selector: 'app-work-editor-overlay',
+  selector: 'app-work-editor-overlay',  // tslint:disable-line component-selector
   templateUrl: './work-editor-overlay.component.html',
   styleUrls: ['./work-editor-overlay.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +46,8 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   @Input() pan = {x: 0, y: 0};
   @Input() viewWidth = 0;
 
+  deleteRequested = new EventEmitter<Work>();
+
   public showVolpianoString = false;
 
   get aabb() { return this._work.AABB; }
@@ -62,7 +67,8 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     public sheetOverlayService: SheetOverlayService,
     private viewChanges: ViewChangesService,
     private changeDetector: ChangeDetectorRef,
-    private editorService: EditorService
+    private editorService: EditorService,
+    private actionService: ActionsService
   ) {
     // console.log('WorkEditorOverlayComponent constructor called!'); // DEBUG
     // console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
@@ -88,5 +94,16 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   }
 
   ngAfterContentChecked() {
+  }
+
+  requestDeleteWork() {
+    console.log('WorkEditorOverlay: Emitting requestDeleteWOrk, work: ' + this.work.workTitle);
+    console.log('WorkEditor: deleteWork ' + this.work.workTitle);
+    // remove current work from workEditor as well?
+    this.sheetOverlayService._sheetOverlayComponent.workEditor.cancelSelection();
+    this.actionService.removeWork(this.work, this.editorService.pcgts.page);
+    this.actionService.run(new CommandChangeProperty(this, 'currentWork', this._work, null));
+    this.actionService.finishAction();
+    // this.deleteRequested.emit(this.work);
   }
 }

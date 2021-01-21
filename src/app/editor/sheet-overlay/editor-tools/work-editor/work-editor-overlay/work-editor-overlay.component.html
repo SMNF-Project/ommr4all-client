@@ -9,6 +9,8 @@
   <div class="full-width">
     <h3>{{ workInfo.title }}</h3>
     <mat-divider></mat-divider>
+
+    <br>
     <ul style="list-style: none;">
       <!--<li>Work title: {{ workInfo.title }}</li>-->
       <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
@@ -17,8 +19,8 @@
                       target="_blank">
         {{ workInfo.cantusId }}</a>
       </li>
-      <li *ngIf="comment">Comment: {{ comment.text }}</li>
-      <li><b>Text readings:</b>
+      <li *ngIf="comment"><br>Comment: {{ comment.text }}</li>
+      <li><br><b>Text readings:</b>
 
         <div mat-dialog-content>
         <mat-tab-group>
@@ -30,6 +32,7 @@
         </div>
 
       </li>
+      <!-- Melody in modern notation (Volpiano-based) -->
       <ng-container *ngIf="work.hasMusic">
       <li><b>Melody:</b>
         <div class="volpiano-container">
@@ -60,5 +63,14 @@
         </li>
       </ng-container>
     </ul>
+    <mat-divider></mat-divider>
+    <div>
+      <br>
+      <span><b>DANGER ZONE</b></span><br>
+      <span>Delete work? All associated metadata will be lost!</span>
+    </div>
+    <div>
+      <button mat-raised-button color="warn" (click)="requestDeleteWork()" i18n="@@Delete"><mat-icon>delete_forever</mat-icon> Delete</button>
+    </div>
   </div>
 </div>
