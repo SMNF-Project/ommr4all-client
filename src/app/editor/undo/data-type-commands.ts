@@ -94,7 +94,7 @@ export class CommandDeleteWork extends Command {
   do() {
     console.log('CmdDeleteWork: calling Do');
     this.page.worksContainer.removeWork(this.work);
-    console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
+    console.log('CmdDeleteWork: page now has ' + this.page.worksContainer.works.length + ' works');
   }
   undo() {
     console.log('CmdDeleteWork: Undo');

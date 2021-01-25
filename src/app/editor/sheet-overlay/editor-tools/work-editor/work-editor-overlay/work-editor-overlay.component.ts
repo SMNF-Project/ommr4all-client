@@ -101,9 +101,16 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   }
 
   addCurrentMetaField() {
+    if (this.currentMetaKeyToAdd === null) { console.warn('Adding work metadata failed: no key provided!'); return; }
+    if (this.work.meta.hasOwnProperty(this.currentMetaKeyToAdd)) { console.warn('Adding work metadata failed: duplicate key!'); return; }
     this.work.meta[this.currentMetaKeyToAdd] = this.currentMetaValueToAdd;
     this.currentMetaKeyToAdd = '';
     this.currentMetaValueToAdd = '';
+  }
+
+  deleteMetaField(key: string) {
+    if (!this.work.meta.hasOwnProperty(key)) { console.warn('Deleting work metadata failed: key ' + key + ' not found!'); return; }
+    delete this.work.meta[key];
   }
 
   requestDeleteWork() {
