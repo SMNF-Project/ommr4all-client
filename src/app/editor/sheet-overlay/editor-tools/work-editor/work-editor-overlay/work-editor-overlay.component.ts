@@ -16,6 +16,7 @@ import {EditorService} from '../../../../editor.service';
 import {Page} from '../../../../../data-types/page/page';
 import {UserComment, UserComments} from '../../../../../data-types/page/userComment';
 import {CommandChangeProperty} from '../../../../undo/util-commands';
+import {BookPermissionFlag} from '../../../../../data-types/permissions';
 
 
 
@@ -63,6 +64,9 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
 
   get readingOrder() { return this.sheetOverlayService.editorService.pcgts.page.readingOrder; }
 
+  public currentMetaKeyToAdd: string = null;
+  public currentMetaValueToAdd: string = null;
+
   constructor(
     public sheetOverlayService: SheetOverlayService,
     private viewChanges: ViewChangesService,
@@ -96,6 +100,12 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   ngAfterContentChecked() {
   }
 
+  addCurrentMetaField() {
+    this.work.meta[this.currentMetaKeyToAdd] = this.currentMetaValueToAdd;
+    this.currentMetaKeyToAdd = '';
+    this.currentMetaValueToAdd = '';
+  }
+
   requestDeleteWork() {
     console.log('WorkEditorOverlay: Emitting requestDeleteWOrk, work: ' + this.work.workTitle);
     console.log('WorkEditor: deleteWork ' + this.work.workTitle);
@@ -106,4 +116,13 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     this.actionService.finishAction();
     // this.deleteRequested.emit(this.work);
   }
+
+  get isAllowedEditing(): boolean {
+    if (!this.editorService.bookMeta.hasPermission(BookPermissionFlag.Save)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 }

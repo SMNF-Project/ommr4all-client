@@ -10,67 +10,109 @@
     <h3>{{ workInfo.title }}</h3>
     <mat-divider></mat-divider>
 
-    <br>
-    <ul style="list-style: none;">
-      <!--<li>Work title: {{ workInfo.title }}</li>-->
-      <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
-      <li *ngIf="workInfo.hasOwnProperty('cantusId')">
-        Cantus ID: <a href="http://cantusindex.org/id/{{ workInfo.cantusId}}"
-                      target="_blank">
-        {{ workInfo.cantusId }}</a>
-      </li>
-      <li *ngIf="comment"><br>Comment: {{ comment.text }}</li>
-      <li><br><b>Text readings:</b>
+    <mat-tab-group>
+      <!-- Work overview tab -->
+      <mat-tab label="Overview">
+        <br>
+        <ul style="list-style: none;">
+          <!--<li>Work title: {{ workInfo.title }}</li>-->
+          <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
+          <li *ngIf="workInfo.hasOwnProperty('cantusId')">
+            Cantus ID: <a href="http://cantusindex.org/id/{{ workInfo.cantusId}}"
+                          target="_blank">
+            {{ workInfo.cantusId }}</a>
+          </li>
+          <!-- Full text of work, in different readings -->
+          <li *ngIf="comment"><br>Comment: {{ comment.text }}</li>
+          <li><br><b>Text readings:</b>
 
-        <div mat-dialog-content>
-        <mat-tab-group>
-          <mat-tab *ngFor="let readingName of work.availableReadings"
-            label="{{ readingName }}">
-            {{ work.getText(readingOrder, readingName) }}
-          </mat-tab>
-        </mat-tab-group>
-        </div>
+            <div mat-dialog-content>
+            <mat-tab-group>
+              <mat-tab *ngFor="let readingName of work.availableReadings"
+                label="{{ readingName }}">
+                {{ work.getText(readingOrder, readingName) }}
+              </mat-tab>
+            </mat-tab-group>
+            </div>
 
-      </li>
-      <!-- Melody in modern notation (Volpiano-based) -->
-      <ng-container *ngIf="work.hasMusic">
-      <li><b>Melody:</b>
-        <div class="volpiano-container">
-          <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
-        </div>
-<!--        <div>-->
-<!--          <span>Pitch names (Debug): </span>-->
-<!--          <ng-container *ngFor="let pitch of work.getPitches()">-->
-<!--            <span>{{ pitch.pitchLetter }}{{ pitch.octave }}-</span>-->
-<!--          </ng-container>-->
-<!--        </div>-->
-        <mat-slide-toggle [(ngModel)]="showVolpianoString">Show Volpiano string</mat-slide-toggle>
-        <div *ngIf="showVolpianoString">
-          <textarea autocomplete="off"
-                    #input name="text"
-                    type="text"
-                    readonly
-                    (wheel)="$event.preventDefault()"
-                    (mousedown)="$event.stopPropagation()"
-            >{{ work.getVolpianoString() }}
-          </textarea>
-        </div>
-      </li>
-      </ng-container>
-      <ng-container *ngIf="!work.hasMusic">
-        <li>
-          <span><i>No music.</i></span>
-        </li>
-      </ng-container>
-    </ul>
-    <mat-divider></mat-divider>
-    <div>
-      <br>
-      <span><b>DANGER ZONE</b></span><br>
-      <span>Delete work? All associated metadata will be lost!</span>
-    </div>
-    <div>
-      <button mat-raised-button color="warn" (click)="requestDeleteWork()" i18n="@@Delete"><mat-icon>delete_forever</mat-icon> Delete</button>
-    </div>
+          </li>
+
+          <!-- Melody in modern notation (Volpiano-based), if work has music -->
+          <ng-container *ngIf="work.hasMusic">
+            <li><b>Melody:</b>
+              <div class="volpiano-container">
+                <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
+              </div>
+              <mat-slide-toggle [(ngModel)]="showVolpianoString">Show Volpiano string</mat-slide-toggle>
+              <div *ngIf="showVolpianoString">
+                <textarea autocomplete="off"
+                          #input name="text"
+                          type="text"
+                          readonly
+                          (wheel)="$event.preventDefault()"
+                          (mousedown)="$event.stopPropagation()"
+                  >{{ work.getVolpianoString() }}
+                </textarea>
+              </div>
+            </li>
+          </ng-container>
+          <ng-container *ngIf="!work.hasMusic">
+            <li>
+              <span><i>No music.</i></span>
+            </li>
+          </ng-container>
+        </ul>
+
+        <!-- Delete work -->
+        <ng-container *ngIf="isAllowedEditing">
+          <mat-divider></mat-divider>
+          <div class="danger">
+            <span><b>DANGER ZONE</b></span><br>
+            <span>Delete work? All associated metadata will be lost! FOREVER!</span>
+            <div>
+              <button mat-raised-button color="warn" (click)="requestDeleteWork()" i18n="@@Delete"><mat-icon>delete_forever</mat-icon> Delete</button>
+            </div>
+          </div>
+        </ng-container>
+      </mat-tab>
+
+      <!-- Metadata tab -->
+      <mat-tab label="Metadata">
+        <ul *ngIf="isAllowedEditing">
+          <li *ngFor="let metaProperty of work.metaKeys" class="work-meta">
+            <span><b>{{ metaProperty }}:</b></span>
+            <textarea class="work-meta"
+                      type="text" autocomplete="off"
+                      #input
+                      [(ngModel)]="work.meta[metaProperty]">
+              {{ work.meta[metaProperty] }}
+            </textarea>
+            <!-- Button to delete the given info -->
+          </li>
+          <!-- Button to add metadata element -->
+          <li><span><b>Add metadata field:</b></span>
+            <div>
+              <input class="work-meta" placeholder="Key" label="newMetaKey" matInput
+                     [(ngModel)]="currentMetaKeyToAdd">
+              <textarea class="work-meta" placeholder="Value" type="text" autocomplete="off" #input
+                        [(ngModel)]="currentMetaValueToAdd"></textarea>
+              <button class="work-meta" mat-flat-button matSuffix (click)="addCurrentMetaField()">
+                <mat-icon class="work-meta button icon"
+                          matTooltip="Add key/value pair to work metadata.">add</mat-icon>
+              </button>
+            </div>
+          </li>
+        </ul>
+        <ul *ngIf="!isAllowedEditing">
+          <li *ngFor="let metaProperty of work.metaKeys">
+            <span><b>{{ metaProperty }}:</b> {{ work.meta[metaProperty] }}</span>
+          </li>
+
+        </ul>
+      </mat-tab>
+
+      <!-- Comments tab -->
+
+    </mat-tab-group>
   </div>
 </div>

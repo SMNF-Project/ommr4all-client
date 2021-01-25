@@ -72,7 +72,11 @@ export class CommandCreateWork extends Command {
     this.page.worksContainer.addWork(this.work);
     console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
   }
-  undo() { console.log('CmdCreateWork: Undo'); this.page.worksContainer.removeWork(this.work); }
+  undo() {
+    console.log('CmdCreateWork: Undo');
+    this.page.worksContainer.removeWork(this.work);
+    console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
   isIdentity(): boolean { return false; }
 }
 
@@ -87,8 +91,16 @@ export class CommandDeleteWork extends Command {
     this.work = _work;
   }
 
-  do() { this.page.worksContainer.removeWork(this.work); }
-  undo() { this.page.worksContainer.addWork(this.work); }
+  do() {
+    console.log('CmdDeleteWork: calling Do');
+    this.page.worksContainer.removeWork(this.work);
+    console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
+  undo() {
+    console.log('CmdDeleteWork: Undo');
+    this.page.worksContainer.addWork(this.work);
+    console.log('CmdDeleteWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
   isIdentity(): boolean { return (!this.work); }
 }
 

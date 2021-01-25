@@ -77,6 +77,7 @@ export class Works {
 
     this.works.push(work);
     this.computeOrderOnPage();
+    this.page.update();
   }
 
   removeWork(work: Work): void {
@@ -90,6 +91,7 @@ export class Works {
     if (this.page) { this.page.detachChild(work); }
     this.computeOrderOnPage();
     console.log('After removing work: ' + this.works.length + ' works');
+    this.page.update();
   }
 
   containsIdenticalWork(work: Work): boolean {
@@ -186,6 +188,9 @@ export class Work extends Region {
       json.id,
       json.meta,
     );
+    // DEBUG
+    console.log('DEBUG: Work meta:');
+    console.log(w.meta);
     return w;
   }
 
@@ -318,6 +323,10 @@ export class Work extends Region {
     return workInfo;
   }
 
+  get metaKeys() {
+    return Object.keys(this.meta);
+  }
+
   collectTextLines(readingOrder: ReadingOrder = null) {
     /* Returns an array of text lines within the work, sorted by reading order.
      * If reading order is not given, uses the ordering of blocks and of lines in blocks. */
@@ -416,7 +425,7 @@ export class Work extends Region {
       // console.log('Line: ');
       // console.log(line);
       const lineVolpiano = line.getVolpianoString(false);
-      console.log('Line ' + line.id + ' Volpiano: ' + lineVolpiano);
+      // console.log('Line ' + line.id + ' Volpiano: ' + lineVolpiano);
       volpiano = volpiano + lineVolpiano;
 
       // Line ending connector

@@ -57,3 +57,39 @@ textarea:focus {
 
 label {
 }
+
+div.danger {
+  background-color: #FFBBBB;
+  margin: 4pt;
+  padding: 4pt;
+  border-radius: 4pt;
+}
+
+
+li.work-meta {
+  margin-bottom: 8pt;
+}
+input.work-meta {
+  width: auto;
+  height: 14pt;
+  font-size: 14pt;
+}
+textarea.work-meta {
+  display: inline-flex;
+  width: auto;
+  height: 14pt;
+  margin-left: 12pt;
+  margin-right: 12pt;
+  resize: none;
+}
+/*button.work-meta {*/
+/*  height: 14px;*/
+/*  background-color: #ffba66;*/
+/*  border: 1px solid red;*/
+/*}*/
+mat-icon.work-meta {
+  font-size: 12px;
+  height: 12px;
+  padding: 2px 2px 2px 2px;
+  background-color: #FFBBBB;
+}
