@@ -77,6 +77,7 @@ export class Works {
 
     this.works.push(work);
     this.computeOrderOnPage();
+    this.page.updateRequired = true;
     this.page.update();
   }
 
@@ -91,6 +92,7 @@ export class Works {
     if (this.page) { this.page.detachChild(work); }
     this.computeOrderOnPage();
     console.log('After removing work: ' + this.works.length + ' works');
+    this.page.updateRequired = true;
     this.page.update();
   }
 

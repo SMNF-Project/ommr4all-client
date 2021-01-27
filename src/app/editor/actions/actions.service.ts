@@ -404,16 +404,16 @@ export class ActionsService {
   }
 
   addNewWork(page: Page, workTitle: string, blocks: Array<Block>) {
-    this.caller.pushChangedViewElement(page);
+    this._actionCaller.pushChangedViewElement(page);
     const cmd = new CommandCreateWork(page, workTitle, blocks);
-    this.caller.runCommand(cmd);
+    this._actionCaller.runCommand(cmd);
     return cmd.work;
   }
 
   removeWork(work: Work, page: Page) {
-    this.caller.pushChangedViewElement(page);
+    this._actionCaller.pushChangedViewElement(page);
     const cmd = new CommandDeleteWork(work, page);
-    this.caller.runCommand(cmd);
+    this._actionCaller.runCommand(cmd);
   }
 
   // annotations

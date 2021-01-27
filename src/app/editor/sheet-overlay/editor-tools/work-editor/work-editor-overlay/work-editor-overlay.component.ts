@@ -17,6 +17,7 @@ import {Page} from '../../../../../data-types/page/page';
 import {UserComment, UserComments} from '../../../../../data-types/page/userComment';
 import {CommandChangeProperty} from '../../../../undo/util-commands';
 import {BookPermissionFlag} from '../../../../../data-types/permissions';
+import {ActionType} from '../../../../actions/action-types';
 
 
 
@@ -118,9 +119,12 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     console.log('WorkEditor: deleteWork ' + this.work.workTitle);
     // remove current work from workEditor as well?
     this.sheetOverlayService._sheetOverlayComponent.workEditor.cancelSelection();
+    this.actionService.startAction(ActionType.WorkRemoved, [this.editorService.pcgts.page]);
     this.actionService.removeWork(this.work, this.editorService.pcgts.page);
-    this.actionService.run(new CommandChangeProperty(this, 'currentWork', this._work, null));
     this.actionService.finishAction();
+
+    // this.actionService.run(new CommandChangeProperty(this, 'currentWork', this._work, null));
+    this.work = null;
     // this.deleteRequested.emit(this.work);
   }
 
