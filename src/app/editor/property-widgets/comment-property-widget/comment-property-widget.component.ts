@@ -3,6 +3,9 @@ import {UserComment, UserCommentHolder, UserComments} from '../../../data-types/
 import {ActionsService} from '../../actions/actions.service';
 import {ActionType} from '../../actions/action-types';
 import {MatInput} from '@angular/material';
+import {EditorService} from '../../editor.service';
+import {AuthenticationService} from '../../../authentication/authentication.service';
+import {timestampNow} from '../../../utils/timestamp';
 
 @Component({
   selector: 'app-comment-property-widget',
@@ -43,6 +46,8 @@ export class CommentPropertyWidgetComponent implements OnInit, OnDestroy {
 
   constructor(
     private actions: ActionsService,
+    private editorService: EditorService,
+    private authenticationService: AuthenticationService,
     private changeDetector: ChangeDetectorRef,
   ) { }
 
@@ -81,9 +86,16 @@ export class CommentPropertyWidgetComponent implements OnInit, OnDestroy {
 
   onAdd(event: MouseEvent) {
     event.preventDefault();
+
+    const username = this.authenticationService.currentUserName;
+    const timestamp = timestampNow();
+
     this.actions.startAction(ActionType.CommentsAdded);
-    this.comment = this.actions.addComment(this.comments, this.commentHolder);
+
+    this.comment = this.actions.addComment(this.comments,
+      this.commentHolder, username, timestamp);
     this.actions.finishAction();
+
     setTimeout(() => {
       this.commentArea.focus();
       this.changeDetector.detectChanges();

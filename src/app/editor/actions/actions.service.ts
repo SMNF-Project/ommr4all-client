@@ -827,11 +827,13 @@ export class ActionsService {
   }
 
   // Comments
-  addComment(userComments: UserComments, c: UserCommentHolder): UserComment {
+  addComment(userComments: UserComments, c: UserCommentHolder,
+             author = '', timestamp = ''): UserComment {
     if (!c || !userComments) { return null; }
     let comment = userComments.getByHolder(c);
     if (comment) { return comment; }
-    comment = new UserComment(userComments, c);
+    comment = UserComment.create(userComments, c, '', null, author, timestamp);
+    // comment = new UserComment(userComments, c);
     this.caller.pushChangedViewElement(comment);
     this.pushToArray(userComments.comments, comment);
     return comment;

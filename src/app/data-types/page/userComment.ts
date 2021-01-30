@@ -9,6 +9,14 @@ export interface UserCommentHolder {
 export class UserComment {
   public text = '';
   public aabb: Rect = null;
+  public author = null;
+  public timestamp = null;
+
+  private _children: Array<UserComment> = [];
+  get children(): Array<UserComment> { return this._children; }
+
+  private _parent: UserComment = null;
+  get parent(): UserComment { return this._parent; }
 
   constructor(
     private _userComments: UserComments,
@@ -19,19 +27,53 @@ export class UserComment {
   static fromJson(json, userComments: UserComments, holder: UserCommentHolder = null) {
     const c = new UserComment(userComments, holder);
     if (!json) { return c; }
+
     c.text = json.text || '';
     c.aabb = json.rect ? Rect.fromJSON(json.rect) : null;
+    c.author = json.author || '';
+    c.timestamp = json.timestamp || '';
+
+    const children = json.children ? json.children.map(ch => UserComment.fromJson(ch, userComments, holder)) : null;
+    if (children) { children.forEach(ch => c.addChild(ch)); }
+
     return c;
   }
 
-  get userComments() { return this._userComments; }
-  get empty() { return this.text.length === 0; }
+  static create(userComments: UserComments,
+                holder: UserCommentHolder,
+                text: string = '',
+                aabb: Rect = null,
+                author: string = '',
+                timestamp: string = '',
+                parent: UserComment = null): UserComment {
+    // Cannot create() comment with children, but can create it with a parent.
+    const c = new UserComment(userComments, holder);
+    c.text = text;
+    c.aabb = aabb;
+    c.author = author;
+    c.timestamp = timestamp;
+    if (parent) { parent.addChild(c); }
+    return c;
+  }
+
+  addChild(comment: UserComment) {
+    this._children.push(comment);
+    comment._parent = this;
+  }
+
+  get userComments(): UserComments { return this._userComments; }
+  get empty(): boolean { return this.text.length === 0; }
+  get isTopLevel(): boolean { return this.parent === null; }
+  get hasChildren(): boolean { return this.children.length > 0; }
 
   toJson() {
     return {
-      'id': this.holder ? this.holder.id : null,
-      'text': this.text,
-      'aabb': this.aabb ? this.aabb.toJSON() : null,
+      id: this.holder ? this.holder.id : null,
+      text: this.text,
+      aabb: this.aabb ? this.aabb.toJSON() : null,
+      author: this.author ? this.author : null,
+      timestamp: this.timestamp ? this.timestamp : null,
+      children: this.children ? this.children.map(ch => ch.toJson()) : null
     };
   }
 }
