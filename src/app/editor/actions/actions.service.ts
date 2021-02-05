@@ -845,6 +845,26 @@ export class ActionsService {
     return comment;
   }
 
+  addTopLevelComment(userComments: UserComments, holder: UserCommentHolder,
+                     author= '', timestamp= ''): UserComment {
+    if (!holder || !userComments)  { return null; }
+    const comment = UserComment.create(userComments, holder, '', null, author, timestamp);
+    this.caller.pushChangedViewElement(comment);
+    this.pushToArray(userComments.comments, comment);
+    return comment;
+  }
+
+  addChildComment(userComments: UserComments, parent: UserComment,
+                  author = '', timestamp = ''): UserComment {
+    if (!parent || !userComments) { return null; }
+    const comment = UserComment.create(userComments,
+      parent.holder, '', null, author, timestamp, parent);
+    this.caller.pushChangedViewElement(comment);
+    this.caller.pushChangedViewElement(parent);
+    this.pushToArray(userComments.comments, comment);
+    return comment;
+  }
+
   removeComment(c: UserComment) {
     if (!c) { return; }
     this.caller.pushChangedViewElement(c);
@@ -860,25 +880,6 @@ export class ActionsService {
 
     const retainComments = comments.getAllCommentsExcludingHolder(h);
     this.changeArray(comments.comments, comments.comments, retainComments);
-  }
-
-  addChildComment(userComments: UserComments, parent: UserComment,
-                  author = '', timestamp = ''): UserComment {
-    if (!parent || !userComments) { return null; }
-    const comment = UserComment.create(userComments,
-      parent.holder, '', null, author, timestamp, parent);
-    this.caller.pushChangedViewElement(comment);
-    this.caller.pushChangedViewElement(parent);
-    this.pushToArray(userComments.comments, comment);
-    return comment;
-  }
-
-  addTopLevelComment(userComments: UserComments, holder: UserCommentHolder,
-                     author= '', timestamp= ''): UserComment {
-    if (!holder || !userComments)  { return null; }
-    const comment = UserComment.create(userComments, holder, '', null, author, timestamp);
-    this.caller.pushChangedViewElement(comment);
-    return comment;
   }
 
   changeCommentText(c: UserComment, s: string) {
