@@ -135,7 +135,8 @@ export class ActionsService {
   }
 
   detachRegion(region: Region) {
-    this.removeComment((region.parentOfType(Page) as Page).userComments.getByHolder(region));
+    // this.removeComment((region.parentOfType(Page) as Page).userComments.getByHolder(region));
+    this.removeAllCommentsOfHolder(region, (region.parentOfType(Page) as Page).userComments);
     if (region instanceof PageLine) {
       this.detachLine(region as PageLine);
     } else if (region instanceof Block) {
@@ -162,12 +163,14 @@ export class ActionsService {
   }
 
   detachLine(line: PageLine) {
-    this.removeComment(line.block.page.userComments.getByHolder(line));
+    // this.removeComment(line.block.page.userComments.getByHolder(line));
+    this.removeAllCommentsOfHolder(line, line.block.page.userComments);
     this.attachLine(null, line);
   }
 
   detachBlock(block: Block) {
-    this.removeComment(block.page.userComments.getByHolder(block));
+    // this.removeComment(block.page.userComments.getByHolder(block));
+    this.removeAllCommentsOfHolder(block, block.page.userComments);
     block.page.annotations.findConnectorsByBlock(block).forEach(c => this.annotationRemoveConnection(c));
     this.attachRegion(null, block);
   }
@@ -190,7 +193,8 @@ export class ActionsService {
 
   deleteStaffLine(staffLine: StaffLine) {
     const oldLine = staffLine.staff;
-    this.removeComment(staffLine.staff.block.page.userComments.getByHolder(staffLine));
+    // this.removeComment(staffLine.staff.block.page.userComments.getByHolder(staffLine));
+    this.removeAllCommentsOfHolder(staffLine, staffLine.staff.block.page.userComments);
     this.caller.pushChangedViewElement(staffLine);
     this.caller.runCommand(new CommandDeleteStaffLine(staffLine));
     this.updateAverageStaffLineDistance(oldLine);
@@ -289,11 +293,12 @@ export class ActionsService {
 
   clearAllLayout(page: Page) {
     page.textRegions.filter(cp => cp.isNotEmpty())
-      .forEach(mr => {this.detachRegion(mr)}
+      .forEach(mr => { this.detachRegion(mr); }
       );
     page.musicRegions.filter(cp => cp.isNotEmpty())
       .forEach(mr => {
-        this.removeComment((mr.parentOfType(Page) as Page).userComments.getByHolder(mr));
+        // this.removeComment((mr.parentOfType(Page) as Page).userComments.getByHolder(mr));
+        this.removeAllCommentsOfHolder(mr, (mr.parentOfType(Page) as Page).userComments);
         mr.lines.forEach( ml => {
           this.changePolyLine(ml.coords, ml.coords, new PolyLine([]));
           this.caller.pushChangedViewElement(ml);
@@ -325,7 +330,8 @@ export class ActionsService {
   }
   detachSymbol(s: MusicSymbol, annotations: Annotations) { if (s) {
     this._actionCaller.pushChangedViewElement(s.staff);
-    this.removeComment(s.staff.block.page.userComments.getByHolder(s));
+    // this.removeComment(s.staff.block.page.userComments.getByHolder(s));
+    this.removeAllCommentsOfHolder(s, s.staff.block.page.userComments);
     if (s instanceof Note) {
       const sc = annotations.findSyllableConnectorByNote(s as Note);
       if (sc) {
@@ -843,6 +849,36 @@ export class ActionsService {
     if (!c) { return; }
     this.caller.pushChangedViewElement(c);
     this.removeFromArray(c.userComments.comments, c);
+  }
+
+  removeAllCommentsOfHolder(h: UserCommentHolder, comments: UserComments) {
+    if (!h) { return; }
+    if (!comments) { return; }
+    const holderComments = comments.getAllCommentsByHolder(h);
+    if (!holderComments) { return; }
+    this.caller.pushChangedViewElement(...holderComments);
+
+    const retainComments = comments.getAllCommentsExcludingHolder(h);
+    this.changeArray(comments.comments, comments.comments, retainComments);
+  }
+
+  addChildComment(userComments: UserComments, parent: UserComment,
+                  author = '', timestamp = ''): UserComment {
+    if (!parent || !userComments) { return null; }
+    const comment = UserComment.create(userComments,
+      parent.holder, '', null, author, timestamp, parent);
+    this.caller.pushChangedViewElement(comment);
+    this.caller.pushChangedViewElement(parent);
+    this.pushToArray(userComments.comments, comment);
+    return comment;
+  }
+
+  addTopLevelComment(userComments: UserComments, holder: UserCommentHolder,
+                     author= '', timestamp= ''): UserComment {
+    if (!holder || !userComments)  { return null; }
+    const comment = UserComment.create(userComments, holder, '', null, author, timestamp);
+    this.caller.pushChangedViewElement(comment);
+    return comment;
   }
 
   changeCommentText(c: UserComment, s: string) {

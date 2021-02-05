@@ -62,7 +62,7 @@ export class UserComment {
   }
 
   get userComments(): UserComments { return this._userComments; }
-  get empty(): boolean { return this.text.length === 0; }
+  get empty(): boolean { return ((this.text === null) || (this.text.length === 0)); }
   get isTopLevel(): boolean { return this.parent === null; }
   get hasChildren(): boolean { return this.children.length > 0; }
 
@@ -77,6 +77,8 @@ export class UserComment {
     };
   }
 }
+
+
 
 export class UserComments {
   constructor(
@@ -101,9 +103,20 @@ export class UserComments {
   }
 
   get comments() { return this._comments; }
+  set comments(comments: Array<UserComment>) { this._comments = comments; }
 
   getByHolder(holder: UserCommentHolder) { return this._comments.find(c => c.holder === holder); }
   getByHolderId(id: string) { return this._comments.find(c => c.holder.id === id); }
+
+  getTopLevelCommentsByHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => (c.isTopLevel) && (c.holder === holder));
+  }
+  getAllCommentsByHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => c.holder === holder);
+  }
+  getAllCommentsExcludingHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => c.holder !== holder);
+  }
 
   findHolderById(id: string): UserCommentHolder {
     if (!this._page) { return null; }  // no page specified, anonymous comments
