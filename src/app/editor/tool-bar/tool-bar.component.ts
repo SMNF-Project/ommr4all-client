@@ -61,6 +61,11 @@ export class ToolBarComponent implements OnInit {
     this.currentlyViewing = true;
   }
 
+  onDiscussionEditorTool() {
+    this.onEditorTool(EditorTools.Discussion);
+    this.currentlyViewing = true;
+  }
+
   onWorkEditorTool() {
     this.onEditorTool(EditorTools.Work);
     // This is not exactly true, since the WorkEditor will be able

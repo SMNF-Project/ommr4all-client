@@ -48,6 +48,9 @@ import {SymbolContextMenuComponent} from './context-menus/symbol-context-menu/sy
 import {WorkEditorComponent} from './editor-tools/work-editor/work-editor.component';
 import {WorkEditorOverlayComponent} from './editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
 import {WorkCreatorComponent} from './editor-tools/work-creator/work-creator.component';
+import {DiscussionEditorComponent} from './editor-tools/discussion-editor/discussion-editor.component';
+import {DiscussionEditorOverlayComponent} from './editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
+import {PageViewComponent} from './views/page-view/page-view.component';
 
 
 @Component({
@@ -65,15 +68,19 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
 
   readonly dummyEditor = new DummyEditorTool(this.sheetOverlayService, this.viewChanges, this.changeDetector);
 
+  @ViewChild(PageViewComponent, {static: false}) pageView: PageViewComponent;
+
   @ViewChild(RegionTypeContextMenuComponent, {static: true}) regionTypeContextMenu: RegionTypeContextMenuComponent;
   @ViewChild(ReadingOrderContextMenuComponent, {static: true}) readingOrderContextMenu: ReadingOrderContextMenuComponent;
   @ViewChild(SymbolContextMenuComponent, {static: true}) symbolContextMenu: SymbolContextMenuComponent;
   @ViewChild(TextEditorOverlayComponent, {static: true}) textEditorOverlay: TextEditorOverlayComponent;
   @ViewChild(WorkEditorOverlayComponent, {static: true}) workEditorOverlay: WorkEditorOverlayComponent;
+  @ViewChild(DiscussionEditorOverlayComponent, {static: true}) discussionEditorOverlay: DiscussionEditorOverlayComponent;
 
   @ViewChild(ViewComponent, {static: true}) viewTool: ViewComponent;
   @ViewChild(WorkEditorComponent, {static: true}) workEditor: WorkEditorComponent;
   @ViewChild(WorkCreatorComponent, {static: true}) workCreator: WorkCreatorComponent;
+  @ViewChild(DiscussionEditorComponent, {static: true}) discussionEditor: DiscussionEditorComponent;
   @ViewChild(LineEditorComponent, {static: true}) lineEditor: LineEditorComponent;
   @ViewChild(StaffGrouperComponent, {static: true}) staffGrouper: StaffGrouperComponent;
   @ViewChild(StaffSplitterComponent, {static: true}) staffSplitter: StaffSplitterComponent;
@@ -156,6 +163,7 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
     this._editors.set(EditorTools.LayoutExtractConnectedComponents, this.layoutExtractConnectedComponents);
     this._editors.set(EditorTools.LayoutLassoArea, this.layoutLassoArea);
     this._editors.set(EditorTools.Syllables, this.syllableEditor);
+    this._editors.set(EditorTools.Discussion, this.discussionEditor); // Not selected from Toolbar, though
 
     this._subscriptions.add(this.editorService.pageStateObs.subscribe(page => {
       this.lastNumberOfActions = 0;

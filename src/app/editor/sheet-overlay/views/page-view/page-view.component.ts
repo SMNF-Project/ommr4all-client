@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
+  Component, EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
+  OnInit, Output,
   QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
@@ -20,6 +20,7 @@ import {AnnotationsViewComponent} from '../annotations-view/annotations-view.com
 import {BlockType} from '../../../../data-types/page/definitions';
 import {CommentsViewComponent} from '../comments-view/comments-view.component';
 import {WorkViewComponent} from '../work-view/work-view.component';
+import {UserCommentHolder} from '../../../../data-types/page/userComment';
 
 @Component({
   selector: '[app-page-view]',  // tslint:disable-line component-selector
@@ -39,6 +40,8 @@ export class PageViewComponent implements OnInit, OnDestroy {
   @ViewChildren(WorkViewComponent) workViews: QueryList<WorkViewComponent>;
   @ViewChild(AnnotationsViewComponent, {static: false}) annotationView: AnnotationsViewComponent;
   @ViewChild(CommentsViewComponent, {static: false}) commentsView: CommentsViewComponent;
+
+  // @Output() commentHolderSelected = new EventEmitter<UserCommentHolder>();
 
   constructor(
     private viewChanges: ViewChangesService,

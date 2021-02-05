@@ -133,6 +133,9 @@ import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/
 import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { WorkCreatorComponent } from './editor/sheet-overlay/editor-tools/work-creator/work-creator.component';
+import { DiscussionComponent } from './discussion/discussion.component';
+import { DiscussionEditorComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor.component';
+import { DiscussionEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -259,6 +262,9 @@ const appRoutes: Routes = [
     WorkEditorComponent,
     WorkEditorOverlayComponent,
     WorkCreatorComponent,
+    DiscussionComponent,
+    DiscussionEditorComponent,
+    DiscussionEditorOverlayComponent,
   ],
   imports: [
     CommonModule,

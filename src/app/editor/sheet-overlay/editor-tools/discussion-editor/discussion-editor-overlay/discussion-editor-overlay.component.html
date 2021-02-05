@@ -1,0 +1,13 @@
+<div
+  id="discussion-editor-overlay"
+  [style.left]="left + 'px'"
+  [style.top]="top + 'px'"
+  [style.min-width]="width + 'px'"
+  cdkDrag
+>
+  <div class="full-width">
+    <p>discussion-editor-overlay works!</p>
+    <p>Selected holder: {{ holder.id }}</p>
+    <app-discussion></app-discussion>
+  </div>
+</div>
