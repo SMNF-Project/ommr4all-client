@@ -1,0 +1,54 @@
+<ng-container *ngIf="comment">
+  <div class="comment-container">
+
+    <div class="comment-heading">
+      <span> <b>Author:</b> {{ commentAuthorString }}</span>
+      <span> <b>Timestamp:</b> {{ commentTimestampString }}</span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+
+    <div *ngIf="!isBeingEdited" class="comment-text">
+      <div><span><b>Text:</b></span></div>
+      <p>{{ comment.text }}</p>
+    </div>
+    <div *ngIf="isBeingEdited" class="comment-text-editor">
+      <label><b>Text:</b>
+        <textarea class="comment-text-editor"
+                  placeholder="{{ comment.text }}"
+                  type="text"
+                  autocomplete="off"
+                  #input
+                  [(ngModel)]="comment.text"></textarea>
+      </label>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="comment-controls">
+        <mat-button-toggle class="comment-control-button"
+          [disabled]="!editCommentEnabled()"
+          [(ngModel)]="isBeingEdited">
+          Edit
+        </mat-button-toggle>
+        <button class="comment-control-button" mat-flat-button matSuffix
+                [disabled]="!replyEnabled()">
+          Reply
+        </button>
+        <button class="comment-control-button" mat-flat-button matSuffix
+                [disabled]="!deleteEnabled()">
+          Delete
+        </button>
+    </div>
+    <app-discussion-comment *ngFor="let child of comment.children"
+      [comment]="child"
+    >
+    </app-discussion-comment>
+  </div>
+</ng-container>
+<ng-container *ngIf="!comment">
+  <div class="comment-container">
+    <div class="comment-text"><span>(No comment.)</span></div>
+  </div>
+</ng-container>

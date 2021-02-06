@@ -1,0 +1,33 @@
+div.comment-container {
+  border: 1px solid black;
+  border-radius: 4px;
+  margin: 8px;
+  padding: 8px;
+}
+
+div.comment-heading {
+  margin: 4px;
+}
+
+div.comment-text {
+  margin: 4px;
+}
+
+div.comment-controls {
+  margin: 8px;
+}
+
+.comment-control-button {
+  margin: 8px;
+  padding: 8px;
+}
+
+
+textarea.comment-text-editor {
+  display: inline-flex;
+  width: auto;
+  height: auto;
+  margin-left: 12pt;
+  margin-right: 12pt;
+  resize: vertical;
+}

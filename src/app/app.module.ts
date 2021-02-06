@@ -59,7 +59,8 @@ import {
   MatSelectModule, MatSidenavModule,
   MatSlideToggleModule, MatStepperModule, MatTableModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatButtonToggleModule,
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { LayoutExtractConnectedComponentsComponent } from './editor/sheet-overlay/editor-tools/layout-extract-connected-components/layout-extract-connected-components.component';
@@ -136,6 +137,7 @@ import { WorkCreatorComponent } from './editor/sheet-overlay/editor-tools/work-c
 import { DiscussionComponent } from './discussion/discussion.component';
 import { DiscussionEditorComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor.component';
 import { DiscussionEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
+import { DiscussionCommentComponent } from './discussion/discussion-comment/discussion-comment.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -265,6 +267,7 @@ const appRoutes: Routes = [
     DiscussionComponent,
     DiscussionEditorComponent,
     DiscussionEditorOverlayComponent,
+    DiscussionCommentComponent,
   ],
   imports: [
     CommonModule,
@@ -286,6 +289,7 @@ const appRoutes: Routes = [
     MatIconModule,
     MatInputModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatDividerModule,
     MatMenuModule,
     MatDialogModule,

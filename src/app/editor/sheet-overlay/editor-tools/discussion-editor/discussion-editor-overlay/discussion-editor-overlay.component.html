@@ -6,8 +6,10 @@
   cdkDrag
 >
   <div class="full-width">
-    <p>discussion-editor-overlay works!</p>
-    <p>Selected holder: {{ holder.id }}</p>
-    <app-discussion></app-discussion>
+    <p><b>Selected holder: {{ holder.id }}</b></p>
+    <app-discussion
+      [holder]="holder"
+      [userComments]="userComments"
+    ></app-discussion>
   </div>
 </div>

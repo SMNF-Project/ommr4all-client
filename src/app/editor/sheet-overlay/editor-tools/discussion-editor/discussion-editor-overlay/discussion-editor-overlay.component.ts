@@ -47,6 +47,7 @@ export class DiscussionEditorOverlayComponent implements OnInit, OnDestroy {
   get width() { return this.right - this.left; }
 
   get _page(): Page { return this.editorService.pcgts.page; }
+  get userComments(): UserComments { return this._page.userComments; }
 
   constructor(
     public sheetOverlayService: SheetOverlayService,

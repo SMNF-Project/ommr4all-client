@@ -10,6 +10,8 @@ export enum BookPermissionFlag {
   DeleteBook = 64,
   EditBookMeta = 128,
   VerifyPage = 256,
+  // Comment = 1024, // This needs to be added to the user model.
+  Comment = Edit,
 
   Write = Edit | Save, // tslint:disable-line no-bitwise
   ReadEdit = Read | Edit, // tslint:disable-line no-bitwise
@@ -22,6 +24,7 @@ export enum BookPermissionFlag {
   RightsMaintainer = RightsWrite | Pages | EditBookMeta | VerifyPage,  // tslint:disable-line no-bitwise
   RightsAdmin = RightsMaintainer | EditPermissions | DeleteBook, // tslint:disable-line no-bitwise
   RightsDemo = ReadEdit,
+
 }
 
 export class BookPermissionFlags {

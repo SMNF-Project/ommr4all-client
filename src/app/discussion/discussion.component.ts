@@ -1,15 +1,50 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
+import {UserComment, UserCommentHolder, UserComments} from '../data-types/page/userComment';
+import {SheetOverlayService} from '../editor/sheet-overlay/sheet-overlay.service';
+import {ActionsService} from '../editor/actions/actions.service';
 
 @Component({
   selector: 'app-discussion',
   templateUrl: './discussion.component.html',
-  styleUrls: ['./discussion.component.scss']
+  styleUrls: ['./discussion.component.css'],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DiscussionComponent implements OnInit {
+  /*
+   * The DiscussionComponent shows all the discussion related to a subset
+   * of UserCommentHolders. It provides basic comment editing functionality:
+   * change text (of your comment), create a new top-level comment, reply to
+   * a comment, delete your comment (unless it has child comments).
+   */
 
-  constructor() { }
+  @Input() userComments: UserComments = null;
+  @Input() holder: UserCommentHolder = null;
+
+  get topLevelComments(): Array<UserComment> {
+    return this.userComments.getTopLevelCommentsByHolder(this.holder);
+  }
+
+  // Support for discussion related to multiple holders at once will come later.
+  // @Input() holders: Array<UserCommentHolder> = [];
+
+  constructor(
+    public changeDetector: ChangeDetectorRef,
+    private sheetOverlayService: SheetOverlayService,
+    private actions: ActionsService
+  ) {
+    // this.changeDetector.detach(); // Seen in LineViewComponent.
+  }
 
   ngOnInit() {
   }
+
 
 }
