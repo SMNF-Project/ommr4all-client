@@ -5,11 +5,12 @@ import {
   Input,
   OnChanges,
   OnInit,
-  SimpleChanges
+  SimpleChanges, ViewChildren
 } from '@angular/core';
 import {UserComment, UserCommentHolder, UserComments} from '../data-types/page/userComment';
 import {SheetOverlayService} from '../editor/sheet-overlay/sheet-overlay.service';
 import {ActionsService} from '../editor/actions/actions.service';
+import {DiscussionCommentComponent} from './discussion-comment/discussion-comment.component';
 
 @Component({
   selector: 'app-discussion',
@@ -27,6 +28,8 @@ export class DiscussionComponent implements OnInit {
 
   @Input() userComments: UserComments = null;
   @Input() holder: UserCommentHolder = null;
+
+  @ViewChildren(DiscussionCommentComponent) topLevelCommentViews: Array<DiscussionCommentComponent>;
 
   get topLevelComments(): Array<UserComment> {
     return this.userComments.getTopLevelCommentsByHolder(this.holder);
@@ -46,5 +49,7 @@ export class DiscussionComponent implements OnInit {
   ngOnInit() {
   }
 
+  onNewReplyComment(reply: UserComment) {}
+  onDeletedComment(comment: UserComment) {}
 
 }

@@ -866,8 +866,30 @@ export class ActionsService {
   }
 
   removeComment(c: UserComment) {
+    // This now breaks because of the child comments! Do NOT use it!
     if (!c) { return; }
     this.caller.pushChangedViewElement(c);
+    this.removeFromArray(c.userComments.comments, c);
+  }
+
+  detachCommentFromParent(c: UserComment) {
+    if (!c) { return; }
+    if (c.isTopLevel) { return; }
+    this.caller.pushChangedViewElement(c);
+    this.caller.pushChangedViewElement(c.parent);
+    this.removeFromArray(c.parent.children, c);
+  }
+
+  removeCommentSubtree(c: UserComment) {
+    if (!c) { return; }
+    if (c.hasChildren) {
+      // Caution: this means a lot of Undo steps.
+      for (const child of c.children) { this.removeCommentSubtree(child); }
+    }
+    this.caller.pushChangedViewElement(c);
+    if (!c.isTopLevel) {
+      this.detachCommentFromParent(c);
+    }
     this.removeFromArray(c.userComments.comments, c);
   }
 

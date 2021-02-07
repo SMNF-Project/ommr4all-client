@@ -29,22 +29,31 @@
     <div class="comment-controls">
         <mat-button-toggle class="comment-control-button"
           [disabled]="!editCommentEnabled()"
-          [(ngModel)]="isBeingEdited">
+          (click)="onEditButtonClicked()">
           Edit
         </mat-button-toggle>
         <button class="comment-control-button" mat-flat-button matSuffix
-                [disabled]="!replyEnabled()">
+                [disabled]="!replyEnabled()"
+                (click)="onReplyButtonClicked()">
           Reply
         </button>
         <button class="comment-control-button" mat-flat-button matSuffix
-                [disabled]="!deleteEnabled()">
+                [disabled]="!deleteEnabled()"
+                (click)="onDeleteButtonClicked()">
           Delete
         </button>
     </div>
-    <app-discussion-comment *ngFor="let child of comment.children"
+
+    <!-- Child comments. -->
+    <app-discussion-comment
+      *ngFor="let child of comment.children"
       [comment]="child"
+      (addedReply)="this.addedReply.emit($event)"
+      (deletedComment)="this.deletedComment.emit($event)"
     >
     </app-discussion-comment>
+    <!-- The event passthrough causes the reply to bubble up to DiscussionComponent. -->
+
   </div>
 </ng-container>
 <ng-container *ngIf="!comment">

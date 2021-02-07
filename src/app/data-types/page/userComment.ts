@@ -61,6 +61,20 @@ export class UserComment {
     comment._parent = this;
   }
 
+  detachChild(comment: UserComment) {
+    // Caution: does not support undo.
+    const idx = this._children.indexOf(comment);
+    if (idx === -1) { return; }
+    comment._parent = null;
+    this._children.splice(idx, 1);
+  }
+
+  detachFromParent() {
+    // Caution: does not support undo.
+    if (this.isTopLevel) { return; }
+    this.parent.detachChild(this);
+  }
+
   get userComments(): UserComments { return this._userComments; }
   get empty(): boolean { return ((this.text === null) || (this.text.length === 0)); }
   get isTopLevel(): boolean { return this.parent === null; }
@@ -97,8 +111,9 @@ export class UserComments {
   }
 
   toJson() {
+    // Filtering to export top-level comments only (since the export is recursive).
     return {
-      comments: this._comments.map(c => c.toJson()),
+      comments: this._comments.filter(c => c.isTopLevel).map(c => c.toJson()),
     };
   }
 

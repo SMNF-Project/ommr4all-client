@@ -19,6 +19,10 @@ export class DiscussionService {
     private authenticationService: AuthenticationService,
   ) {}
 
+  currentCommentAuthorName(): string {
+    return this.authenticationService.currentUserName;
+  }
+
   userCanAddComment(): boolean {
     return this.editorService.bookMeta.hasPermission(BookPermissionFlag.Comment);
   }

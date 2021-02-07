@@ -1,5 +1,8 @@
 <div class="discussion-container">
-  <app-discussion-comment *ngFor="let comment of topLevelComments"
+  <app-discussion-comment
+    *ngFor="let comment of topLevelComments"
     [comment]="comment"
+    (addedReply)="onNewReplyComment($event)"
+    (deletedComment)="onDeletedComment($event)"
   ></app-discussion-comment>
 </div>
