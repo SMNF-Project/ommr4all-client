@@ -1,4 +1,11 @@
 <div class="discussion-container">
+  <div class="discussion-controls">
+    <button class="comment-control-button" mat-flat-button matSuffix
+            [disabled]="!newThreadEnabled()"
+            (click)="onNewThreadButtonClicked()">
+      New thread
+    </button>
+  </div>
   <app-discussion-comment
     *ngFor="let comment of topLevelComments"
     [comment]="comment"

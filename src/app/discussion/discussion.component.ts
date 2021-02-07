@@ -11,6 +11,8 @@ import {UserComment, UserCommentHolder, UserComments} from '../data-types/page/u
 import {SheetOverlayService} from '../editor/sheet-overlay/sheet-overlay.service';
 import {ActionsService} from '../editor/actions/actions.service';
 import {DiscussionCommentComponent} from './discussion-comment/discussion-comment.component';
+import {DiscussionService} from './discussion.service';
+import {timestampNow} from '../utils/timestamp';
 
 @Component({
   selector: 'app-discussion',
@@ -40,6 +42,7 @@ export class DiscussionComponent implements OnInit {
 
   constructor(
     public changeDetector: ChangeDetectorRef,
+    private discussionService: DiscussionService,
     private sheetOverlayService: SheetOverlayService,
     private actions: ActionsService
   ) {
@@ -47,6 +50,19 @@ export class DiscussionComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  newThreadEnabled(): boolean {
+    return this.discussionService.userCanAddComment();
+  }
+
+  onNewThreadButtonClicked(): void {
+    if (!this.newThreadEnabled()) { return; }
+    const comment = this.actions.addTopLevelComment(this.userComments,
+      this.holder,
+      this.discussionService.currentCommentAuthorName(),
+      timestampNow());
+    // Focus the new comment view
   }
 
   onNewReplyComment(reply: UserComment) {}
