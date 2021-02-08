@@ -37,7 +37,8 @@
                 (click)="onReplyButtonClicked()">
           Reply
         </button>
-        <button class="comment-control-button" mat-flat-button matSuffix
+        <button *ngIf="deleteEnabled()"
+                class="comment-control-button danger" mat-flat-button matSuffix
                 [disabled]="!deleteEnabled()"
                 (click)="onDeleteButtonClicked()">
           Delete

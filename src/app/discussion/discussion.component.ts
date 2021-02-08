@@ -65,6 +65,15 @@ export class DiscussionComponent implements OnInit {
     // Focus the new comment view
   }
 
+  deleteAllCommentsEnabled(): boolean {
+    return this.discussionService.userCanDeleteAllHolderComments(this.holder);
+  }
+
+  onDeleteAllComments(): void {
+    if (!this.deleteAllCommentsEnabled()) { return; }
+    this.actions.removeAllCommentsOfHolder(this.holder, this.userComments);
+  }
+
   onNewReplyComment(reply: UserComment) {}
   onDeletedComment(comment: UserComment) {}
 

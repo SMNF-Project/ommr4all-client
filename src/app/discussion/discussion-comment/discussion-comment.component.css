@@ -18,17 +18,21 @@ div.comment-controls {
 }
 
 button.comment-control-button {
-  margin: 8px;
+  margin: 0 8px;
   padding: 0 8px;
   border: solid 1px black;
   line-height: 36px;
 }
 mat-button-toggle.comment-control-button {
-  margin: 8px;
+  margin: 0 8px;
   padding: 0 8px;
-  background-color: antiquewhite;
   border: solid 1px black;
   line-height: 36px;
+}
+.danger {
+  background-color: red;
+  color: antiquewhite;
+  font-weight: bold;
 }
 
 
@@ -41,4 +45,3 @@ textarea.comment-text-editor {
   margin-right: 12pt;
   resize: vertical;
 }
-

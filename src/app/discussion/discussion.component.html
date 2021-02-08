@@ -5,6 +5,12 @@
             (click)="onNewThreadButtonClicked()">
       New thread
     </button>
+    <button *ngIf="deleteAllCommentsEnabled()"
+            class="comment-control-button danger" mat-flat-button matSuffix
+            [disabled]="!deleteAllCommentsEnabled()"
+            (click)="onDeleteAllComments()">
+      Delete all comments
+    </button>
   </div>
   <app-discussion-comment
     *ngFor="let comment of topLevelComments"

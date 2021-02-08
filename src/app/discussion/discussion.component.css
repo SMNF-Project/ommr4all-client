@@ -1,0 +1,10 @@
+button.comment-control-button {
+  border: 1px solid black;
+  margin: 0 8px;
+}
+
+.danger {
+  background-color: red;
+  color: antiquewhite;
+  font-weight: bold;
+}

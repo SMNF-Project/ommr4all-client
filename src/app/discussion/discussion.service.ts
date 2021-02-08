@@ -3,7 +3,7 @@ import {EditorService} from '../editor/editor.service';
 import {SheetOverlayService} from '../editor/sheet-overlay/sheet-overlay.service';
 import {AuthenticationService} from '../authentication/authentication.service';
 import {BookPermissionFlag} from '../data-types/permissions';
-import {UserComment} from '../data-types/page/userComment';
+import {UserComment, UserCommentHolder, UserComments} from '../data-types/page/userComment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,10 @@ export class DiscussionService {
     private sheetOverlayService: SheetOverlayService,
     private authenticationService: AuthenticationService,
   ) {}
+
+  get userComments(): UserComments {
+    return this.editorService.pcgts.page.userComments;
+  }
 
   currentCommentAuthorName(): string {
     return this.authenticationService.currentUserName;
@@ -49,6 +53,13 @@ export class DiscussionService {
       for (const child of comment.children) {
         if (!this.userCanDeleteComment(child)) { return false; }
       }
+    }
+    return true;
+  }
+
+  userCanDeleteAllHolderComments(holder: UserCommentHolder): boolean {
+    for (const c of this.userComments.getTopLevelCommentsByHolder(holder)) {
+      if (!this.userCanDeleteComment(c)) { return false; }
     }
     return true;
   }
