@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {EventEmitter, Injectable, Output} from '@angular/core';
 import {ChangedView, RequestChangedViewElements} from './changed-view-elements';
 import {PageLine} from '../../data-types/page/pageLine';
 import {Page} from '../../data-types/page/page';
@@ -8,7 +8,7 @@ import {Work} from '../../data-types/page/work';
   providedIn: 'root'
 })
 export class ViewChangesService {
-  changed = new EventEmitter<ChangedView>();
+  @Output() changed = new EventEmitter<ChangedView>();
 
   constructor(
   ) { }
@@ -31,7 +31,7 @@ export class ViewChangesService {
 
   updateAllWorks(page: Page) {
     const works = new Array<Work>();
-    page.works.forEach(w => works.push(w));
+    page.worksContainer.works.forEach(w => works.push(w));
     this.request(works);
   }
 

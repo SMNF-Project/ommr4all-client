@@ -101,7 +101,7 @@ export class CommandDeleteWork extends Command {
     this.page.worksContainer.addWork(this.work);
     console.log('CmdDeleteWork: page now has ' + this.page.worksContainer.works.length + ' works');
   }
-  isIdentity(): boolean { return (!this.work); }
+  isIdentity(): boolean { return false; }
 }
 
 export class CommandAttachRegion extends Command {

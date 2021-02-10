@@ -18,6 +18,7 @@ import {UserComment, UserComments} from '../../../../../data-types/page/userComm
 import {CommandChangeProperty} from '../../../../undo/util-commands';
 import {BookPermissionFlag} from '../../../../../data-types/permissions';
 import {ActionType} from '../../../../actions/action-types';
+import {PolyLine} from '../../../../../geometry/geometry';
 
 
 
@@ -73,7 +74,9 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     private viewChanges: ViewChangesService,
     private changeDetector: ChangeDetectorRef,
     private editorService: EditorService,
-    private actionService: ActionsService
+    private actionService: ActionsService,
+    private actions: ActionsService,
+
   ) {
     // console.log('WorkEditorOverlayComponent constructor called!'); // DEBUG
     // console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
@@ -119,7 +122,7 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     console.log('WorkEditor: deleteWork ' + this.work.workTitle);
     // remove current work from workEditor as well?
     this.sheetOverlayService._sheetOverlayComponent.workEditor.cancelSelection();
-    this.actionService.startAction(ActionType.WorkRemoved, [this.editorService.pcgts.page]);
+    this.actionService.startAction(ActionType.WorkRemoved);
     this.actionService.removeWork(this.work, this.editorService.pcgts.page);
     this.actionService.finishAction();
 

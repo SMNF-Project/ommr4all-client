@@ -76,6 +76,7 @@ export class Works {
     if (this.containsIdenticalWork(work)) { console.log('Adding work ' + work.workTitle + ' identical to existing work.'); return; }
 
     this.works.push(work);
+    if (this.page) { this.page.attachChild(work); }
     this.computeOrderOnPage();
     this.page.updateRequired = true;
     this.page.update();
@@ -104,6 +105,7 @@ export class Works {
     }
     return false;
   }
+
 }
 
 
