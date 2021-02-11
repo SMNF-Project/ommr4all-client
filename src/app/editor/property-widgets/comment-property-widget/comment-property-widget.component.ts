@@ -79,7 +79,8 @@ export class CommentPropertyWidgetComponent implements OnInit, OnDestroy {
 
   onDelete() {
     this.actions.startAction(ActionType.CommentsDeleted);
-    this.actions.removeComment(this.comment);
+    // this.actions.removeComment(this.comment);
+    this.actions.removeAllCommentsOfHolder(this.commentHolder, this.comment.userComments);
     this.comment = null;
     this.actions.finishAction();
   }
@@ -92,7 +93,9 @@ export class CommentPropertyWidgetComponent implements OnInit, OnDestroy {
 
     this.actions.startAction(ActionType.CommentsAdded);
 
-    this.comment = this.actions.addComment(this.comments,
+    // this.comment = this.actions.addComment(this.comments,
+    //   this.commentHolder, username, timestamp);
+    this.comment = this.actions.addTopLevelComment(this.comments,
       this.commentHolder, username, timestamp);
     this.actions.finishAction();
 

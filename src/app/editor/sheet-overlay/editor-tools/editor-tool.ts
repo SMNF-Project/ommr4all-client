@@ -73,6 +73,10 @@ export abstract class EditorTool {
   onWorkMouseMove(event: MouseEvent, w: Work) {}
   onWorkContextMenu(event: MouseEvent, w: Work) {}
 
+  onCommentHolderMouseDown(event: MouseEvent, h: UserCommentHolder) {}
+  onCommentHolderMouseUp(event: MouseEvent, h: UserCommentHolder) {}
+  onCommentHolderMouseMove(event: MouseEvent, h: UserCommentHolder) {}
+
   onSyllableMouseDown(event: MouseEvent, syllableConnection: SyllableConnector) {}
   onSyllableMouseUp(event: MouseEvent, connection: Connection, syllableConnector: SyllableConnector) {}
 
@@ -89,6 +93,7 @@ export abstract class EditorTool {
   isSymbolSelectable(symbol: MusicSymbol): boolean { return false; }
   isLogicalConnectionSelectable(lc: LogicalConnection): boolean { return false; }
   isWorkSelectable(work: Work): boolean { return false; }
+  isCommentHolderSelectable(h: UserCommentHolder): boolean { return false; }
 
   useCrossHairCursor(): boolean { return false; }
   useMoveCursor() { return false; }

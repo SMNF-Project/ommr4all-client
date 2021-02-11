@@ -1,0 +1,80 @@
+<ng-container *ngIf="comment">
+<div class="comment-container">
+  <mat-expansion-panel  #expansionPanel
+                        [expanded]="expanded"
+                        (opened)="requestFocus()">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <b>Author:&nbsp;</b> {{ commentAuthorString }} &nbsp;&nbsp; <b>Text:</b>&nbsp;{{ commentTextFirstFewWords }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+<!--    <div class="comment-heading">-->
+<!--      <span> <b>Author:&nbsp;</b> {{ commentAuthorString }}</span>&nbsp;&nbsp;-->
+<!--      <span> <b>Timestamp:&nbsp;</b> {{ commentTimestampString }}</span>-->
+<!--    </div>-->
+
+    <mat-divider></mat-divider>
+
+
+    <div *ngIf="!isBeingEdited" class="comment-text" (click)="requestFocus()">
+      <span><b>Text:</b></span>
+      <p>{{ comment.text }}</p>
+    </div>
+    <div *ngIf="isBeingEdited" class="comment-text-editor">
+      <label><b>Text:</b>
+        <textarea class="comment-text-editor"
+                  placeholder="{{ comment.text }}"
+                  type="text"
+                  autocomplete="off"
+                  #input
+                  [(ngModel)]="comment.text"></textarea>
+      </label>
+    </div>
+
+    <div *ngIf="focused" class="comment-footer">
+      <mat-divider></mat-divider>
+      <span><b>Timestamp:&nbsp;</b>{{ commentTimestampString }}</span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div *ngIf="focused" class="comment-controls">
+        <mat-button-toggle class="comment-control-button"
+          [disabled]="!editCommentEnabled()"
+          (click)="onEditButtonClicked()">
+          <ng-container *ngIf="!isBeingEdited">Edit</ng-container>
+          <ng-container *ngIf="isBeingEdited">Save</ng-container>
+        </mat-button-toggle>
+        <button class="comment-control-button" mat-flat-button matSuffix
+                [disabled]="!replyEnabled()"
+                (click)="onReplyButtonClicked()">
+          Reply
+        </button>
+        <button *ngIf="deleteEnabled()"
+                class="comment-control-button danger" mat-flat-button matSuffix
+                [disabled]="!deleteEnabled()"
+                (click)="onDeleteButtonClicked()">
+          Delete
+        </button>
+    </div>
+
+    <!-- Child comments. -->
+    <app-discussion-comment
+      *ngFor="let child of comment.children"
+      [comment]="child"
+      (addedReply)="addedReply.emit($event)"
+      (deletedComment)="deletedComment.emit($event)"
+      (requestedFocus)="requestedFocus.emit($event)"
+    > <!-- Must ensure at most one comment is focused in a discussion. -->
+    </app-discussion-comment>
+    <!-- The event passthrough causes the reply to bubble up to DiscussionComponent. -->
+  </mat-expansion-panel>
+</div>
+</ng-container>
+
+<ng-container *ngIf="!comment">
+<div class="comment-container">
+  <div class="comment-text"><span>(No comment.)</span></div>
+</div>
+</ng-container>

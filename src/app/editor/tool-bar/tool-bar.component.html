@@ -56,10 +56,15 @@
              [class.active]="toolBarStateService.currentEditorTool === EditorTools.View"
              (click)="onViewEditorTool()">remove_red_eye</mat-icon>
         <mat-icon class="button icon"
+                  matTooltip="Read and participate in the discussion of the page."
+                  i18n-matTooltip
+                  [class.active]="toolBarStateService.currentEditorTool === EditorTools.Discussion"
+                  (click)="onDiscussionEditorTool()">question_answer</mat-icon>
+        <mat-icon class="button icon"
                   matTooltip="View and edit work data"
                   i18n-matTooltip
                   [class.active]="toolBarStateService.currentEditorTool === EditorTools.Work"
-                  (click)="onWorkEditorTool()">comment</mat-icon>
+                  (click)="onWorkEditorTool()">build</mat-icon>
         <mat-icon class="button icon"
                   matTooltip="Edit page"
                   i18n-matTooltip

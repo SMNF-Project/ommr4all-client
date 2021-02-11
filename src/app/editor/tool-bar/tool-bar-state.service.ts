@@ -20,6 +20,8 @@ export enum EditorTools {
 
   Work,
   WorkCreator,
+
+  Discussion,
 }
 
 export const editorToolToProgressGroup = [
@@ -99,6 +101,7 @@ export class ToolBarStateService {
 
   isCurrentToolReadOnly(): boolean {
     return (this._currentEditorTool === EditorTools.View) ||
-      (this._currentEditorTool === EditorTools.Work);
+      (this._currentEditorTool === EditorTools.Work) ||
+      (this._currentEditorTool === EditorTools.Discussion);
   }
 }

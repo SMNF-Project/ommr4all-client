@@ -61,8 +61,6 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   get width() { return this.right - this.left; }
 
   get _page(): Page { return this.editorService.pcgts.page; }
-  get _allComments(): UserComments { return this._page.userComments; }
-  get comment(): UserComment { return this._allComments.getByHolder(this.work); }
 
   get readingOrder() { return this.sheetOverlayService.editorService.pcgts.page.readingOrder; }
 

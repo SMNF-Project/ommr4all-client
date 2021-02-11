@@ -23,7 +23,6 @@
             {{ workInfo.cantusId }}</a>
           </li>
           <!-- Full text of work, in different readings -->
-          <li *ngIf="comment"><br>Comment: {{ comment.text }}</li>
           <li><br><b>Text readings:</b>
 
             <div mat-dialog-content>
@@ -129,6 +128,12 @@
       </mat-tab>
 
       <!-- Comments tab -->
+      <mat-tab label="Discussion">
+        <app-discussion
+          [userComments]="_page.userComments"
+          [holder]="work">
+        </app-discussion>
+      </mat-tab>
 
     </mat-tab-group>
   </div>

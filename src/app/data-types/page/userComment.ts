@@ -61,8 +61,22 @@ export class UserComment {
     comment._parent = this;
   }
 
+  detachChild(comment: UserComment) {
+    // Caution: does not support undo.
+    const idx = this._children.indexOf(comment);
+    if (idx === -1) { return; }
+    comment._parent = null;
+    this._children.splice(idx, 1);
+  }
+
+  detachFromParent() {
+    // Caution: does not support undo.
+    if (this.isTopLevel) { return; }
+    this.parent.detachChild(this);
+  }
+
   get userComments(): UserComments { return this._userComments; }
-  get empty(): boolean { return this.text.length === 0; }
+  get empty(): boolean { return ((this.text === null) || (this.text.length === 0)); }
   get isTopLevel(): boolean { return this.parent === null; }
   get hasChildren(): boolean { return this.children.length > 0; }
 
@@ -77,6 +91,8 @@ export class UserComment {
     };
   }
 }
+
+
 
 export class UserComments {
   constructor(
@@ -95,15 +111,27 @@ export class UserComments {
   }
 
   toJson() {
+    // Filtering to export top-level comments only (since the export is recursive).
     return {
-      comments: this._comments.map(c => c.toJson()),
+      comments: this._comments.filter(c => c.isTopLevel).map(c => c.toJson()),
     };
   }
 
   get comments() { return this._comments; }
+  set comments(comments: Array<UserComment>) { this._comments = comments; }
 
   getByHolder(holder: UserCommentHolder) { return this._comments.find(c => c.holder === holder); }
   getByHolderId(id: string) { return this._comments.find(c => c.holder.id === id); }
+
+  getTopLevelCommentsByHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => (c.isTopLevel) && (c.holder === holder));
+  }
+  getAllCommentsByHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => c.holder === holder);
+  }
+  getAllCommentsExcludingHolder(holder: UserCommentHolder): Array<UserComment> {
+    return this._comments.filter(c => c.holder !== holder);
+  }
 
   findHolderById(id: string): UserCommentHolder {
     if (!this._page) { return null; }  // no page specified, anonymous comments
