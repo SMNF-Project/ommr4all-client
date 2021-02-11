@@ -30,12 +30,12 @@ export class DiscussionEditorOverlayComponent implements OnInit, OnDestroy {
 
   get aabb() {
     if (this._holder.hasOwnProperty('_AABB')) {
-      console.log('Holder ' + this.holder.id + ' has AABB');
+      // console.log('Holder ' + this.holder.id + ' has AABB');
       // @ts-ignore
       return this._holder._AABB;
     } else {
-      console.log('Holder has no AABB, returning empty rect.');
-      console.log('Holder: ');
+      // console.log('Holder has no AABB, returning empty rect.');
+      // console.log('Holder: ');
       console.log(this._holder);
       return new Rect();
     }
@@ -58,13 +58,13 @@ export class DiscussionEditorOverlayComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    console.log('DiscussionOverlayComponent ngOnInit called!');
-    console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
-    if (this.holder) {
-      console.log('   Top, left, right, width: ' + [this.top, this.left, this.right, this.width]);
-    } else {
-      console.log('    No holder is set!');
-    }
+    // console.log('DiscussionOverlayComponent ngOnInit called!');
+    // console.log('   Positional args: ' + [this.zoom, this.pan.x, this.pan.y, this.viewWidth]);
+    // if (this.holder) {
+      // console.log('   Top, left, right, width: ' + [this.top, this.left, this.right, this.width]);
+    // } else {
+      // console.log('    No holder is set!');
+    // }
 
     this._subscription.add(this.viewChanges.changed.subscribe((vc) => {
       if (vc.checkChangesWorks.has(this._holder)) {

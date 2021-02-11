@@ -1,16 +1,24 @@
 <ng-container *ngIf="comment">
-  <div class="comment-container">
+<div class="comment-container">
+  <mat-expansion-panel  #expansionPanel
+                        [expanded]="expanded"
+                        (opened)="requestFocus()">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <b>Author:&nbsp;</b> {{ commentAuthorString }} &nbsp;&nbsp; <b>Text:</b>&nbsp;{{ commentTextFirstFewWords }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    <div class="comment-heading">
-      <span> <b>Author:</b> {{ commentAuthorString }}</span>
-      <span> <b>Timestamp:</b> {{ commentTimestampString }}</span>
-    </div>
+<!--    <div class="comment-heading">-->
+<!--      <span> <b>Author:&nbsp;</b> {{ commentAuthorString }}</span>&nbsp;&nbsp;-->
+<!--      <span> <b>Timestamp:&nbsp;</b> {{ commentTimestampString }}</span>-->
+<!--    </div>-->
 
     <mat-divider></mat-divider>
 
 
-    <div *ngIf="!isBeingEdited" class="comment-text">
-      <div><span><b>Text:</b></span></div>
+    <div *ngIf="!isBeingEdited" class="comment-text" (click)="requestFocus()">
+      <span><b>Text:</b></span>
       <p>{{ comment.text }}</p>
     </div>
     <div *ngIf="isBeingEdited" class="comment-text-editor">
@@ -24,9 +32,13 @@
       </label>
     </div>
 
+    <div class="comment-footer">
+      <span><b>Timestamp:&nbsp;</b>{{ commentTimestampString }}</span>
+    </div>
+
     <mat-divider></mat-divider>
 
-    <div class="comment-controls">
+    <div *ngIf="focused" class="comment-controls">
         <mat-button-toggle class="comment-control-button"
           [disabled]="!editCommentEnabled()"
           (click)="onEditButtonClicked()">
@@ -49,16 +61,18 @@
     <app-discussion-comment
       *ngFor="let child of comment.children"
       [comment]="child"
-      (addedReply)="this.addedReply.emit($event)"
-      (deletedComment)="this.deletedComment.emit($event)"
-    >
+      (addedReply)="addedReply.emit($event)"
+      (deletedComment)="deletedComment.emit($event)"
+      (requestedFocus)="requestedFocus.emit($event)"
+    > <!-- Must ensure at most one comment is focused in a discussion. -->
     </app-discussion-comment>
     <!-- The event passthrough causes the reply to bubble up to DiscussionComponent. -->
-
-  </div>
+  </mat-expansion-panel>
+</div>
 </ng-container>
+
 <ng-container *ngIf="!comment">
-  <div class="comment-container">
-    <div class="comment-text"><span>(No comment.)</span></div>
-  </div>
+<div class="comment-container">
+  <div class="comment-text"><span>(No comment.)</span></div>
+</div>
 </ng-container>

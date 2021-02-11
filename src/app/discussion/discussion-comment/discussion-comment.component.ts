@@ -1,26 +1,41 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChildren} from '@angular/core';
+import {
+  AfterContentChecked,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewChildren,
+  ViewEncapsulation
+} from '@angular/core';
 import {UserComment} from '../../data-types/page/userComment';
-import {EditorService} from '../../editor/editor.service';
-import {AuthenticationService} from '../../authentication/authentication.service';
 import {DiscussionService} from '../discussion.service';
 import {ActionsService} from '../../editor/actions/actions.service';
 import {timestampNow} from '../../utils/timestamp';
+import {MatExpansionPanel} from '@angular/material/expansion';
+
 
 @Component({
   selector: 'app-discussion-comment',
   templateUrl: './discussion-comment.component.html',
-  styleUrls: ['./discussion-comment.component.css']
+  styleUrls: ['./discussion-comment.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class DiscussionCommentComponent implements OnInit {
+export class DiscussionCommentComponent implements OnInit, AfterContentChecked {
 
   private _emptyAuthorString = '(none)';
   private _emptyTimestampString = '(unknown)';
 
   @Input() comment: UserComment = null;
   @ViewChildren(DiscussionCommentComponent) childCommentViews: Array<DiscussionCommentComponent>;
+  @ViewChild(MatExpansionPanel, {static: false}) expansionPanel: MatExpansionPanel;
 
   @Output() addedReply = new EventEmitter<UserComment>();
   @Output() deletedComment = new EventEmitter<UserComment>();
+
+  @Output() requestedFocus = new EventEmitter<DiscussionCommentComponent>(true);
 
   public isBeingEdited = false;
 
@@ -37,13 +52,31 @@ export class DiscussionCommentComponent implements OnInit {
     return this._emptyTimestampString;
   }
 
+  get commentTextFirstFewWords(): string {
+    let text = this.comment.text.split(' ').slice(0, 4).join(' ');
+    if (this.comment.text.split(' ').length > 4) {
+      text = text + '...';
+    }
+    return text;
+  }
+
+  private _focused = false;
+  get focused(): boolean { return this._focused; }
+
+  private _expanded = false;
+  get expanded(): boolean { return this._expanded; }
+  set expanded(value) { this._expanded = value; }
 
   constructor(
     private discussionService: DiscussionService,
     private actions: ActionsService,
+    private changeDetector: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
+  }
+
+  ngAfterContentChecked() {
   }
 
   editCommentEnabled(): boolean {
@@ -89,5 +122,43 @@ export class DiscussionCommentComponent implements OnInit {
     this.actions.removeCommentSubtree(this.comment);
     this.deletedComment.emit(this.comment);
   }
+
+  requestFocus() {
+    this.requestedFocus.emit(this);
+  }
+  reactToFocusRequest(commentToFocus: UserComment) {
+    // The DiscussionComponent recieves a focus request bubbling up and
+    // sends a focus decision bubbling down.
+    console.log('CommentView T=' + this.comment.timestamp + ' processing focus request: ' + commentToFocus.timestamp);
+    if (commentToFocus === this.comment) {
+      this.focus();
+      console.log('...recursion hit the focused comment!!');
+    } else {
+      this.unfocus();
+    }
+    console.log('...sending request to child comment views:');
+    console.log(this.childCommentViews);
+    this.childCommentViews.forEach(c => c.reactToFocusRequest(commentToFocus));
+  }
+
+  focus() {
+    this._focused = true;
+    this.expand();
+    // this.expansionPanel.open();
+    console.log('Focused on comment view: ' + this.commentTextFirstFewWords);
+  }
+  unfocus() {
+    this._focused = false;
+    this.isBeingEdited = false;
+  }
+
+  expand() {
+    if (this.expanded) {
+      return;
+    }
+    this.expanded = true;
+    this.changeDetector.markForCheck();
+  }
+
 
 }

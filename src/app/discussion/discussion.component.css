@@ -1,3 +1,12 @@
+div.discussion-container {
+  max-height: 400px;
+  overflow: scroll;
+}
+div.discussion-controls {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 button.comment-control-button {
   border: 1px solid black;
   margin: 0 8px;
