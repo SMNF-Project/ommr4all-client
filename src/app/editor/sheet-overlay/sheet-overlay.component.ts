@@ -254,6 +254,7 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
         }
       }
     }
+    // tslint:disable-next-line:max-line-length
     this.actions.cleanPage(this.page, EmptyRegionDefinition.HasStaffLines | EmptyRegionDefinition.HasLines, new Set<BlockType>([BlockType.Music]));
   }
 

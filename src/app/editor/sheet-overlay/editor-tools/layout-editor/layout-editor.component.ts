@@ -22,7 +22,7 @@ import {Subscription} from 'rxjs';
 import {Block} from '../../../../data-types/page/block';
 import {arrayFromSet} from '../../../../utils/copy';
 import {UserCommentHolder} from '../../../../data-types/page/userComment';
-import {Page} from "../../../../data-types/page/page";
+import {Page} from '../../../../data-types/page/page';
 
 const machina: any = require('machina');
 

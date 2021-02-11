@@ -293,7 +293,7 @@ export class ActionsService {
 
   clearAllLayout(page: Page) {
     page.textRegions.filter(cp => cp.isNotEmpty())
-      .forEach(mr => { this.detachRegion(mr); }
+      .forEach(mr => {this.detachRegion(mr);}
       );
     page.musicRegions.filter(cp => cp.isNotEmpty())
       .forEach(mr => {
@@ -418,6 +418,7 @@ export class ActionsService {
 
   removeWork(work: Work, page: Page) {
     this._actionCaller.pushChangedViewElement(page);
+    this._actionCaller.pushChangedViewElement(work);
     const cmd = new CommandDeleteWork(work, page);
     this._actionCaller.runCommand(cmd);
   }
@@ -431,7 +432,7 @@ export class ActionsService {
     let line: PageLine = null;
     const tr = annotations.page.textRegions.filter(t => t.type === BlockType.Lyrics).find(
       t => {line = t.textLines.find(tl => tl.sentence.hasSyllable(syllable));
-        return line !== undefined; }
+            return line !== undefined; }
     );
     if (block === undefined) { console.error('Note without a music region', neume); return; }
     if (tr === undefined) { console.error('Syllable without a text region', syllable); return; }

@@ -127,8 +127,10 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     // DEBUG
     console.log('WorkEditorComponent: Detected click on work: ' + work.workTitle);
     console.log(this);
+    this.actions.startAction(ActionType.WorkSelect);
     this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, work));
     this.actions.finishAction();
+    event.preventDefault();
     console.log('Current work: ');
     console.log(this.currentWork);
     // this.workEditorOverlay.work = work;
@@ -141,6 +143,7 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
     if (this.state === 'active') {
       if (event.code === 'Escape') {
         // this.actions.startAction(ActionType.LyricsDeselect);
+        this.actions.startAction(ActionType.WorkDeselect);
         this.actions.run(new CommandChangeProperty(this, 'currentWork', this.currentWork, null));
         this.actions.finishAction();
         // this.actions.finishAction();
