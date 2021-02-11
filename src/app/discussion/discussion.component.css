@@ -1,6 +1,6 @@
 div.discussion-container {
   max-height: 400px;
-  overflow: scroll;
+  overflow: auto;
 }
 div.discussion-controls {
   padding-top: 8px;

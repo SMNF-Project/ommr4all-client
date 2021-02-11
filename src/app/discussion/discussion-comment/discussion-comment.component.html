@@ -32,7 +32,8 @@
       </label>
     </div>
 
-    <div class="comment-footer">
+    <div *ngIf="focused" class="comment-footer">
+      <mat-divider></mat-divider>
       <span><b>Timestamp:&nbsp;</b>{{ commentTimestampString }}</span>
     </div>
 
@@ -42,7 +43,8 @@
         <mat-button-toggle class="comment-control-button"
           [disabled]="!editCommentEnabled()"
           (click)="onEditButtonClicked()">
-          Edit
+          <ng-container *ngIf="!isBeingEdited">Edit</ng-container>
+          <ng-container *ngIf="isBeingEdited">Save</ng-container>
         </mat-button-toggle>
         <button class="comment-control-button" mat-flat-button matSuffix
                 [disabled]="!replyEnabled()"

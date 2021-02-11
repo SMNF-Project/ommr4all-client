@@ -25,10 +25,10 @@ div.comment-heading {
 
 div.comment-text {
   /*margin: 4px;*/
-  overflow: scroll;
+  overflow: auto;
   background-color: antiquewhite;
-  display: flex;
-  flex-direction: row;
+  /*display: flex;*/
+  /*flex-direction: row;*/
 }
 div.comment-text:hover {
   cursor: pointer;
@@ -36,19 +36,24 @@ div.comment-text:hover {
 
 div.comment-controls {
   margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 button.comment-control-button {
   margin: 0 8px;
   padding: 0 8px;
   border: solid 1px black;
-  line-height: 36px;
+  line-height: 24px;
 }
 mat-button-toggle.comment-control-button {
   margin: 0 8px;
   padding: 0 8px;
-  border: solid 1px black;
-  line-height: 36px;
+  border: solid 1px black !important;
+  line-height: 24px;
+  max-height: 48px;
+}
+.mat-button-toggle-label-content {
+  line-height: 24px !important;
 }
 .danger {
   background-color: red;
@@ -62,7 +67,7 @@ textarea.comment-text-editor {
   width: 100%;
   min-width: auto;
   height: auto;
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: 0px;
+  margin-right: 0px;
   resize: vertical;
 }
