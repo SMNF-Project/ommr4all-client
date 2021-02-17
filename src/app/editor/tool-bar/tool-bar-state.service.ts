@@ -102,6 +102,7 @@ export class ToolBarStateService {
   isCurrentToolReadOnly(): boolean {
     return (this._currentEditorTool === EditorTools.View) ||
       (this._currentEditorTool === EditorTools.Work) ||
+      (this._currentEditorTool === EditorTools.WorkCreator) ||
       (this._currentEditorTool === EditorTools.Discussion);
   }
 }
