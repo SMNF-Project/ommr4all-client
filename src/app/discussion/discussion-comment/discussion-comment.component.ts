@@ -126,11 +126,14 @@ export class DiscussionCommentComponent implements OnInit, AfterContentChecked {
   requestFocus() {
     this.requestedFocus.emit(this);
   }
-  reactToFocusRequest(commentToFocus: UserComment) {
+  reactToFocusRequest(commentToFocus: UserComment, alsoSetAsEdited: boolean = false) {
     // The DiscussionComponent recieves a focus request bubbling up and
     // sends a focus decision bubbling down.
     console.log('CommentView T=' + this.comment.timestamp + ' processing focus request: ' + commentToFocus.timestamp);
     if (commentToFocus === this.comment) {
+      if (alsoSetAsEdited) {
+        this.isBeingEdited = true;
+      }
       this.focus();
       console.log('...recursion hit the focused comment!!');
     } else {
@@ -144,6 +147,7 @@ export class DiscussionCommentComponent implements OnInit, AfterContentChecked {
   focus() {
     this._focused = true;
     this.expand();
+    if (!this.comment.text) { this.isBeingEdited = true; }
     // this.expansionPanel.open();
     console.log('Focused on comment view: ' + this.commentTextFirstFewWords);
   }

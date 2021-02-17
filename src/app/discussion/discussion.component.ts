@@ -63,7 +63,7 @@ export class DiscussionComponent implements OnInit {
       this.discussionService.currentCommentAuthorName(),
       timestampNow());
     // Focus the new comment view
-    this.setFocusedCommentView(comment);
+    this.setFocusedCommentView(comment, true);
   }
 
   deleteAllCommentsEnabled(): boolean {
@@ -84,7 +84,7 @@ export class DiscussionComponent implements OnInit {
 
   onNewReplyComment(reply: UserComment) {
     console.log('Discussion.onNewReplyComment: ' + reply.text.slice(0, 10));
-    this.setFocusedCommentView(reply);
+    this.setFocusedCommentView(reply, true);
   }
 
   onRequestFocus(commentView: DiscussionCommentComponent) {
@@ -92,14 +92,14 @@ export class DiscussionComponent implements OnInit {
     this.setFocusedCommentView(commentView.comment);
   }
 
-  setFocusedCommentView(comment: UserComment) {
+  setFocusedCommentView(comment: UserComment, alsoSetAsEdited: boolean = false) {
     // This does not work because the newly added comment is not yet in the viewchildren.
     // This can be solved by accessing the correct view *after* it is created
     // and focusing on it, which requires waiting until angular updates the templates.
-    this.topLevelCommentViews.forEach(v => v.reactToFocusRequest(comment));
+    // this.topLevelCommentViews.forEach(v => v.reactToFocusRequest(comment));
 
     setTimeout(() =>
-    this.topLevelCommentViews.forEach(v => v.reactToFocusRequest(comment)),
+    this.topLevelCommentViews.forEach(v => v.reactToFocusRequest(comment, alsoSetAsEdited)),
       1,
     );
   }
