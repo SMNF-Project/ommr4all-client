@@ -97,4 +97,11 @@ export enum ActionType {
   CommentsDeleted,
   CommentsText,
   CommentsArea,
+
+  // Works
+  Works = 800,
+  WorkAdded,
+  WorkRemoved,
+  WorkSelect,
+  WorkDeselect
 }

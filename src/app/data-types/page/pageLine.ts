@@ -3,9 +3,16 @@ import {Sentence} from './sentence';
 import {Point, PolyLine, Size} from '../../geometry/geometry';
 import {IdType} from './id-generator';
 import {Block} from './block';
-import {BlockType, EmptyRegionDefinition, GraphicalConnectionType, MusicSymbolPositionInStaff, SymbolType,} from './definitions';
+import {
+  BlockType,
+  EmptyRegionDefinition,
+  GraphicalConnectionType,
+  MusicSymbolPositionInStaff,
+  PitchName, SyllableConnectionType,
+  SymbolType
+} from './definitions';
 import {Syllable} from './syllable';
-import {Accidental, Clef, Note, MusicSymbol} from './music-region/symbol';
+import {Accidental, Clef, MusicSymbol, Note, Pitch} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
 
 export class LogicalConnection {
@@ -21,17 +28,115 @@ export class LogicalConnection {
   }
 }
 
+export class LineReading {
+  static readonly defaultReadingName = 'Lemma reading (default)';
+
+  public readingName = null;
+  public sentence = new Sentence();
+
+  private readonly _line = null;
+
+  public constructor(parent: PageLine = null) {
+    if (parent) {
+      this._line = parent;
+    }
+  }
+
+  static create(sentence: Sentence,
+                line: PageLine = null,
+                readingName = LineReading.defaultReadingName): LineReading {
+    const r = new LineReading(line);
+    r.sentence = sentence;
+    r.readingName = readingName;
+    return r;
+  }
+
+  static fromJson(json, line: PageLine = null) {
+    const reading = new LineReading(line);
+    // console.log('Reading Sentence from json: ' + json.sentence);
+    reading.sentence = Sentence.fromJson(json.sentence);
+    reading.readingName = json.readingName;
+    // console.log('LineReading created: ' + reading.readingName + ' / ' + json.readingName);
+    // console.log(reading);
+    // console.log('json: ' + JSON.stringify(json));
+    return reading;
+  }
+
+  static dictFromJson(json, line: PageLine = null) {
+    const readings = Object.assign({},
+      ...json.map((reading) => ({[reading.readingName]: LineReading.fromJson(reading, line)})
+      ));
+    // console.log('LineReading.dictFromJson: Created readings: ');
+    // console.log(readings);
+    return readings;
+  }
+
+  static dictToJson(readingsDict: { [key: string]: LineReading}) {
+    const json = Object.values(readingsDict).filter(
+      reading => reading instanceof LineReading).filter(
+        reading => !reading.isDefaultReading()).map(reading => reading.toJson());
+    // console.log('LineReading.dictToJson: created json ' + json);
+    return json;
+  }
+
+  static createDefaultDict(sentence: Sentence,
+                           line: PageLine = null): { [key: string]: LineReading } {
+    const r = LineReading.create(sentence, line);
+    const rName = LineReading.defaultReadingName;
+    return Object.assign({}, {[rName]: r});
+  }
+
+  toJson() {
+    return {
+      readingName: this.readingName,
+      sentence: this.sentence.toJson()
+    };
+  }
+
+  getLine(): PageLine {
+    return this._line;
+  }
+
+  isDefaultReading(): boolean {
+    return (this.readingName === LineReading.defaultReadingName);
+  }
+
+}
+
 export class PageLine extends Region {
   // General
   public reconstructed = false;
 
   // TextLine
-  public sentence = new Sentence();
+  // public sentence = new Sentence();
+  get sentence() {
+    if (this.hasReadings) { return this.readings[this.activeReading].sentence; } else { return new Sentence(); }
+  }
+  set sentence(s: Sentence) {
+    if (this.hasReadings) {
+      this.readings[this.activeReading].sentence = s;
+    } else {
+      console.error('Cannot assign sentence to line that does not expose readings! Doing nothing.');
+    }
+  }
+
+  public transcriptionName: string = null;
+  public readings: { [name: string]: LineReading } = Object.create({}); // Object of LineReadings, keyed by 'reading' property
+  public hasReadings = false;
+  public activeReading: string = null;
+  private _activeReadingLockedByEditor = false;
+  get activeReadingLockedByEditor(): boolean { return this._activeReadingLockedByEditor; }
+  set activeReadingLockedByEditor(value: boolean) { this._activeReadingLockedByEditor = value; }
+  public lockActiveReading() { this.activeReadingLockedByEditor = true; }
+  public unlockActiveReading() { this.activeReadingLockedByEditor = false; }
 
   // MusicLine
   private _symbols: Array<MusicSymbol> = [];
   private _avgStaffLineDistance = 0;
   private _logicalConnections: Array<LogicalConnection> = [];
+
+  // Caches
+  private _volpianoLine = null;
 
   // =============================================================================
   // General
@@ -40,9 +145,31 @@ export class PageLine extends Region {
     const line = new PageLine();
     line._id = json.id;
     line.attachToParent(block);
-    line.coords = PolyLine.fromString(json.coords);
-    line.sentence = Sentence.fromJson(json.sentence);
+    const coords = PolyLine.fromString(json.coords);
+    line.coords = coords;
     line.reconstructed = json.reconstructed === true;
+
+    const sentence = Sentence.fromJson(json.sentence);
+
+    // Transcription name used to enable multiple text versions for a copy of a line.
+    if (json.transcriptionName) {
+      // console.log('PageLine: fromJson() with transcriptionName = ' + json.transcriptionName);
+      line.transcriptionName = json.transcriptionName;
+    }
+
+    // Readings from data.
+    // Note: changed this so that a line always looks like it has readings.
+    if (json.readings) {
+      line.readings = LineReading.dictFromJson(json.readings, line);
+      line.hasReadings = true;
+      // Add default reading
+      line.readings[LineReading.defaultReadingName] = LineReading.create(sentence, line);
+      line.activeReading = LineReading.defaultReadingName;
+    } else {
+      line.readings = LineReading.createDefaultDict(sentence, line);
+      line.hasReadings = true;
+      line.activeReading = LineReading.defaultReadingName;
+    }
 
     // Staff lines are required for clef and note positioning if available, so attach it first
     if (json.staffLines) { json.staffLines.map(s => StaffLine.fromJson(s, line)); }
@@ -62,14 +189,29 @@ export class PageLine extends Region {
   }
 
   toJson() {
-    return {
+
+    // Note that the coords and sentence are taken from the default reading,
+    // since there may be a different reading active.
+    // If there are no variant readings, this is generated from the original
+    // sentence and coords, so it is equivalent to just osing this.coords and
+    // this sentence.
+    const output = {
       id: this.id,
       coords: this.coords.toString(),
       reconstructed: this.reconstructed,
-      sentence: this.sentence.toJson(),
+      sentence: this.defaultReading.sentence.toJson(),
       staffLines: this.staffLines.map(s => s.toJson()),
       symbols: this._symbols.map(s => s.toJson()),
     };
+    if (this.transcriptionName !== null) {
+      // console.log('PageLine: toJson() with transcriptionName = ' + this.transcriptionName);
+      Object.assign(output, {transcriptionName: this.transcriptionName});
+    }
+    if (this.hasReadings) {
+      // The default reading should NOT be exported in the readings dict.
+      Object.assign(output, {readings: LineReading.dictToJson(this.readings)});
+    }
+    return output;
   }
 
   getBlock() { return this.parent as Block; }
@@ -113,6 +255,14 @@ export class PageLine extends Region {
 
   clean() {
     this.staffLines.filter(l => l.coords.length <= 1).forEach(l => l.detachFromParent());
+    this.cleanReadings();
+  }
+  cleanReadings() {
+    this.availableReadings.forEach((readingName) => {
+      // clean if the reading is set to null
+      if (!this.readings[readingName]) { delete this.readings[readingName]; }
+      // clean readings that exist but have no syllables? let's not do that.
+    });
   }
 
   isNotEmpty(flags = EmptyRegionDefinition.Default) {
@@ -133,7 +283,13 @@ export class PageLine extends Region {
 
   get avgStaffLineDistance() { return this._avgStaffLineDistance; }
   set avgStaffLineDistance(d: number) { this._avgStaffLineDistance = d; }
-  staffHeight() { if (this.staffLines.length <= 1) { return 0; } else { return this.staffLines[this.staffLines.length - 1].coords.averageY() - this.staffLines[0].coords.averageY(); }}
+  staffHeight() {
+    if (this.staffLines.length <= 1) {
+      return 0;
+    } else {
+      return this.staffLines[this.staffLines.length - 1].coords.averageY() - this.staffLines[0].coords.averageY();
+    }
+  }
   get logicalConnections() { return this._logicalConnections; }
 
   refreshMusicIds() {
@@ -373,6 +529,56 @@ export class PageLine extends Region {
     return bestS;
   }
 
+  getPitches(): Array<Pitch> {
+    return this.symbols.filter(s => s instanceof Note).map(s => s as Note).map(s => Pitch.pitchFromNote(s));
+  }
+
+  getVolpianoString(addStartingClef = false): string {
+    let volpiano = '';
+    if (addStartingClef) { volpiano = volpiano + '1--'; }
+    // Here we should rather read symbol by symbol to catch accidentals.
+    // Clef changes are also not handled very well.
+
+    // TODO: incorporate syllables into volpiano export & rendering.
+    // In volpiano, lyrics have to be aligned by div.
+    // That probably means we should be returning an array of volpiano strings
+    // per syllable.
+    // Immediate concern: assign appropriate connectors -- volpiano spacing.
+    for (const s of this.symbols) {
+      if (!(s instanceof Note)) { continue; }
+      const p = s.pitch;
+      if (p === undefined) {
+        console.warn('Undefined pitch! Volpiano state: ' + volpiano);
+        continue;
+      }
+      const v = p.volpiano;
+
+      // add the appropriate number of connecting spaces.
+      // Same neume: 0, new neume: 1, new syllable: 2, new word: 3
+      let connector = '-';
+      // console.log('symbol ' + s.id + ': graphical connection ' + s.graphicalConnection);
+      if (s.syllable !== null) {
+        // console.log('    Note ' + s.id + ' has directly assigned syllable: ' + s.syllable.id);
+        connector = '--';
+      } else if (s.findSyllable() !== null) {
+        const syl = s.findSyllable();
+        // console.log('    Note ' + s.id + ' has found syllable: ' + syl.id);
+        if (syl.connection === SyllableConnectionType.New) {
+          connector = '---';
+        } else {
+          connector = '--';
+        }
+
+      }
+      if (s.graphicalConnection === GraphicalConnectionType.Looped) {
+        connector = '';
+      }
+      volpiano = volpiano + connector + v;
+      // console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
+    }
+    return volpiano;
+  }
+
   /*
    * Logical connection markers
    * ===================================================================================================
@@ -440,8 +646,37 @@ export class PageLine extends Region {
   // TextLine
   // ==========================================================================
 
+  syllableInfoById(id: string, searchReadings = true): {s: Syllable, r: LineReading} {
+    if (searchReadings && this.hasReadings) {
+      for (const readingName of Object.keys(this.readings)) {
+        // console.log('PageLine ' + this.id + ': searching for syllable ' + id + ' in reading ' + readingName);
+        const syl = this.readings[readingName].sentence.syllables.find(s => s.id === id);
+        if (syl) {
+          // console.log('Syllable found!');
+          // console.log(syl);
+          return {s: syl, r: this.readings[readingName]};
+        }
+      }
+      console.log('syllableInfoById: Syllable with id = ' + id + ' not found in readings. ' +
+        ' (Line: ' + this.id + ')' +
+        ' If found in the current sentence, something is strange, because current sentence' +
+        ' should be at least the default reading.');
+      return {s: null, r: null};
+    }
+    const syllable = this.sentence.syllables.find(s => s.id === id);
+    return {s: syllable, r: null};
+  }
+
+  getReadingOfSyllable(s: Syllable): LineReading {
+    const si = this.syllableInfoById(s.id);
+    return si.r;
+  }
+  getReadingNameOfSyllable(s: Syllable): string {
+    return this.getReadingOfSyllable(s).readingName;
+  }
+
   syllableById(id: string): Syllable {
-    return this.sentence.syllables.find(s => s.id === id);
+    return this.syllableInfoById(id).s;
   }
 
   cleanSyllables(): void {
@@ -450,5 +685,90 @@ export class PageLine extends Region {
 
   refreshTextIds() {
     this.sentence.refreshIds();
+    // refresh IDs in readings as well
+    if (this.hasReadings) {
+      Object.values(this.readings).forEach(reading => reading.sentence.refreshIds());
+    }
   }
+
+  /* Readings */
+  setActiveReading(readingName: string): void {
+    if (!this.hasReadings) {
+      return;
+    }
+    if (this.activeReadingLockedByEditor) {
+      return;
+    }
+    const reading = this.readings[readingName];
+    if (!reading) {
+      console.log('PageLine.setActiveReading: Reading ' + readingName + ' not available!');
+      return;
+    }
+    // We should also save the current reading in case it was edited!
+    // However, this seems to work by virtue of reference assignment:
+    // changes to the active reading are made directly to the Sentence
+    // inside readings[activeReading].
+    // this.sentence = reading.sentence; -- this is now unnecessary, since this.sentence is a getter
+    // this.coords = reading.coords;
+    this.activeReading = readingName;
+    this.update();
+  }
+
+  setActiveDefaultReading(): void {
+    if (this.hasReadings) {
+      this.setActiveReading(LineReading.defaultReadingName);
+    }
+  }
+
+  get availableReadings(): Array<string> {
+    if (!this.hasReadings) { return []; }
+    return Object.keys(this.readings);
+  }
+
+  isReadingAvailable(readingName: string): boolean {
+    if (!this.hasReadings) {
+      return false;
+    }
+    const reading = this.readings[readingName];
+    return !!reading;  // not not: cast to boolean, check un-negated
+  }
+
+  get defaultReading(): LineReading {
+    if (!this.hasReadings) {
+      return this.createDefaultReading();
+    }
+    return this.readings[LineReading.defaultReadingName];
+  }
+
+  createDefaultReading(): LineReading {
+    return LineReading.fromJson({
+      readingName: LineReading.defaultReadingName,
+      sentence: this.sentence.toJson(),
+      coords: this.coords.toString()
+    }, this);
+  }
+
+  addReading(readingName: string,
+             sentence: Sentence = new Sentence()): void {
+    if (this.isReadingAvailable(readingName)) {
+      console.log('Error: Trying to add reading that already exists: ' + readingName);
+      return;
+    }
+    const r = LineReading.create(sentence, this, readingName);
+    Object.assign(this.readings, {[readingName]: r});
+    this.update();
+  }
+
+  removeReading(readingName: string) {
+    if (!this.isReadingAvailable(readingName)) {
+      console.log('Error: cannot remove reading that does not exist: ' + readingName);
+      return;
+    }
+    if (readingName === this.activeReading) {
+      this.setActiveDefaultReading();
+    }
+    delete this.readings[readingName];
+    this.update();
+  }
+
 }

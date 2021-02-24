@@ -29,6 +29,8 @@ export class ToolBarComponent implements OnInit {
   Locks = PageProgressGroups;
   Flags = BookPermissionFlag;
 
+  public currentlyViewing = true;
+
   constructor(public toolBarStateService: ToolBarStateService,
               public sheetOverlay: SheetOverlayService,
               public editor: EditorService,
@@ -47,9 +49,29 @@ export class ToolBarComponent implements OnInit {
     );
   }
 
-  onRequestEditPage() { this.toolBarStateService.requestEditPage.emit(); }
+  onRequestEditPage() {
+    this.toolBarStateService.requestEditPage.emit();
+    this.currentlyViewing = false;
+  }
 
   onSave() { this.editor.save(); }
+
+  onViewEditorTool() {
+    this.onEditorTool(EditorTools.View);
+    this.currentlyViewing = true;
+  }
+
+  onDiscussionEditorTool() {
+    this.onEditorTool(EditorTools.Discussion);
+    this.currentlyViewing = true;
+  }
+
+  onWorkEditorTool() {
+    this.onEditorTool(EditorTools.Work);
+    // This is not exactly true, since the WorkEditor will be able
+    // to induce changes (add/modify works and their data).
+    this.currentlyViewing = true;
+  }
 
   onEditorTool(tool: EditorTools) {
     this.toolBarStateService.currentEditorTool = tool;

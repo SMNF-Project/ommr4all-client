@@ -8,6 +8,13 @@
       [editorTool]="editorTool"
     >
     </g>
+    <g
+      *ngFor="let work of (pageState | async).pcgts.page.works"
+      app-work-view
+      [work]="work"
+      [editorTool]="editorTool"
+    >
+    </g>
     <g app-annotations-view *ngIf="editorTool.viewSettings.showAnnotations"
        [annotations]="(pageState | async).pcgts.page.annotations"
        [editorTool]="editorTool">
@@ -27,8 +34,9 @@
     </g>
     <g app-comments-view *ngIf="editorTool.viewSettings.showComments"
        [comments]="(pageState | async).pcgts.page.userComments"
-       [editorTool]="editorTool"
-    ></g>
+       [editorTool]="editorTool">
+       <!-- (commentHolderSelected)="commentHolderSelected.emit($event)"-->
+    </g>
 
   </g>
       <!-- <g *ngFor="let musicRegion of page.musicRegions; let index = index;">

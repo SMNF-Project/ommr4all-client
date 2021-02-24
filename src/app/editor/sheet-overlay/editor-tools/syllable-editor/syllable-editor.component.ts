@@ -16,6 +16,7 @@ import {SyllableClickEvent} from '../../../property-widgets/syllable-property-wi
 import {PageLine} from '../../../../data-types/page/pageLine';
 import {copyList} from '../../../../utils/copy';
 import {Block} from '../../../../data-types/page/block';
+import {SyllablesActiveReadingChanged} from '../../../property-widgets/syllable-property-widget/syllable-property-widget.component';
 
 const machina: any = require('machina');
 
@@ -148,7 +149,11 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
             const closestNote = this.page.closesLogicalComponentToPosition(pos);
             if (closestNote && closestNote === this._prepareInsertConnection && closestNote.isSyllableConnectionAllowed()) {
               this.actions.startAction(ActionType.SyllablesAddToNeume);
-              const c = this.actions.annotationAddSyllableNeumeConnection(this.page.annotations, closestNote, this.syllabelEditorService.currentSyllable);
+              const c = this.actions.annotationAddSyllableNeumeConnection(
+                this.page.annotations,
+                closestNote,
+                this.syllabelEditorService.currentSyllable);
+              // Why is this here? To deal with out-of-order connector creation.
               this.actions.freeMoveSyllable(this.page, c, pos);
               this._selectNext();
               this.actions.finishAction();
@@ -237,6 +242,7 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
   }
 
   onSymbolMouseUp(event: MouseEvent, symbol: MusicSymbol) {
+    console.log('SyllableEditorComponent: Calling onSymbolMouseUp');
     if (this.state === 'active' || this.state === 'selected') {
       this.states.handle('active');
       if (symbol instanceof Note && this.syllabelEditorService.currentSyllable) {
@@ -247,6 +253,10 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
           this._selectNext();
           this.actions.finishAction();
           event.preventDefault();
+          // DEBUG re: #25
+          console.log('Sentence after adding connector with syllable ' + this.syllabelEditorService.currentSyllable);
+          const syllableLocation = this.page.syllableLocationById(this.syllabelEditorService.currentSyllable.id);
+          console.log(syllableLocation.sentence.text);
         }
       }
     }
@@ -268,6 +278,12 @@ export class SyllableEditorComponent extends EditorTool implements OnInit {
     if (event.connector) {
       this.selectedSyllableConnection = event.connector;
     }
+  }
+
+  onActiveReadingChanged(event: SyllablesActiveReadingChanged) {
+    console.log('Syllable editor: handling active reading change event: ' + event.readingName);
+    this.states.transition('idle');
+    this.states.handle('activate');
   }
 
   onKeydown(event: KeyboardEvent) {

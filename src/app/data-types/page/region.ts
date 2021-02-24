@@ -9,6 +9,10 @@ export class Region implements UserCommentHolder {
   protected _children: Array<Region> = [];
   public coords = new PolyLine([]);
 
+  // This is for rendering subsets of a loaded PcGts instead of reloading
+  // and filtering it.
+  public visible = true;
+
   get commentOrigin() { return this._AABB.tl(); }
 
   constructor(
@@ -16,7 +20,7 @@ export class Region implements UserCommentHolder {
     protected _id: string = '',
   ) {
     if (_id.length === 0) {
-      this._id = IdGenerator.newId(this._idType)
+      this._id = IdGenerator.newId(this._idType);
     }
   }
 

@@ -1,0 +1,31 @@
+<h1 mat-dialog-title i18n>MEI head editing tool</h1>
+<div mat-dialog-content>
+  <ng-template matStepLabel i18n>Paste text</ng-template>
+  <mat-tab-group>
+    <mat-tab label="XML">
+      <mat-form-field class="full-width">
+        <textarea matInput placeholder="Paste here"
+                  rows="30"
+                  cdkTextareaAutosize
+                  required [(ngModel)]="xmlText"></textarea>
+        <mat-hint i18n>Paste the MEIhead element XML.</mat-hint>
+      </mat-form-field>
+    </mat-tab>
+    <mat-tab label="Raw base64">
+      <mat-form-field class="full-width">
+        <textarea matInput placeholder="Paste here"
+                  rows="30"
+                  cdkTextareaAutosize
+                  required [(ngModel)]="base64Text"></textarea>
+        <mat-hint i18n>Paste the base64 text you want to insert</mat-hint>
+      </mat-form-field>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<div mat-dialog-actions align="end">
+  <div fxLayout="row" fxLayoutGap="5px">
+    <button mat-flat-button color="primary" (click)="insert()" i18n="@@Insert">Insert</button>
+    <button mat-flat-button (click)="close()" i18n="@@Cancel">Cancel</button>
+  </div>
+</div>
+

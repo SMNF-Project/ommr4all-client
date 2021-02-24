@@ -20,6 +20,13 @@ import {ActionType} from '../../actions/action-types';
 import {CommandChangeProperty} from '../../undo/util-commands';
 import {SyllableConnector} from '../../../data-types/page/annotations';
 import {Sentence} from '../../../data-types/page/sentence';
+import {LineReading} from '../../../data-types/page/pageLine';
+
+export class SyllablesActiveReadingChanged {
+  constructor(
+    public readingName: string
+  ) {}
+}
 
 @Component({
   selector: 'app-syllable-property-widget',
@@ -30,13 +37,34 @@ import {Sentence} from '../../../data-types/page/sentence';
 export class SyllablePropertyWidgetComponent implements OnInit, DoCheck {
   SCT = SyllableConnectionType;
   private _prevSyllable = new Syllable();
+  private _activeReading = LineReading.defaultReadingName;
   @Input() syllable: Syllable = null;
   @Input() selectedSyllableConnection: SyllableConnector = null;
   @Input() page: Page;
   @Output() syllableChanged = new EventEmitter();
   @Output() syllableClicked = new EventEmitter<SyllableClickEvent>();
 
+  @Output() activeReadingChanged = new EventEmitter<SyllablesActiveReadingChanged>();
+
   @ViewChild('textInput', {static: false}) textElem: ElementRef;
+
+  processSyllableClicked(event: SyllableClickEvent) {
+    // Filtering the click event based on the active reading. Refactor lower?
+    let readingName = null;
+    if (event.connector) {
+      readingName = event.connector.textLine.getReadingNameOfSyllable(event.syllable);
+    } else {
+      // This is quite inefficient, since it iterates through all syllables until
+      // the right one is found. Maybe syllables should have a backlink to their Sentence
+      // and the sentence to their line? Can be null by default.
+      readingName = this.page.syllableInfoById(event.syllable.id).r.readingName;
+    }
+    if (readingName === this.activeReading) {
+      this.syllableClicked.emit(event);
+    } else {
+      console.log('SyllablePropertyWidget: Click event on syllable from a line that does not have active reading. Ignoring.');
+    }
+  }
 
   getPrevPageLine() {
     const pageLine = this.page.readingOrder.readingOrder.filter(pl => pl.sentence.hasSyllable(this.syllable))[0];
@@ -112,4 +140,21 @@ export class SyllablePropertyWidgetComponent implements OnInit, DoCheck {
     elem.value = elem.value.replace(/[ \-~]/, '');
     this.changeDetector.markForCheck();
   }
+
+  get activeReading(): string {
+    return this._activeReading;
+  }
+  set activeReading(reading) {
+    console.log('SyllablePropertyWidget: setting active reading to ' + reading);
+    if (reading === this._activeReading) {
+      return;
+    }
+    this._activeReading = reading;
+    this.activeReadingChanged.emit(new SyllablesActiveReadingChanged(reading));
+    // Needs to redraw all lines in order to fire change detection in the child components
+    // responsible for rendering syllables from the currently active reading.
+    this.viewChanges.updateAllLines(this.page);
+    this.changeDetector.markForCheck();
+  }
+
 }

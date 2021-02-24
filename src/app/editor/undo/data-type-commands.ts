@@ -13,6 +13,7 @@ import {Syllable} from '../../data-types/page/syllable';
 import {ReadingOrder} from '../../data-types/page/reading-order';
 import {arraysAreEqual} from 'tslint/lib/utils';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {Work, Works} from '../../data-types/page/work';
 
 export class CommandAttachSymbol extends Command {
   private readonly oldIdx: number;
@@ -52,6 +53,55 @@ export class CommandCreateBlock extends Command {
   do() { this.block.attachToParent(this.page); }
   undo() { this.block.detachFromParent(); }
   isIdentity() { return false; }
+}
+
+export class CommandCreateWork extends Command {
+  public work: Work;
+
+  constructor(
+    private page: Page,
+    private workTitle: string,
+    private blocks: Array<Block>
+  ) {
+    super();
+    this.work = Work.create(page.worksContainer, page, workTitle, blocks);
+  }
+
+  do() {
+    console.log('CmdCreateWork: calling Do');
+    this.page.worksContainer.addWork(this.work);
+    console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
+  undo() {
+    console.log('CmdCreateWork: Undo');
+    this.page.worksContainer.removeWork(this.work);
+    console.log('CmdCreateWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
+  isIdentity(): boolean { return false; }
+}
+
+export class CommandDeleteWork extends Command {
+  public work: Work;
+
+  constructor(
+    private _work: Work,
+    private page: Page
+  ) {
+    super();
+    this.work = _work;
+  }
+
+  do() {
+    console.log('CmdDeleteWork: calling Do');
+    this.page.worksContainer.removeWork(this.work);
+    console.log('CmdDeleteWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
+  undo() {
+    console.log('CmdDeleteWork: Undo');
+    this.page.worksContainer.addWork(this.work);
+    console.log('CmdDeleteWork: page now has ' + this.page.worksContainer.works.length + ' works');
+  }
+  isIdentity(): boolean { return false; }
 }
 
 export class CommandAttachRegion extends Command {

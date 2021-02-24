@@ -11,6 +11,7 @@ import {Syllable} from '../../../data-types/page/syllable';
 import {UserCommentHolder} from '../../../data-types/page/userComment';
 import {ChangeDetectorRef} from '@angular/core';
 import {Page} from '../../../data-types/page/page';
+import {Work} from '../../../data-types/page/work';
 
 const machina: any = require('machina');
 
@@ -37,6 +38,8 @@ export abstract class EditorTool {
       this.reset();
     });
     this._viewSettings = _defaultViewSettings.copy();
+    // Setting up the elements that are dependent on what is *in* the data
+    // this._viewSettings.availableReadings = sheetOverlayService.editorService.pageStateVal.pcgts.page.availableReadings;
   }
 
   redraw() {
@@ -65,6 +68,15 @@ export abstract class EditorTool {
   onSymbolMouseMove(event: MouseEvent, s: MusicSymbol) {}
   onSymbolContextMenu(event: MouseEvent, s: MusicSymbol) {}
 
+  onWorkMouseDown(event: MouseEvent, w: Work) {}
+  onWorkMouseUp(event: MouseEvent, w: Work) {}
+  onWorkMouseMove(event: MouseEvent, w: Work) {}
+  onWorkContextMenu(event: MouseEvent, w: Work) {}
+
+  onCommentHolderMouseDown(event: MouseEvent, h: UserCommentHolder) {}
+  onCommentHolderMouseUp(event: MouseEvent, h: UserCommentHolder) {}
+  onCommentHolderMouseMove(event: MouseEvent, h: UserCommentHolder) {}
+
   onSyllableMouseDown(event: MouseEvent, syllableConnection: SyllableConnector) {}
   onSyllableMouseUp(event: MouseEvent, connection: Connection, syllableConnector: SyllableConnector) {}
 
@@ -80,6 +92,8 @@ export abstract class EditorTool {
   isRegionSelectable(region: Region): boolean { return false; }
   isSymbolSelectable(symbol: MusicSymbol): boolean { return false; }
   isLogicalConnectionSelectable(lc: LogicalConnection): boolean { return false; }
+  isWorkSelectable(work: Work): boolean { return false; }
+  isCommentHolderSelectable(h: UserCommentHolder): boolean { return false; }
 
   useCrossHairCursor(): boolean { return false; }
   useMoveCursor() { return false; }
@@ -98,6 +112,7 @@ export abstract class EditorTool {
   get syllableToInsert(): Syllable { return null; }
   get selectedCommentHolder(): UserCommentHolder { return null; }
   get selectedLine(): PageLine { return null; }
+  get selectedWork(): Work { return null; }
 
 
   // view of editor tool
@@ -105,7 +120,8 @@ export abstract class EditorTool {
   set viewSettings(viewSettings: ViewSettings) {
     if (viewSettings) {
       this._viewSettings = viewSettings;
-      this.viewChanges.updateAllLines(this.sheetOverlayService.editorService.pcgts.page);
+      // this.viewChanges.updateAllLines(this.sheetOverlayService.editorService.pcgts.page);
+      this.viewChanges.updateAllViews(this.sheetOverlayService.editorService.pcgts.page);
     }
   }
   get viewSettings() { return this._viewSettings; }

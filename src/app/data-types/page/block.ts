@@ -1,7 +1,7 @@
 import {Region} from './region';
 import {BlockType, EmptyRegionDefinition} from './definitions';
 import {Point, PolyLine} from '../../geometry/geometry';
-import {PageLine} from './pageLine';
+import {LineReading, PageLine} from './pageLine';
 import {IdType} from './id-generator';
 import {Syllable} from './syllable';
 import {Page} from './page';
@@ -136,10 +136,10 @@ export class Block extends Region {
     return null;
   }
 
-  syllableInfoById(id: string): {s: Syllable, l: PageLine} {
+  syllableInfoById(id: string): {s: Syllable, l: PageLine, r: LineReading} {
     for (const tl of this.textLines) {
-      const s = tl.syllableById(id);
-      if (s) { return {s: s, l: tl}; }
+      const sLineInfo = tl.syllableInfoById(id);
+      if (sLineInfo.s) { return {s: sLineInfo.s, r: sLineInfo.r, l: tl}; }
     }
     return null;
   }
@@ -149,5 +149,26 @@ export class Block extends Region {
 
   cleanSyllables(): void {
     this.textLines.forEach(tl => tl.cleanSyllables());
+  }
+
+  getLineCoords(): PolyLine {
+    // Returns a PolyLine of coords taken as a union of coords
+    // of all the lines in the block.
+    const lineCoords = this.lines.map(l => l.coords.deepCopy().points)
+      .reduce((acc, val) => acc.concat(val), []);
+    // console.log('Block.getLineCoords() after reduce:');
+    // console.log(lineCoords);
+    return new PolyLine(lineCoords);
+  }
+
+  getAllCoords(): PolyLine {
+    // Return a PolyLine of coords taken as a union of coords
+    // of all the lines in the block and the block itself.
+    const lineCoords = this.getLineCoords();
+    if (this.coords.length > 0) {
+      // console.log('Block.getAllCoords: adding own coords to line coords');
+      lineCoords.points.concat(this.coords.deepCopy().points);
+    }
+    return lineCoords;
   }
 }

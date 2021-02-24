@@ -10,6 +10,8 @@ export enum BlockType {
   FolioNumber = 'folioNumber',
 
   Music = 'music',
+
+  Work = 'work',
 }
 
 export class BlockTypeUtil {
@@ -20,7 +22,31 @@ export class BlockTypeUtil {
     dropCapital: 'drop-capital',
     folioNumber: 'folio-number',
     music: 'music',
+    work: 'work',
   };
+
+  static isMusic(type: BlockType) {
+    return type === BlockType.Music;
+  }
+  static isText(type: BlockType) {
+    return (type === BlockType.DropCapital)
+      || (type === BlockType.Lyrics)
+      || (type === BlockType.Paragraph)
+      || (type === BlockType.Heading)
+      || (type === BlockType.FolioNumber);
+  }
+  static isWork(type: BlockType) {
+    return type === BlockType.Work;
+  }
+  static isLyrics(type: BlockType) {
+    return (type === BlockType.DropCapital)
+      || (type === BlockType.Lyrics);
+  }
+  static isReadingsCapableText(type: BlockType) {
+    return (type === BlockType.Lyrics)
+      // || (type === BlockType.DropCapital)
+      || (type === BlockType.Paragraph);
+  }
 }
 
 export enum EmptyRegionDefinition {
@@ -105,3 +131,19 @@ export enum SyllableConnectionType {
   New = 2,
 }
 
+export enum PitchName {
+  UNDEFINED = -1,
+  A = 0,
+  B = 1,
+  C = 2,
+  D = 3,
+  E = 4,
+  F = 5,
+  G = 6,
+}
+
+export class PitchConstants {
+  static readonly MIDDLE_C_OCTAVE = 4;
+}
+
+export class Octave extends Number {}

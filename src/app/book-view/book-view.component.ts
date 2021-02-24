@@ -106,7 +106,7 @@ export class BookViewComponent implements OnInit {
 
   ngOnInit() {
     this.errorMessage = '';
-    this.book.pipe(filter(com => !!com))
-      .subscribe(com => this.http.get<{count: number}>(com.commentsCountUrl()).subscribe(v => this.commentsCount.next(v.count)));
+    // this.book.pipe(filter(com => !!com))
+    //   .subscribe(com => this.http.get<{count: number}>(com.commentsCountUrl()).subscribe(v => this.commentsCount.next(v.count)));
   }
 }

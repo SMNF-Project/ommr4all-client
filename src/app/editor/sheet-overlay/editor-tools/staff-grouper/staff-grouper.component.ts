@@ -60,7 +60,8 @@ export class StaffGrouperComponent extends EditorTool implements OnInit {
   }
 
   ngOnInit() {
-    this.selectionBox.selectionFinished.subscribe((rect: Rect) => { this.onSelectionFinished(rect); });
+    this.selectionBox.selectionFinished.subscribe(
+      (rect: Rect) => { this.onSelectionFinished(rect); });
   }
 
   onSelectionFinished(rect: Rect) {

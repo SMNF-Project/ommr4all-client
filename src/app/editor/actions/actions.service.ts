@@ -7,15 +7,15 @@ import {
   CommandChangeSyllable,
   CommandCreateBlock,
   CommandCreateLine,
-  CommandCreateStaffLine,
-  CommandDeleteStaffLine,
+  CommandCreateStaffLine, CommandCreateWork,
+  CommandDeleteStaffLine, CommandDeleteWork,
   CommandDetachSymbol,
   CommandMoveInReadingOrder,
   CommandUpdateReadingOrder
 } from '../undo/data-type-commands';
 import {Point, PolyLine} from '../../geometry/geometry';
 import {copyList, copySet} from '../../utils/copy';
-import {CommandChangeArray, CommandChangeProperty, CommandChangeSet} from '../undo/util-commands';
+import {CommandCallFunction, CommandChangeArray, CommandChangeProperty, CommandChangeSet} from '../undo/util-commands';
 import {
   AccidentalType,
   BlockType,
@@ -34,7 +34,7 @@ import {Annotations, Connection, SyllableConnector} from '../../data-types/page/
 import {Syllable} from '../../data-types/page/syllable';
 import {ActionType} from './action-types';
 import {Block} from '../../data-types/page/block';
-import {PageLine} from '../../data-types/page/pageLine';
+import {LineReading, PageLine} from '../../data-types/page/pageLine';
 import {Region} from '../../data-types/page/region';
 import {ViewChangesService} from './view-changes.service';
 import {RequestChangedViewElements} from './changed-view-elements';
@@ -42,6 +42,7 @@ import {Sentence} from '../../data-types/page/sentence';
 import {UserComment, UserCommentHolder, UserComments} from '../../data-types/page/userComment';
 import {PageEditingProgress, PageProgressGroups} from '../../data-types/page-editing-progress';
 import {CommandSetLock} from '../undo/lock-commands';
+import {Work} from '../../data-types/page/work';
 
 const leven = require('leven');
 
@@ -134,7 +135,8 @@ export class ActionsService {
   }
 
   detachRegion(region: Region) {
-    this.removeComment((region.parentOfType(Page) as Page).userComments.getByHolder(region));
+    // this.removeComment((region.parentOfType(Page) as Page).userComments.getByHolder(region));
+    this.removeAllCommentsOfHolder(region, (region.parentOfType(Page) as Page).userComments);
     if (region instanceof PageLine) {
       this.detachLine(region as PageLine);
     } else if (region instanceof Block) {
@@ -161,12 +163,14 @@ export class ActionsService {
   }
 
   detachLine(line: PageLine) {
-    this.removeComment(line.block.page.userComments.getByHolder(line));
+    // this.removeComment(line.block.page.userComments.getByHolder(line));
+    this.removeAllCommentsOfHolder(line, line.block.page.userComments);
     this.attachLine(null, line);
   }
 
   detachBlock(block: Block) {
-    this.removeComment(block.page.userComments.getByHolder(block));
+    // this.removeComment(block.page.userComments.getByHolder(block));
+    this.removeAllCommentsOfHolder(block, block.page.userComments);
     block.page.annotations.findConnectorsByBlock(block).forEach(c => this.annotationRemoveConnection(c));
     this.attachRegion(null, block);
   }
@@ -189,7 +193,8 @@ export class ActionsService {
 
   deleteStaffLine(staffLine: StaffLine) {
     const oldLine = staffLine.staff;
-    this.removeComment(staffLine.staff.block.page.userComments.getByHolder(staffLine));
+    // this.removeComment(staffLine.staff.block.page.userComments.getByHolder(staffLine));
+    this.removeAllCommentsOfHolder(staffLine, staffLine.staff.block.page.userComments);
     this.caller.pushChangedViewElement(staffLine);
     this.caller.runCommand(new CommandDeleteStaffLine(staffLine));
     this.updateAverageStaffLineDistance(oldLine);
@@ -288,11 +293,12 @@ export class ActionsService {
 
   clearAllLayout(page: Page) {
     page.textRegions.filter(cp => cp.isNotEmpty())
-      .forEach(mr => {this.detachRegion(mr)}
+      .forEach(mr => {this.detachRegion(mr);}
       );
     page.musicRegions.filter(cp => cp.isNotEmpty())
       .forEach(mr => {
-        this.removeComment((mr.parentOfType(Page) as Page).userComments.getByHolder(mr));
+        // this.removeComment((mr.parentOfType(Page) as Page).userComments.getByHolder(mr));
+        this.removeAllCommentsOfHolder(mr, (mr.parentOfType(Page) as Page).userComments);
         mr.lines.forEach( ml => {
           this.changePolyLine(ml.coords, ml.coords, new PolyLine([]));
           this.caller.pushChangedViewElement(ml);
@@ -324,7 +330,8 @@ export class ActionsService {
   }
   detachSymbol(s: MusicSymbol, annotations: Annotations) { if (s) {
     this._actionCaller.pushChangedViewElement(s.staff);
-    this.removeComment(s.staff.block.page.userComments.getByHolder(s));
+    // this.removeComment(s.staff.block.page.userComments.getByHolder(s));
+    this.removeAllCommentsOfHolder(s, s.staff.block.page.userComments);
     if (s instanceof Note) {
       const sc = annotations.findSyllableConnectorByNote(s as Note);
       if (sc) {
@@ -380,6 +387,42 @@ export class ActionsService {
     if (n) { this._actionCaller.runCommand(new CommandChangeProperty(n, 'isNeumeStart', n.isNeumeStart, start)); }
   }
 
+  addNewReading(readingName: string, line: PageLine) {
+    const reading = LineReading.create(new Sentence(), line, readingName);
+    this._actionCaller.pushChangedViewElement(line);
+    this._actionCaller.runCommand(new CommandChangeProperty(
+      line.readings,
+      readingName,
+      undefined,
+      reading));
+  }
+
+  removeReading(readingName: string, line: PageLine) {
+    if (!line.isReadingAvailable(readingName)) { return; }
+    this._actionCaller.pushChangedViewElement(line);
+    this._actionCaller.runCommand(new CommandChangeProperty(
+      line.readings,
+      readingName,
+      line.readings[readingName],
+      null
+    ));
+    this._actionCaller.runCommand(new CommandCallFunction(() => line.clean()));
+  }
+
+  addNewWork(page: Page, workTitle: string, blocks: Array<Block>) {
+    this._actionCaller.pushChangedViewElement(page);
+    const cmd = new CommandCreateWork(page, workTitle, blocks);
+    this._actionCaller.runCommand(cmd);
+    return cmd.work;
+  }
+
+  removeWork(work: Work, page: Page) {
+    this._actionCaller.pushChangedViewElement(page);
+    this._actionCaller.pushChangedViewElement(work);
+    const cmd = new CommandDeleteWork(work, page);
+    this._actionCaller.runCommand(cmd);
+  }
+
   // annotations
   annotationAddSyllableNeumeConnection(annotations: Annotations, neume: Note, syllable: Syllable): SyllableConnector {
     // this.caller.pushChangedViewElement()
@@ -389,7 +432,7 @@ export class ActionsService {
     let line: PageLine = null;
     const tr = annotations.page.textRegions.filter(t => t.type === BlockType.Lyrics).find(
       t => {line = t.textLines.find(tl => tl.sentence.hasSyllable(syllable));
-        return line !== undefined; }
+            return line !== undefined; }
     );
     if (block === undefined) { console.error('Note without a music region', neume); return; }
     if (tr === undefined) { console.error('Syllable without a text region', syllable); return; }
@@ -419,7 +462,7 @@ export class ActionsService {
     const syl = connection.syllableConnectors.find(sc => sc.syllable === s);
     if (syl) { return syl; }
     this.caller.pushChangedViewElement(n, s, tl, connection.musicRegion, connection.textRegion);
-    this.pushToArray(connection.syllableConnectors, new SyllableConnector(connection, s, n, tl));
+    this.pushToArray(connection.syllableConnectors, new SyllableConnector(connection, s, n, tl, tl.getReadingOfSyllable(s)));
     return connection.syllableConnectors[connection.syllableConnectors.length - 1];
   }
 
@@ -701,6 +744,7 @@ export class ActionsService {
     if (!sentence || !syllable || !sentence.hasSyllable(syllable)) { return; }
     this.changeArray(sentence.syllables, sentence.syllables, sentence.syllables.filter(s => s !== syllable));
   }
+
   insertSyllable(sentence: Sentence, syllable: Syllable, targetSyllable: Syllable = null, pos: number = 1) {
     if (pos < 0) { pos = 0; }
     if (!sentence || !syllable) { return; }
@@ -715,9 +759,14 @@ export class ActionsService {
     }
     this.changeArray(sentence.syllables, sentence.syllables, syllables);
   }
+
   moveSyllable(target: PageLine, source: PageLine, syllable: Syllable, targetSyllable: Syllable = null, pos: number = 1) {
     const targetSentence = target.sentence;
     const sourceSentence = source.sentence;
+    // DEBUG
+    // if (targetSyllable !== null) { console.log('moveSyllable: syllable ' + syllable.text + ', targetSyllable: ' + targetSyllable.text + ', pos: ' + pos); }
+    // console.log('  targetSentence: ' + targetSentence.text);
+    // console.log('  sourceSentence: ' + sourceSentence.text);
     if (!sourceSentence.hasSyllable(syllable)) { return; }
     if (!targetSentence || ! sourceSentence || !syllable) { return; }
     this.removeSyllable(sourceSentence, syllable);
@@ -727,27 +776,41 @@ export class ActionsService {
       this.updateSyllablePrefixOfLine(source);
     }
   }
+
   freeMoveSyllable(page: Page, syllableConnector: SyllableConnector, pos: Point): SyllableConnector {
+    // DEBUG
+    // console.log('freeMoveSyllable: connector ' + syllableConnector.id + ' at point ' + pos.toString());
+    // console.log('Sentence: ' + page.syllableLocationById(syllableConnector.syllable.id).sentence.text);
+    // console.log('Reading: ' + page.syllableLocationById(syllableConnector.syllable.id).reading.readingName);
+
     const closestNote = page.closesLogicalComponentToPosition(pos);
     if (!closestNote || !closestNote.isSyllableConnectionAllowed()) {
       return null;  // nothing we can do here
     }
+    // console.log('Found closest note: ' + closestNote.id + ', pitch: ' + closestNote.pname);
 
     const containingLines = page.allTextLinesWithType(BlockType.Lyrics).filter(l => l.AABB.containsPoint(pos));
     const targetLine = containingLines.length > 0 ? containingLines[0] : null;
+    // DEBUG
+    // if (targetLine !== null) { console.log('Found target line: ' + targetLine.id); }
     return this.moveSyllableToNote(page, syllableConnector, closestNote, targetLine);
   }
+
   moveSyllableToNote(page: Page, syllableConnector: SyllableConnector, note: Note, targetTextLine: PageLine): SyllableConnector {
     const notes = note.staff.filterSymbols(SymbolType.Note).map(s => s as Note)
       .filter(n => n.isSyllableConnectionAllowed());
     let closestConnector: SyllableConnector = null;
+    // console.log('moveSyllableToNote: looking for index of note from ' + notes.indexOf(note));
     for (let i = notes.indexOf(note) - 1; i >= 0; i--) {
-      closestConnector = page.annotations.findSyllableConnectorByNote(notes[i] as Note);
+      // closestConnector = page.annotations.findSyllableConnectorByNote(notes[i] as Note);
+      closestConnector = page.annotations.findSyllableConnectorByNoteAndReading(notes[i] as Note, syllableConnector.reading);
       if (closestConnector && closestConnector.textLine === targetTextLine) {
         break;
       }
       closestConnector = null;
     }
+    // DEBUG
+    // if (closestConnector !== null) { console.log('Found previous closest connector: ' + closestConnector.syllable.id + '/' + closestConnector.neume.id); }
 
     if (closestConnector) {
       return this.moveSyllableAndSyllableConnector(syllableConnector, note, closestConnector.textLine, closestConnector.syllable, 1);
@@ -762,26 +825,84 @@ export class ActionsService {
 
   moveSyllableAndSyllableConnector(syllable: SyllableConnector, targetNote: Note, target: PageLine,
                                    targetSyllable: Syllable = null, pos: number = 1) {
+    // if (targetSyllable !== null) {
+    //     console.log('moveSyllableAndSyllableConnector: syllable ' + syllable.syllable.text + ', targetSyllable: ' + targetSyllable.text);
+    // }
     this.moveSyllable(target, syllable.textLine, syllable.syllable, targetSyllable, pos);
     this.connectionRemoveSyllableConnector(syllable);
     return this.annotationAddSyllableNeumeConnection(target.block.page.annotations, targetNote, syllable.syllable);
   }
 
   // Comments
-  addComment(userComments: UserComments, c: UserCommentHolder): UserComment {
+  addComment(userComments: UserComments, c: UserCommentHolder,
+             author = '', timestamp = ''): UserComment {
     if (!c || !userComments) { return null; }
     let comment = userComments.getByHolder(c);
     if (comment) { return comment; }
-    comment = new UserComment(userComments, c);
+    comment = UserComment.create(userComments, c, '', null, author, timestamp);
+    // comment = new UserComment(userComments, c);
     this.caller.pushChangedViewElement(comment);
     this.pushToArray(userComments.comments, comment);
     return comment;
   }
 
+  addTopLevelComment(userComments: UserComments, holder: UserCommentHolder,
+                     author= '', timestamp= ''): UserComment {
+    if (!holder || !userComments)  { return null; }
+    const comment = UserComment.create(userComments, holder, '', null, author, timestamp);
+    this.caller.pushChangedViewElement(comment);
+    this.pushToArray(userComments.comments, comment);
+    return comment;
+  }
+
+  addChildComment(userComments: UserComments, parent: UserComment,
+                  author = '', timestamp = ''): UserComment {
+    if (!parent || !userComments) { return null; }
+    const comment = UserComment.create(userComments,
+      parent.holder, '', null, author, timestamp, parent);
+    this.caller.pushChangedViewElement(comment);
+    this.caller.pushChangedViewElement(parent);
+    this.pushToArray(userComments.comments, comment);
+    return comment;
+  }
+
   removeComment(c: UserComment) {
+    // This now breaks because of the child comments! Do NOT use it!
     if (!c) { return; }
     this.caller.pushChangedViewElement(c);
     this.removeFromArray(c.userComments.comments, c);
+  }
+
+  detachCommentFromParent(c: UserComment) {
+    if (!c) { return; }
+    if (c.isTopLevel) { return; }
+    this.caller.pushChangedViewElement(c);
+    this.caller.pushChangedViewElement(c.parent);
+    this.removeFromArray(c.parent.children, c);
+  }
+
+  removeCommentSubtree(c: UserComment) {
+    if (!c) { return; }
+    if (c.hasChildren) {
+      // Caution: this means a lot of Undo steps.
+      for (const child of c.children) { this.removeCommentSubtree(child); }
+    }
+    this.caller.pushChangedViewElement(c);
+    if (!c.isTopLevel) {
+      this.detachCommentFromParent(c);
+    }
+    this.removeFromArray(c.userComments.comments, c);
+  }
+
+  removeAllCommentsOfHolder(h: UserCommentHolder, comments: UserComments) {
+    if (!h) { return; }
+    if (!comments) { return; }
+    const holderComments = comments.getAllCommentsByHolder(h);
+    if (!holderComments) { return; }
+    this.caller.pushChangedViewElement(...holderComments);
+
+    const retainComments = comments.getAllCommentsExcludingHolder(h);
+    this.changeArray(comments.comments, comments.comments, retainComments);
   }
 
   changeCommentText(c: UserComment, s: string) {

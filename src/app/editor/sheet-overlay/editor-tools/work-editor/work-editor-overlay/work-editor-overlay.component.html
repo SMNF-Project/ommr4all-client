@@ -1,0 +1,140 @@
+<!--  *ngIf="work"-->
+<div
+  id="work-editor-overlay"
+  [style.left]="left + 'px'"
+  [style.top]="top + 'px'"
+  [style.min-width]="width + 'px'"
+  cdkDrag
+>
+  <div class="full-width">
+    <h3>{{ workInfo.title }}</h3>
+    <mat-divider></mat-divider>
+
+    <mat-tab-group>
+      <!-- Work overview tab -->
+      <mat-tab label="Overview">
+        <br>
+        <ul style="list-style: none;">
+          <!--<li>Work title: {{ workInfo.title }}</li>-->
+          <!--<li>No. of blocks: {{ workInfo.nBlocks }}</li>-->
+          <li *ngIf="workInfo.hasOwnProperty('cantusId')">
+            Cantus ID: <a href="http://cantusindex.org/id/{{ workInfo.cantusId}}"
+                          target="_blank">
+            {{ workInfo.cantusId }}</a>
+          </li>
+          <!-- Full text of work, in different readings -->
+          <li><br><b>Text readings:</b>
+
+            <div mat-dialog-content>
+            <mat-tab-group>
+              <mat-tab *ngFor="let readingName of work.availableReadings"
+                label="{{ readingName }}">
+                {{ work.getText(readingOrder, readingName) }}
+              </mat-tab>
+            </mat-tab-group>
+            </div>
+
+          </li>
+
+          <!-- Melody in modern notation (Volpiano-based), if work has music -->
+          <ng-container *ngIf="work.hasMusic">
+            <li><b>Melody:</b>
+              <div class="volpiano-container">
+                <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
+              </div>
+              <mat-slide-toggle [(ngModel)]="showVolpianoString">Show Volpiano string</mat-slide-toggle>
+              <div *ngIf="showVolpianoString">
+                <textarea autocomplete="off"
+                          #input name="text"
+                          type="text"
+                          readonly
+                          (wheel)="$event.preventDefault()"
+                          (mousedown)="$event.stopPropagation()"
+                  >{{ work.getVolpianoString() }}
+                </textarea>
+              </div>
+            </li>
+          </ng-container>
+          <ng-container *ngIf="!work.hasMusic">
+            <li>
+              <span><i>No music.</i></span>
+            </li>
+          </ng-container>
+        </ul>
+
+        <!-- Delete work -->
+        <ng-container *ngIf="isAllowedEditing">
+          <br>
+          <mat-divider></mat-divider>
+          <br>
+          <div class="danger">
+            <span><b>DANGER ZONE</b></span><br>
+            <span>Delete work? All associated metadata will be lost! FOREVER!</span>
+            <div>
+              <button mat-raised-button color="warn" (click)="requestDeleteWork()" i18n="@@Delete"><mat-icon>delete_forever</mat-icon> Delete</button>
+            </div>
+          </div>
+        </ng-container>
+      </mat-tab>
+
+      <!-- Metadata tab -->
+      <mat-tab label="Metadata">
+        <ul *ngIf="isAllowedEditing">
+          <li class="work-title">
+            <span>workTitle:</span> <textarea class="work-title" type="text" autocomplete="off" #input
+                                 [(ngModel)]="work.workTitle">
+              {{ work.workTitle }}
+            </textarea>
+          </li>
+          <mat-divider></mat-divider>
+          <li *ngFor="let metaProperty of work.metaKeys" class="work-meta">
+            <span>{{ metaProperty }}:</span>
+            <textarea class="work-meta"
+                      type="text" autocomplete="off"
+                      #input
+                      [(ngModel)]="work.meta[metaProperty]">
+              {{ work.meta[metaProperty] }}
+            </textarea>
+            <!-- Button to delete the given info -->
+            <button class="work-meta" matSuffix mat-flat-button (click)="deleteMetaField(metaProperty)">
+              <mat-icon class="work-meta button icon"
+                        matTooltip="Delete this field from work metadata.">delete</mat-icon>
+            </button>
+          </li>
+          <!-- Button to add metadata element -->
+          <li>
+            <mat-divider></mat-divider>
+            <br>
+            <span><b>Add metadata field</b></span>
+            <div id="work-meta-add">
+              <input class="work-meta" placeholder="Key" label="newMetaKey" matInput
+                     [(ngModel)]="currentMetaKeyToAdd">
+              <span><b>:</b></span>
+              <textarea class="work-meta" placeholder="Value" type="text" autocomplete="off" #input
+                        [(ngModel)]="currentMetaValueToAdd"></textarea>
+              <button class="work-meta" matSuffix mat-flat-button (click)="addCurrentMetaField()">
+                <mat-icon class="work-meta button icon"
+                          matTooltip="Add key/value pair to work metadata.">add</mat-icon>
+              </button>
+            </div>
+          </li>
+        </ul>
+        <ul *ngIf="!isAllowedEditing">
+          <li *ngFor="let metaProperty of work.metaKeys">
+            <span><b>{{ metaProperty }}:</b> {{ work.meta[metaProperty] }}</span>
+          </li>
+
+        </ul>
+      </mat-tab>
+
+      <!-- Comments tab -->
+      <mat-tab label="Discussion">
+        <app-discussion
+          [userComments]="_page.userComments"
+          [holder]="work">
+        </app-discussion>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>

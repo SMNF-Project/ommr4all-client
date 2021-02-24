@@ -49,6 +49,8 @@
           [selectedSyllableConnection]="sheetOverlayComponent.currentEditorTool.selectedSyllableConnection"
           (syllableChanged)="viewChanges.request([sheetOverlayComponent.syllableEditor.selectedSyllableConnection.connection.textRegion])"
           (syllableClicked)="sheetOverlayComponent.syllableEditor.onSyllablePropertyWidgetClick($event)"
+          (activeReadingChanged)="editorService.pcgts.page.setActiveReading($event.readingName)"
+          (activeReadingChanged)="sheetOverlayComponent.syllableEditor.onActiveReadingChanged($event)"
         ></app-syllable-property-widget>
       </div>
       <div *ngIf="sheetOverlayComponent && sheetOverlayComponent.currentEditorTool"

@@ -3,9 +3,11 @@ import { Point } from '../../geometry/geometry';
 import {Note, MusicSymbol} from '../../data-types/page/music-region/symbol';
 import {EditorService} from '../editor.service';
 import {Region} from '../../data-types/page/region';
-import {editorToolToProgressGroup, ToolBarStateService} from '../tool-bar/tool-bar-state.service';
+import {EditorTools, editorToolToProgressGroup, ToolBarStateService} from '../tool-bar/tool-bar-state.service';
 import {PageLine} from '../../data-types/page/pageLine';
 import {SheetOverlayComponent} from './sheet-overlay.component';
+import {Work} from '../../data-types/page/work';
+import {WorkEditorComponent} from './editor-tools/work-editor/work-editor.component';
 
 export class SymbolConnection {
   constructor(
@@ -34,6 +36,7 @@ export class SheetOverlayService {
   private _closestRegionToMouse: Region = null;
 
   readingOrderHoveredPageLine: PageLine = null;
+  hoveredWork: Work = null;
 
   _sheetOverlayComponent: SheetOverlayComponent;
   svgPanZoom = new SvgPanZoom();
@@ -50,6 +53,16 @@ export class SheetOverlayService {
 
   get closestStaffToMouse() {
     return this._closestStaffToMouse;
+  }
+
+  get selectedWork() {
+    // NOTE: why is this *here* and no other selectedSomething() method? Shouldn't this be
+    // in the WorkEditorTool?
+    if (this._sheetOverlayComponent.tool === EditorTools.Work) {
+      const _workEditor = this._sheetOverlayComponent.currentEditorTool as WorkEditorComponent;
+      return _workEditor.currentWork;
+    }
+    return null;
   }
 
   set closestStaffToMouse(staff: PageLine) {

@@ -1,0 +1,16 @@
+<svg:g>
+  <ng-container *ngIf="work.visible">
+    <polygon *ngIf="work.coords && editorTool.viewSettings.showWorks"
+             [attr.points]="work.coords.toSVG()"
+             [class.highlighted]="highlighted"
+             [ngClass]="'shading region ' + BlockTypeUtil.css[work.type]"
+             [class.selectable]="isWorkSelectable(work)"
+             [attr.fill]="'#' + shading(indexOfWork(work))"
+             (mousedown)="onWorkMouseDown($event, work)"
+             (mouseup)="onWorkMouseUp($event, work)"
+             (mousemove)="onWorkMouseMove($event, work)"
+             (contextmenu)="onWorkContextMenu($event, work)"
+    >
+    </polygon>
+  </ng-container>
+</svg:g>

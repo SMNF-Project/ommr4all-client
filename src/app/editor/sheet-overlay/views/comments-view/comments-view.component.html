@@ -2,4 +2,10 @@
        *ngFor="let comment of comments.comments"
        [p]="comment.holder.commentOrigin"
        [size]="5"
-       [type]="NonScalingType.COMMENT"></svg:g>
+       [type]="NonScalingType.COMMENT"
+       [class.selectable]="isCommentHolderSelectable(comment.holder)"
+       [class.selected]="isCommentHolderSelected(comment.holder)"
+       (mousedown)="onCommentHolderMouseDown($event, comment.holder)"
+       (mouseup)="onCommentHolderMouseUp($event, comment.holder)"
+       (mousemove)="onCommentHolderMouseMove($event, comment.holder)"
+></svg:g>

@@ -8,3 +8,11 @@
 .syllable.selected {
   background-color: lightblue;
 }
+
+.syllable.unavailable {
+  color: grey;
+}
+.syllable.unavailable:hover {
+  text-decoration: none;
+  cursor: default;
+}

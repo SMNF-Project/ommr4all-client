@@ -24,6 +24,7 @@ export enum GlobalPermissions {
 export class AuthenticationService {
   private _user = new BehaviorSubject<AuthenticatedUser>(JSON.parse(localStorage.getItem('user')));
   private _loggedIn = new BehaviorSubject<boolean>(!!this._user.getValue());
+  private _lastAttemptedLoginUsername: string = null;
   get loggedInObs() { return this._loggedIn.asObservable(); }
   get userObs() { return this._user.asObservable(); }
   get user(): AuthenticatedUser { return this._user.getValue(); }
@@ -50,6 +51,8 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string ) {
+    this._lastAttemptedLoginUsername = username;
+    console.log('authentication.login(): storing login attempt username: ' + username);
     return this.http.post<AuthenticatedUser>('/api/token-auth/', {username, password}).pipe(
       map(res => this.setSession(res)),
       shareReplay(),
@@ -68,6 +71,15 @@ export class AuthenticationService {
 
   public isLoggedIn() {
     return this._loggedIn.getValue();
+  }
+
+  get currentUserName(): string {
+    if (this.isLoggedIn()) {
+      console.log('currentUserName(): logged in, name: ' + this._lastAttemptedLoginUsername);
+      return this._lastAttemptedLoginUsername;
+    } else {
+      console.log('currentUserName(): Not logged in, so no current username.');
+      return null; }
   }
 
   isLoggedOut() {

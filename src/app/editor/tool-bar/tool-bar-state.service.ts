@@ -17,6 +17,11 @@ export enum EditorTools {
 
   Lyrics,
   Syllables,
+
+  Work,
+  WorkCreator,
+
+  Discussion,
 }
 
 export const editorToolToProgressGroup = [
@@ -46,6 +51,7 @@ export class ToolBarStateService {
   @Output() runCharacterRecognition = new EventEmitter();
   @Output() runClearAllTexts = new EventEmitter();
   @Output() runClearAllSyllableConnections = new EventEmitter();
+  @Output() runMeiHeadTool = new EventEmitter();
 
   @Output() runClearFullPage = new EventEmitter();
   @Output() requestEditPage = new EventEmitter();
@@ -68,9 +74,16 @@ export class ToolBarStateService {
   }
 
   set currentEditorTool(v: EditorTools) {
+    // DEBUG
+    console.log('ToolbarStateService: setting current editor tool: ');
+    console.log(v);
     if (this._currentEditorTool !== v) {
+      console.log('ToolbarStateService: the tool is changing! Prev: ' + this._currentEditorTool);
       this.editorToolChanged.emit({prev: this._currentEditorTool, next: v});
       this._currentEditorTool = v;
+      console.log('ToolbarStateService: Current editor tool set to: ' + this._currentEditorTool);
+    } else {
+      console.log('ToolbarStateService: the tool is the same as current tool: ' + this._currentEditorTool);
     }
   }
 
@@ -84,5 +97,12 @@ export class ToolBarStateService {
       this.editorSymbolChanged.emit(v);
       this._currentEditorSymbol = v;
     }
+  }
+
+  isCurrentToolReadOnly(): boolean {
+    return (this._currentEditorTool === EditorTools.View) ||
+      (this._currentEditorTool === EditorTools.Work) ||
+      (this._currentEditorTool === EditorTools.WorkCreator) ||
+      (this._currentEditorTool === EditorTools.Discussion);
   }
 }

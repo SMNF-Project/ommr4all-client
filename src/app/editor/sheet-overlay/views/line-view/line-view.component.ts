@@ -64,6 +64,15 @@ export class LineViewComponent implements OnInit, AfterContentChecked, OnChanges
   shading(index: number) { return LineViewComponent._shadingPalette[index % 10]; }
 
   redraw() {
+    // This is here so that the underlying data is in sync with
+    // the view settings. Up until now, because view settings
+    // were dealing only with object types and did not affect
+    // the inside of the data model, this kind of propagation of
+    // values *from the editor to the data* was not necessary.
+    // const reading = this.editorTool.viewSettings.activeReading;
+    // console.log('line-view.redraw(): setting reading to ' + reading);
+    // this.line.setActiveReading(reading);
+
     this.line.update();
     this.changeDetector.detectChanges();
     if (this.symbolsView) { this.symbolsView.redraw(); }

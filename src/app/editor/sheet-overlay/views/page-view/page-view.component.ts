@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Component,
+  Component, EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
+  OnInit, Output,
   QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
@@ -19,6 +19,8 @@ import {SyllableEditorComponent} from '../../editor-tools/syllable-editor/syllab
 import {AnnotationsViewComponent} from '../annotations-view/annotations-view.component';
 import {BlockType} from '../../../../data-types/page/definitions';
 import {CommentsViewComponent} from '../comments-view/comments-view.component';
+import {WorkViewComponent} from '../work-view/work-view.component';
+import {UserCommentHolder} from '../../../../data-types/page/userComment';
 
 @Component({
   selector: '[app-page-view]',  // tslint:disable-line component-selector
@@ -35,8 +37,11 @@ export class PageViewComponent implements OnInit, OnDestroy {
   @Input() editorTool: EditorTool;
 
   @ViewChildren(BlockViewComponent) blockViews: QueryList<BlockViewComponent>;
+  @ViewChildren(WorkViewComponent) workViews: QueryList<WorkViewComponent>;
   @ViewChild(AnnotationsViewComponent, {static: false}) annotationView: AnnotationsViewComponent;
   @ViewChild(CommentsViewComponent, {static: false}) commentsView: CommentsViewComponent;
+
+  // @Output() commentHolderSelected = new EventEmitter<UserCommentHolder>();
 
   constructor(
     private viewChanges: ViewChangesService,
@@ -77,6 +82,7 @@ export class PageViewComponent implements OnInit, OnDestroy {
 
     this.redraw();
     this._page.update();
+
     blocks.forEach(b => {
       const blockView = this.blockViews.find(bv => bv.block === b);
       if (blockView) {
@@ -84,6 +90,14 @@ export class PageViewComponent implements OnInit, OnDestroy {
 
         blockView.changeDetector.detectChanges();
         lineViews.forEach(lv => lv.redraw());
+      }
+    });
+
+    const works = arrayFromSet(changedView.checkChangesWorks);
+    works.forEach(w => {
+      const workView = this.workViews.find(wv => wv.work === w);
+      if (workView) {
+        workView.changeDetector.detectChanges();
       }
     });
   }

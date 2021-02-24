@@ -59,7 +59,8 @@ import {
   MatSelectModule, MatSidenavModule,
   MatSlideToggleModule, MatStepperModule, MatTableModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatButtonToggleModule,
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { LayoutExtractConnectedComponentsComponent } from './editor/sheet-overlay/editor-tools/layout-extract-connected-components/layout-extract-connected-components.component';
@@ -125,6 +126,18 @@ import { AdministrativeViewNotationStyleComponent } from './administrative-view/
 import { NotationStyleViewComponent } from './administrative-view/administrative-view-notation-style/notation-style-view/notation-style-view.component';
 import { AddNotationStyleViewComponent } from './administrative-view/administrative-view-notation-style/add-notation-style-view/add-notation-style-view.component';
 import { BookStatsDialogComponent } from './book-view/book-settings-view/book-stats-dialog/book-stats-dialog.component';
+import { MeiHeadToolDialogComponent } from './editor/dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import { WorkViewComponent } from './editor/sheet-overlay/views/work-view/work-view.component';
+import { WorkEditorComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor.component';
+import { WorkEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/work-editor-overlay.component';
+import { HighlightModule, HIGHLIGHT_OPTIONS} from 'ngx-highlightjs';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { WorkCreatorComponent } from './editor/sheet-overlay/editor-tools/work-creator/work-creator.component';
+import { DiscussionComponent } from './discussion/discussion.component';
+import { DiscussionEditorComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor.component';
+import { DiscussionEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
+import { DiscussionCommentComponent } from './discussion/discussion-comment/discussion-comment.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -246,6 +259,15 @@ const appRoutes: Routes = [
     NotationStyleViewComponent,
     AddNotationStyleViewComponent,
     BookStatsDialogComponent,
+    MeiHeadToolDialogComponent,
+    WorkViewComponent,
+    WorkEditorComponent,
+    WorkEditorOverlayComponent,
+    WorkCreatorComponent,
+    DiscussionComponent,
+    DiscussionEditorComponent,
+    DiscussionEditorOverlayComponent,
+    DiscussionCommentComponent,
   ],
   imports: [
     CommonModule,
@@ -267,6 +289,7 @@ const appRoutes: Routes = [
     MatIconModule,
     MatInputModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatDividerModule,
     MatMenuModule,
     MatDialogModule,
@@ -282,6 +305,9 @@ const appRoutes: Routes = [
       {enableTracing: !environment.production}
     ),
     MatListModule,
+    MatTabsModule,
+    HighlightModule,
+    MatExpansionModule,
   ],
   entryComponents: [
     AddNewDialogComponent,
@@ -297,11 +323,20 @@ const appRoutes: Routes = [
     OverrideEditLockDialogComponent,
     ConfirmDialogComponent,
     PredictDialogComponent,
+    MeiHeadToolDialogComponent,
   ],
   bootstrap: [AppComponent],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HIGHLIGHT_OPTIONS,
+      useValue: {
+        coreLibraryLoader: () => import('highlight.js/lib/core'),
+        languages: {
+          xml: () => import('highlight.js/lib/languages/xml')
+        }
+      }
+    }
   ],
 })
 export class AppModule { }

@@ -15,8 +15,12 @@
       (keyup)="$event.stopPropagation()"
     ></textarea>
   </mat-form-field>
-  <mat-divider></mat-divider>
-  <button mat-flat-button color="warn" (click)="onDelete()" i18n>Delete comment</button>
+  <ng-container *ngIf="comment">
+    <div>Author: <span *ngIf="comment.author">{{ comment.author }}</span></div>
+    <div>Timestamp: <span *ngIf="comment.timestamp">{{ comment.timestamp }}</span></div>
+    <mat-divider></mat-divider>
+    <button mat-flat-button color="warn" (click)="onDelete()" i18n>Delete comment</button>
+  </ng-container>
 </div>
 <div *ngIf="commentHolder && !comment">
   <button mat-flat-button color="primary" (click)="onAdd($event)" i18n>Add comment</button>

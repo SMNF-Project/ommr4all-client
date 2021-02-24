@@ -1,19 +1,23 @@
 import {Point, PolyLine, Rect} from '../../geometry/geometry';
 import {StaffLine} from './music-region/staff-line';
-import {BlockType, Constants} from './definitions';
+import {BlockType, BlockTypeUtil, Constants} from './definitions';
 import {Region} from './region';
 import {ReadingOrder} from './reading-order';
 import {Annotations} from './annotations';
 import {Block} from './block';
-import {PageLine} from './pageLine';
+import {LineReading, PageLine} from './pageLine';
 import {IdType} from './id-generator';
 import {UserComments} from './userComment';
 import {Note} from './music-region/symbol';
+import {Work, Works} from './work';
+import {Syllable} from './syllable';
+import {Sentence} from './sentence';
 
 export class Page extends Region {
   private _readingOrder = new ReadingOrder(this);
   private _annotations = new Annotations(this);
   private _userComments = new UserComments(this);
+  private _worksContainer = new Works(this);
 
   constructor(
     public imageFilename = '',
@@ -22,9 +26,12 @@ export class Page extends Region {
     public originalHeight = 0,
   ) {
     super(IdType.Page);
+    console.log('Constructing a new page!');
   }
 
   static fromJson(json) {
+    console.log('DEBUG: New page from json:');
+    console.log(json);
     const page = new Page(
       json.imageFilename,
       json.imageHeight / json.imageHeight * Constants.GLOBAL_SCALING,
@@ -34,6 +41,7 @@ export class Page extends Region {
     json.blocks.forEach(b => Block.fromJson(page, b));
     page._readingOrder = ReadingOrder.fromJson(json.readingOrder, page);
     page._annotations = Annotations.fromJson(json.annotations, page);
+    page._worksContainer = Works.fromJson(json.works, page);
     page._userComments = UserComments.fromJson(json.comments, page);
     page._readingOrder._updateReadingOrder();
     page._resolveCrossRefs();
@@ -43,12 +51,13 @@ export class Page extends Region {
 
   toJson() {
     return {
-      blocks: this.blocks.map(b => b.toJson()),
+      blocks: this.blocks.filter(b => b.type !== BlockType.Work).map(b => b.toJson()),
       imageFilename: this.imageFilename,
       imageWidth: this.imageWidth * this.originalHeight / Constants.GLOBAL_SCALING,
       imageHeight: this.imageHeight * this.originalHeight / Constants.GLOBAL_SCALING,
       readingOrder: this._readingOrder.toJson(),
       annotations: this._annotations.toJson(),
+      works: this._worksContainer.toJson(),
       comments: this._userComments.toJson(),
     };
   }
@@ -56,15 +65,52 @@ export class Page extends Region {
   get readingOrder() { return this._readingOrder; }
   get annotations() { return this._annotations; }
   get userComments() { return this._userComments; }
-  get blocks() { return this._children as Array<Block>; }
-  get textRegions() { return this.blocks.filter(b => b.type !== BlockType.Music); }
-  get musicRegions() { return this.blocks.filter(b => b.type === BlockType.Music); }
+
+  // Work regions are children of the page, but they are not Blocks.
+  get blocks() { return this._children.filter(c => c instanceof Block) as Array<Block>; }
+  get textRegions() { return this.blocks.filter(b => BlockTypeUtil.isText(b.type)); }
+  get musicRegions() { return this.blocks.filter(b => BlockTypeUtil.isMusic(b.type)); }
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
 
+  get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
+  get worksContainer() { return this._worksContainer; }
+
+  get availableReadings(): Array<string> {
+    const readingNames: Array<string> = [];
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        for (const readingName of tl.availableReadings) {
+          if (!readingNames.find(n => n === readingName)) {
+            readingNames.push(readingName);
+          }
+        }
+      }
+    }
+    return readingNames;
+  }
+
+  setActiveReading(readingName: string) {
+    console.log('Page.setActiveReading: Setting active reading on page to ' + readingName);
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        tl.setActiveReading(readingName);
+      }
+    }
+  }
+
+  get availableWorks(): Array<string> {
+    return this.works.map(w => w.workTitle);
+  }
+
   clean() {
+    // Apparently this is cleanup to get rid of empty contents...?
+    console.log('Cleaning the page...works: ' + this.works.length);
     this.blocks.forEach(b => b.lines.forEach(l => l.clean()));
     this.blocks.forEach(b => b.lines.filter(l => l.isEmpty()).forEach(l => l.detachFromParent()));
     this.blocks.filter(b => b.isEmpty()).forEach(b => b.detachFromParent());
+
+    // Should only detach works that contain no valid blocks??
+    // this.works.forEach(w => w.detachFromParent());
   }
 
   textLineById(id: string): PageLine {
@@ -74,6 +120,39 @@ export class Page extends Region {
       }
     }
     return null;
+  }
+
+  syllableInfoById(id: string): { s: Syllable, r: LineReading } {
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        const si = tl.syllableInfoById(id);
+        if (si.s !== null) {
+          return si;
+        }
+      }
+    }
+    console.warn('page.syllableInfoById: syllable with id=' + id + ' not found in page!');
+    return {s: null, r: null};
+  }
+
+  syllableLocationById(id: string): { s: Syllable,
+    sentence: Sentence, reading: LineReading, textLine: PageLine, block: Block } {
+    /* Finds a syllable and returns its chain of containers. */
+    for (const tr of this.textRegions) {
+      for (const tl of tr.textLines) {
+        const si = tl.syllableInfoById(id);
+        if (si.s != null) {
+          return {
+            s: si.s,
+            sentence: si.r.sentence,
+            reading: si.r,
+            textLine: tl,
+            block: tr};
+        }
+      }
+    }
+    console.warn('page.syllableLocationById: syllable with id=' + id + ' not found in page!');
+    return {s: null, sentence: null, reading: null, textLine: null, block: null};
   }
 
   _resolveCrossRefs() {
@@ -201,6 +280,16 @@ export class Page extends Region {
       });
     }
     return outLines;
+  }
+
+  listBlocksInRect(rect: Rect): Block[] {
+    const outBlocks: Block[] = [];
+    for (const block of this.blocks) {
+      if (block.AABB.intersetcsWithRect(rect)) {
+        outBlocks.push(block);
+      }
+    }
+    return outBlocks;
   }
 
   staffLinePointsInRect(rect: Rect): {points: Set<Point>, staffLines: Set<StaffLine>} {

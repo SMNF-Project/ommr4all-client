@@ -31,6 +31,7 @@ export class FullLyricsViewLineComponent implements OnInit, OnDestroy {
   }
   get line() { return this._line; }
 
+  @Input() activeReading: string;
   @Input() annotations: Annotations;
   @Input() selectedSyllableConnection: SyllableConnector = null;
   @Output() syllableClicked = new EventEmitter<SyllableClickEvent>();

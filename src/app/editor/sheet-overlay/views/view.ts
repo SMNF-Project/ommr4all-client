@@ -1,3 +1,5 @@
+import {LineReading} from '../../../data-types/page/pageLine';
+
 export class ViewSettings {
   constructor(
     public showStaffLines = true,
@@ -8,9 +10,14 @@ export class ViewSettings {
     public showReadingOrder = false,
     public showAnnotations = false,
     public showComments = true,
+    public showWorks = false,
 
     public showBackground = true,
     public showSymbolCenterOnly = false,
+
+    // public activeReading = LineReading.defaultReadingName,
+    // public availableReadings: Array<string> = []
+
   ) {
   }
 

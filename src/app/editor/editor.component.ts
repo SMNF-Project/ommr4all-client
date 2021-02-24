@@ -34,6 +34,8 @@ import {PolyLine} from '../geometry/geometry';
 import {BookPermissionFlag, BookPermissionFlags} from '../data-types/permissions';
 import {Annotations} from '../data-types/page/annotations';
 import {Sentence} from '../data-types/page/sentence';
+import {MeiHeadToolDialogComponent} from './dialogs/mei-head-tool-dialog/mei-head-tool-dialog.component';
+import {SyllablePropertyWidgetComponent} from './property-widgets/syllable-property-widget/syllable-property-widget.component';
 
 
 @Component({
@@ -46,6 +48,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   private _subscription = new Subscription();
   @ViewChild(SheetOverlayComponent, {static: false}) sheetOverlayComponent: SheetOverlayComponent;
   @ViewChild(NotePropertyWidgetComponent, {static: false}) notePropertyWidget: NotePropertyWidgetComponent;
+  @ViewChild(SyllablePropertyWidgetComponent, {static: false}) syllablePropertyWidget: SyllablePropertyWidgetComponent;
 
   readonly TaskStatusCodes = TaskStatusCodes;
   readonly ET = EditorTools;
@@ -80,6 +83,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.autoSaver.destroy();
       this.autoSaver = new AutoSaver(actions, editorService, serverState);
     });
+    this.editorService._editor = this;
   }
 
   ngOnDestroy(): void {
@@ -103,6 +107,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this._subscription.add(this.toolbarStateService.runLayoutAnalysis.subscribe(() => this.openLayoutAnalysisDialog()));
     this._subscription.add(this.toolbarStateService.editorToolChanged.subscribe(() => this.changeDetector.markForCheck()));
     this._subscription.add(this.toolbarStateService.runLyricsPasteTool.subscribe(() => this.openLyricsPasteTool()));
+    this._subscription.add(this.toolbarStateService.runMeiHeadTool.subscribe(() => this.openMeiHeadTool()));
     this._subscription.add(this.toolbarStateService.requestEditPage.subscribe(() => this.requestEditPage()));
     this._subscription.add(this.toolbarStateService.runAutoSyllable.subscribe(() => this.openPredictionDialog(AlgorithmGroups.Syllables)));
     this._subscription.add(this.editorService.pageStateObs.subscribe(() => {  this.changeDetector.detectChanges(); }));
@@ -315,7 +320,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       data: {
         page: this.editorService.pcgts.page,
       }
-    }).afterClosed().subscribe( (r) => {
+    }).afterClosed().subscribe((r) => {
         if (r) {
           this.toolbarStateService.currentEditorTool = EditorTools.Syllables;
           if (r.assignSyllables) {
@@ -324,5 +329,20 @@ export class EditorComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  private openMeiHeadTool() {
+    this.modalDialog.open(MeiHeadToolDialogComponent, {
+      disableClose: false,
+      width: '1400px',
+      panelClass: 'mei-head-tool-modalbox',
+      data: {
+        pcgts: this.editorService.pcgts,
+      }
+    }).afterClosed().subscribe((r) => {
+      if (r) {
+        console.log('Editor.openMeiHeadTool(): result ' + r);
+      }
+    });
   }
 }

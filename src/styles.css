@@ -97,3 +97,13 @@ span.page-id {
   font-weight: bold;
 }
 
+/* Fonts! */
+@font-face {
+  font-family: "Volpiano";
+  src: local("Volpiano"), url(./assets/fonts/volpiano.woff);
+}
+
+@font-face {
+  font-family: "Volpiano2";
+  src: local("Volpiano2"), url(./assets/fonts/volpiano2.woff);
+}

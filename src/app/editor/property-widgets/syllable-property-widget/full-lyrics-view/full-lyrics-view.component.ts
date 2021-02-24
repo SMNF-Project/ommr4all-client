@@ -30,6 +30,7 @@ export class FullLyricsViewComponent implements OnInit {
 
   @Input() annotations: Annotations;
   @Input() selectedSyllableConnection: SyllableConnector = null;
+  @Input() activeReading: string;
   @Output() syllableClicked = new EventEmitter<SyllableClickEvent>();
 
 

@@ -13,7 +13,7 @@ import {SheetOverlayService} from '../../../sheet-overlay.service';
 import {ActionsService} from '../../../../actions/actions.service';
 import {BlockType} from '../../../../../data-types/page/definitions';
 import {Sentence} from '../../../../../data-types/page/sentence';
-import {PageLine} from '../../../../../data-types/page/pageLine';
+import {LineReading, PageLine} from '../../../../../data-types/page/pageLine';
 import {Subscription} from 'rxjs';
 import {ViewChangesService} from '../../../../actions/view-changes.service';
 import {BookPermissionFlag} from '../../../../../data-types/permissions';
@@ -37,11 +37,14 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   @Input() viewWidth = 0;
 
   get sentence() { return this._line.sentence; }
+
   get aabb() { return this._line.AABB; }
   get blockType() { return this._line.getBlock().type; }
-
   @ViewChild('input', {static: false}) inputText: ElementRef;
+
   Mode = BlockType;
+
+  public showVirtualKeyboard = false;
 
   get top() { return Math.max(0, this.aabb.bottom * this.zoom + this.pan.y); }
   get left() { return Math.max(0, this.aabb.left * this.zoom + this.pan.x); }
@@ -56,6 +59,41 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     if (this.currentText === text) { return; }
     this.changeSyllables(text);
   }
+
+  public currentReadingNameToAdd: string = null;
+  get defaultReadingName() { return LineReading.defaultReadingName; }
+
+  addCurrentReading(): void {
+    if (!this.currentReadingNameToAdd) { return; }
+    this.actions.addNewReading(this.currentReadingNameToAdd, this.line);
+    this.activeReading = this.currentReadingNameToAdd;
+    // console.log('Would add new reading: ' + this.currentReadingNameToAdd);
+    this.currentReadingNameToAdd = null;
+  }
+
+  removeReading(readingName: string): void {
+    console.log('TextEditorOverlay Removing reading: ' + readingName);
+    if (!this.line.isReadingAvailable(readingName)) { console.log('...reading unavailable'); return; }
+    if (readingName === LineReading.defaultReadingName) {
+      console.log('Cannot remove default reading!');
+      return;
+    }
+    this.line.unlockActiveReading();
+    this.activeReading = this.defaultReadingName;
+    this.line.lockActiveReading();
+    this.actions.removeReading(readingName, this.line);
+  }
+
+  get activeReading() { return this.line.activeReading; }
+  set activeReading(readingName: string) {
+    this.line.unlockActiveReading();
+    this.line.setActiveReading(readingName);
+    this.line.lockActiveReading();
+    console.log('TextEditorOverlay.setActiveReading to ' + readingName);
+  }
+
+  get activeReadingIndex() { return this.line.availableReadings.indexOf(this.activeReading); }
+  set activeReadingIndex(idx: number) { this.activeReading = this.line.availableReadings[idx]; }
 
   get virtualKeyboardStoringPermitted() { return this.sheetOverlayService.editorService.bookMeta.hasPermission(BookPermissionFlag.Write); }
 
@@ -75,10 +113,13 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     if (this.inputText) {
       this.inputText.nativeElement.focus();
     }
+    this.line.lockActiveReading();
   }
 
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
+    this.line.unlockActiveReading();
+    this.line.setActiveDefaultReading();
   }
 
 
@@ -88,6 +129,7 @@ export class TextEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   get virtualKeyboardUrl() { return this.sheetOverlayService.editorService.bookCom.virtualKeyboardUrl(); }
 
   changeSyllables(to: string): void {
+    console.log('TextEditorOverlay.changeSyllables: Setting to reading ' + this._line.activeReading + ' a new sentence from text: ' + to);
     const newSentence = new Sentence(Sentence.textToSyllables(to));
     this.actions.changeLyrics(this._line, newSentence);
   }

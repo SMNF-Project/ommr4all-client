@@ -1,0 +1,122 @@
+#work-editor-overlay {
+  position: relative;
+  background-color: antiquewhite;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px 2px black;
+  padding: 5px;
+  pointer-events: all;
+  width: 600px;
+}
+
+.volpiano-melody {
+  font-family: 'Volpiano', sans-serif;
+  font-size: 28px;
+  float: left;
+  margin: 0px;
+}
+
+input {
+  min-width: 0;
+  width: 100%;
+  border: none;
+  background: none;
+  font-size: 120%;
+  outline: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  color: black;
+}
+input:focus {
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #9f968a;
+}
+
+
+textarea {
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  resize: vertical;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: whitesmoke;
+  font-size: 120%;
+  outline: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  color: black;
+}
+textarea:focus {
+  border: none;
+  outline: none;
+  background: whitesmoke;
+  border-bottom: 2px solid #9f968a;
+}
+
+.full-width {
+  width: 100%;
+}
+
+label {
+}
+
+div.danger {
+  background-color: #FFBBBB;
+  margin: 4pt;
+  padding: 4pt;
+  border-radius: 4pt;
+}
+
+
+div#work-meta-add {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+li.work-meta {
+  margin-bottom: 4pt;
+  margin-top: 4pt;
+}
+li.work-title {
+  margin-bottom: 16pt;
+  margin-top: 18pt;
+}
+input.work-meta {
+  width: auto;
+  height: 14pt;
+  font-size: 12pt;
+}
+textarea.work-meta {
+  display: inline-flex;
+  width: auto;
+  height: 16pt;
+  margin-left: 12pt;
+  margin-right: 12pt;
+  resize: none;
+}
+textarea.work-title {
+  display: inline-flex;
+  width: 70%;
+  min-width: auto;
+  height: 16pt;
+  margin-left: 12pt;
+  margin-right: 12pt;
+  resize: vertical;
+}
+button.work-meta {
+  height: 18px;
+  background-color: whitesmoke;
+  border: none;
+  line-height: 18px;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 4px;
+  text-align: center;
+}
+button.work-meta:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.4);
+}
+mat-icon.work-meta {
+  font-size: 12px;
+  height: 18px;
+  width: 16px;
+  padding: 2px 2px 2px 2px;
+  /*background-color: #FFBBBB;*/
+}

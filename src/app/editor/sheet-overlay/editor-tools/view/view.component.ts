@@ -3,6 +3,7 @@ import {EditorTool} from '../editor-tool';
 import {SheetOverlayService} from '../../sheet-overlay.service';
 import {ViewSettings} from '../../views/view';
 import {ViewChangesService} from '../../../actions/view-changes.service';
+import {Work} from '../../../../data-types/page/work';
 
 @Component({
   selector: '[app-view-editor-tool]',  // tslint:disable-line component-selector
@@ -19,10 +20,11 @@ export class ViewComponent extends EditorTool implements OnInit {
       new ViewSettings(
         true,
         false,
-        true,
-        true,
-        true,
-        true,
+        false,
+        false,
+        false,
+        false,
+        false,
         true,
         true,
         ),
@@ -31,5 +33,7 @@ export class ViewComponent extends EditorTool implements OnInit {
 
   ngOnInit() {
   }
+
+  receivePageMouseEvents(): boolean { return true; }
 
 }

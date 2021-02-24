@@ -14,6 +14,7 @@ import {PredictData} from './dialogs/predict-dialog/predict-dialog.component';
 import {BookPermissionFlag} from '../data-types/permissions';
 import {AnnotationStruct} from '../data-types/structs';
 import {ApiError, apiErrorFromHttpErrorResponse} from '../utils/api-error';
+import {EditorComponent} from './editor.component';
 
 export class PageState {
   constructor(
@@ -74,6 +75,8 @@ export class EditorService implements OnDestroy {
   private _automaticSymbolsLoading = false;
   private _apiError: ApiError;
   private _lastPageCommunication: PageCommunication = null;
+
+  _editor: EditorComponent;
 
   private _resetState() {
     const progress = new PageEditingProgress();
@@ -186,6 +189,9 @@ export class EditorService implements OnDestroy {
     state.saved = false;
     state.pcgts.clean();
     state.pcgts.refreshIds();
+    // DEBUG
+    console.log('EditorService.save(): saving page:');
+    console.log(state.pcgts.page);
     forkJoin([
         this.http.put(state.pageCom.content_url('statistics'), state.statistics.toJson(), {}),
         this.http.put(state.pageCom.content_url('pcgts'), state.pcgts.toJson(), {}),
