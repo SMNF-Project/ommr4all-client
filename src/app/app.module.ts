@@ -329,14 +329,14 @@ const appRoutes: Routes = [
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: HIGHLIGHT_OPTIONS,
-      useValue: {
-        coreLibraryLoader: () => import('highlight.js/lib/core'),
-        languages: {
-          xml: () => import('highlight.js/lib/languages/xml')
-        }
-      }
-    }
+    // { provide: HIGHLIGHT_OPTIONS,
+    //   useValue: {
+    //     coreLibraryLoader: () => import('highlight.js/lib/core'),
+    //     languages: {
+    //       xml: () => import('highlight.js/lib/languages/xml')
+    //     }
+    //   }
+    // }
   ],
 })
 export class AppModule { }
