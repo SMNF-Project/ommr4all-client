@@ -7,6 +7,7 @@ import {ViewChangesService} from '../../../../actions/view-changes.service';
 import {EditorService} from '../../../../editor.service';
 import {ActionsService} from '../../../../actions/actions.service';
 import {Page} from '../../../../../data-types/page/page';
+import {DiscussionEditorComponent} from '../discussion-editor.component';
 
 @Component({
   selector: 'app-discussion-editor-overlay',
@@ -76,5 +77,15 @@ export class DiscussionEditorOverlayComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._subscription.unsubscribe();
   }
+
+  close() {
+    const sheetOverlayComponent = this.sheetOverlayService._sheetOverlayComponent;
+    const editorTool = sheetOverlayComponent.currentEditorTool;
+    if (editorTool instanceof DiscussionEditorComponent) {
+      const discussionTool = editorTool as DiscussionEditorComponent;
+      discussionTool.close();
+    }
+  }
+
 
 }

@@ -110,5 +110,10 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
     }
   }
 
+  close() {
+    this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, null));
+    this.actions.finishAction();
+  }
+
 
 }

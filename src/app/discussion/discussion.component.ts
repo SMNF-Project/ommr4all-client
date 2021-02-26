@@ -13,6 +13,7 @@ import {ActionsService} from '../editor/actions/actions.service';
 import {DiscussionCommentComponent} from './discussion-comment/discussion-comment.component';
 import {DiscussionService} from './discussion.service';
 import {timestampNow} from '../utils/timestamp';
+import {DiscussionEditorComponent} from '../editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor.component';
 
 @Component({
   selector: 'app-discussion',
@@ -49,10 +50,20 @@ export class DiscussionComponent implements OnInit {
     // this.changeDetector.detach(); // Seen in LineViewComponent.
   }
 
+  close() {
+    const sheetOverlayComponent = this.sheetOverlayService._sheetOverlayComponent;
+    const editorTool = sheetOverlayComponent.currentEditorTool;
+    if (editorTool instanceof DiscussionEditorComponent) {
+      const discussionTool = editorTool as DiscussionEditorComponent;
+      discussionTool.close();
+    }
+  }
+
   ngOnInit() {
   }
 
   newThreadEnabled(): boolean {
+    return this.discussionService.userCanAddComment();
     return this.discussionService.userCanAddComment();
   }
 

@@ -7,6 +7,9 @@
 >
   <div class="full-width">
     <p><b>Selected holder: {{ holder.id }}</b></p>
+    <mat-icon matSuffix class="button icon" matTooltip="Close"
+
+              (click)="close()">highlight_off</mat-icon>
     <app-discussion
       [holder]="holder"
       [userComments]="userComments"
