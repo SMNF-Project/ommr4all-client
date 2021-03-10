@@ -186,6 +186,7 @@ export class PageLine extends Region {
     if (parent) {
       parent.attachChild(this);
     }
+    this.initDefaultReading();
   }
 
   toJson() {
@@ -746,6 +747,13 @@ export class PageLine extends Region {
       sentence: this.sentence.toJson(),
       coords: this.coords.toString()
     }, this);
+  }
+
+  initDefaultReading() {
+    const defaultReading = this.createDefaultReading();
+    Object.assign(this.readings, {[defaultReading.readingName]: defaultReading});
+    this.hasReadings = true;
+    this.setActiveDefaultReading();
   }
 
   addReading(readingName: string,
