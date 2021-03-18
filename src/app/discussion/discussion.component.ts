@@ -50,6 +50,11 @@ export class DiscussionComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('DiscussionComponent.ngOnInit: holder: ' + this.holder.id);
+    console.log('Comments for this holder:');
+    console.log(this.userComments.getAllCommentsByHolder(this.holder));
+    console.log('All comments');
+    console.log(this.userComments.comments);
   }
 
   newThreadEnabled(): boolean {

@@ -74,6 +74,7 @@ export class Page extends Region {
 
   get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
   get worksContainer() { return this._worksContainer; }
+  hasWorks(): boolean { return (this.works.length > 0); }
 
   get availableReadings(): Array<string> {
     const readingNames: Array<string> = [];

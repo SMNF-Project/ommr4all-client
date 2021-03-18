@@ -107,6 +107,11 @@ export class UserComments {
     if (json) {
       comments._comments = json.comments.map(c => UserComment.fromJson(c, comments, comments.findHolderById(c.id))).filter(c => c.holder || !onlyValid);
     }
+    console.log('UserComments.fromJson():');
+    console.log('From json:');
+    console.log(json);
+    console.log('Extracted comments:');
+    console.log(comments);
     return comments;
   }
 
@@ -151,6 +156,10 @@ export class UserComments {
       for (const sc of c.syllableConnectors) {
         if (sc.id === id) { return sc; }
       }
+    }
+    for (const w of this._page.works) {
+      console.log('Finding holder ' + id + ' by ID: work ' + w.id);
+      if (w.id === id) { return w; }
     }
     console.warn('Comment holder with id ' + id + ' not found.');
     return null;

@@ -27,11 +27,36 @@ export class ViewComponent extends EditorTool implements OnInit {
         false,
         true,
         true,
-        ),
+      ),
     );
   }
 
   ngOnInit() {
+    if (this.sheetOverlayService._sheetOverlayComponent.page.hasWorks()) {
+      this._viewSettings = new ViewSettings(
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+      );
+    } else {
+      this._viewSettings = new ViewSettings(
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+      );
+    }
   }
 
   receivePageMouseEvents(): boolean { return true; }
