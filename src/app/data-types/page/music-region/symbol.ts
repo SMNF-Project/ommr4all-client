@@ -262,8 +262,9 @@ export class Note extends MusicSymbol {
     // console.log('  clef.staffPositionOffset: ' + clef.positionInStaff);
     let relativeOffset = note.positionInStaff - clef.positionInStaff;
     // console.log('  relativeOffset: ' + relativeOffset);
+    // Note that the F-clef is a fifth *lower* than the C-clef.
     if (clef.type === ClefType.Clef_F) {
-      relativeOffset += 3;
+      relativeOffset -= 4;
     }
     const pitchIndex = relativeOffset + 2;
     // console.log('  pitchIndex: ' + pitchIndex);
