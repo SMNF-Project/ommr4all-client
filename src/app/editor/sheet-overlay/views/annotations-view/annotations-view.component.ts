@@ -13,6 +13,8 @@ export class AnnotationsViewComponent implements OnInit, OnChanges {
   @Input() annotations: Annotations;
   @Input() editorTool: EditorTool;
 
+  public fontSizeCoefficient = 0.3;
+
   constructor(
     private changeDetector: ChangeDetectorRef,
   ) {
