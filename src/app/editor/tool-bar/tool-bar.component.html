@@ -337,8 +337,7 @@
 
 
   <ng-container *ngIf="((editMode && !viewOnly) || editOnlyMode)">
-    <div [class.active]="toolBarStateService.isCurrentToolReadOnly()"
-         [class.disabled]="!toolBarStateService.isCurrentToolReadOnly()">
+    <div [class.active]="toolBarStateService.isCurrentToolReadOnly()">
       <div class="buttons-container">
         <mat-icon class="button icon" matTooltip="Edit MEI head metadata"
                   i18n-matTooltip
