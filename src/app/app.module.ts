@@ -331,9 +331,9 @@ const appRoutes: Routes = [
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     // { provide: HIGHLIGHT_OPTIONS,
     //   useValue: {
-    //     coreLibraryLoader: function() { import('highlight.js/lib/core'); },
+    //     coreLibraryLoader: () => import('highlight.js/lib/core'),
     //     languages: {
-    //       xml: function() { import('highlight.js/lib/languages/xml'); }
+    //       xml: () => import('highlight.js/lib/languages/xml')
     //     }
     //   }
     // }

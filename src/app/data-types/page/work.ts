@@ -128,8 +128,9 @@ export class Work extends Region {
     public workTitle: string,
     public blocks: Array<Block> = [],
     public meta: {[key: string]: any} = {},
+    protected _id: string = '',
   ) {
-    super(IdType.Work);
+    super(IdType.Work, _id);
     this._works = _works;
     // Note that the work does *NOT* add itself to the container.
     this.workTitle = workTitle;
@@ -138,8 +139,8 @@ export class Work extends Region {
     this.type = BlockType.Work;
 
     this.coords = this.computeCoordsFromBlocks();
-    // console.log('Coords for work ' + this.workTitle + ':');
-    // console.log(this.coords);
+    console.log('ID for work ' + this.workTitle + ':');
+    console.log(this._id);
   }
 
   static create(
@@ -150,8 +151,8 @@ export class Work extends Region {
     id = '',
     meta = {},
   ) {
-    const work = new Work(works, workTitle, blocks, meta);
-    work._id = id;
+    const work = new Work(works, workTitle, blocks, meta, id);
+    // work._id = id;
     // The work is a child of the page, so that its redrawing etc. is done properly,
     // but it is NOT a block (yet). This is differentiated in the Page in the get blocks() function.
     parent.attachChild(work);
@@ -193,17 +194,21 @@ export class Work extends Region {
       json.meta,
     );
     // DEBUG
-    console.log('DEBUG: Work meta:');
-    console.log(w.meta);
+    console.log('DEBUG: Work.fromJson: id:');
+    console.log(w.id);
     return w;
   }
 
   toJson() {
-    return {
+    const output = {
+      id: this.id,
       workTitle: this.workTitle,
       blocks: this.blocks.map(b => b.id),
       meta: this.meta
     };
+    console.log('Work.toJson: returning');
+    console.log(output);
+    return output;
   }
 
   get page(): Page {

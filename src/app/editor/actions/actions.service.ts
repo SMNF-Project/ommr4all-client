@@ -7,8 +7,10 @@ import {
   CommandChangeSyllable,
   CommandCreateBlock,
   CommandCreateLine,
-  CommandCreateStaffLine, CommandCreateWork,
-  CommandDeleteStaffLine, CommandDeleteWork,
+  CommandCreateStaffLine,
+  CommandCreateWork,
+  CommandDeleteStaffLine,
+  CommandDeleteWork,
   CommandDetachSymbol,
   CommandMoveInReadingOrder,
   CommandUpdateReadingOrder
@@ -88,6 +90,11 @@ export class ActionsService {
     const deleted = v.splice(index, deleteCount, ...insert);
     this.changeArray2(v, n);
     return deleted;
+  }
+  removeArrayFromArray<T>(v: Array<T>, del: Array<T>) {
+    const delset = new Set(del);
+    const filteredArray = v.filter(element => !delset.has(element));
+    this.changeArray(v, v, filteredArray);
   }
   changeProperty<T>(obj: any, property: string, from: T, to: T) { this.caller.runCommand(new CommandChangeProperty(obj, property, from, to));  }
 
@@ -399,14 +406,22 @@ export class ActionsService {
 
   removeReading(readingName: string, line: PageLine) {
     if (!line.isReadingAvailable(readingName)) { return; }
+    this._actionCaller.startAction(ActionType.ReadingRemoved, []);
     this._actionCaller.pushChangedViewElement(line);
-    this._actionCaller.runCommand(new CommandChangeProperty(
+
+    // Prepare to delete associated annotations
+    const annotations = line.block.page.annotations;
+    const connectorsToRemove = annotations.findAllSyllableConnectorsByReading(line.readings[readingName])
+
+    // Prepare to delete the reading
+    this._actionCaller.addCommand(new CommandChangeProperty(
       line.readings,
       readingName,
       line.readings[readingName],
       null
     ));
-    this._actionCaller.runCommand(new CommandCallFunction(() => line.clean()));
+    this._actionCaller.addCommand(new CommandCallFunction(() => line.clean()));
+    this._actionCaller.finishAction();
   }
 
   addNewWork(page: Page, workTitle: string, blocks: Array<Block>) {

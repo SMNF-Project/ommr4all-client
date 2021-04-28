@@ -14,6 +14,7 @@ import {
 import {Syllable} from './syllable';
 import {Accidental, Clef, MusicSymbol, Note, Pitch} from './music-region/symbol';
 import {StaffLine} from './music-region/staff-line';
+import {Page} from './page';
 
 export class LogicalConnection {
   constructor(
@@ -103,6 +104,12 @@ export class LineReading {
 
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// The PageLine is the data element that provides most functionality
+// w.r.t. music and text.
+
+
 export class PageLine extends Region {
   // General
   public reconstructed = false;
@@ -137,6 +144,9 @@ export class PageLine extends Region {
 
   // Caches
   private _volpianoLine = null;
+
+  // Reference to page
+  private get _page() { return this.parentOfType(Page) as Page; }
 
   // =============================================================================
   // General
@@ -186,6 +196,7 @@ export class PageLine extends Region {
     if (parent) {
       parent.attachChild(this);
     }
+    this.initDefaultReading();
   }
 
   toJson() {
@@ -262,6 +273,14 @@ export class PageLine extends Region {
       // clean if the reading is set to null
       if (!this.readings[readingName]) { delete this.readings[readingName]; }
       // clean readings that exist but have no syllables? let's not do that.
+
+      // clean annotations for a cleared-out reading. That is: remove all
+      // syllable connectors whose reading was the empty reading.
+      if (this._page !== null) {
+        const annotations = this._page.annotations;
+        const lineConnections = annotations.findConnectorsByBlock(this.block);
+
+      }
     });
   }
 
@@ -746,6 +765,13 @@ export class PageLine extends Region {
       sentence: this.sentence.toJson(),
       coords: this.coords.toString()
     }, this);
+  }
+
+  initDefaultReading() {
+    const defaultReading = this.createDefaultReading();
+    Object.assign(this.readings, {[defaultReading.readingName]: defaultReading});
+    this.hasReadings = true;
+    this.setActiveDefaultReading();
   }
 
   addReading(readingName: string,

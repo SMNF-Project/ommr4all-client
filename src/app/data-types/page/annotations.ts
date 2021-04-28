@@ -60,6 +60,35 @@ export class Annotations {
     return null;
   }
 
+  findAllSyllableConnectorsByReading(reading: LineReading): Array<SyllableConnector> {
+    // Assumes a single reading is only used by a single pageLine, so when any connectors
+    // for a given LineReading are found, assumes that no more connectors for that LineReading
+    // can be found in other textRegions.
+    // Note that this will not hold when searching for readings by reading name (string),
+    // since of course many lines will have LineReading with the same reading name.
+    if (!reading) { return null; }
+    for (const c of this.connections.filter(con => con.textRegion === reading.getLine().block)) {
+      const scArray = c.syllableConnectors.filter(s => s.reading === reading);
+      if (scArray) { return scArray; }
+    }
+    return null;
+  }
+
+  findAllSyllableConnectorsByLineAndReadingName(textLine: PageLine, readingName: string): Array<SyllableConnector> {
+    if (!textLine) { return null; }
+    if (!readingName) { return null; }
+    // Theoretically multiple Connections can point to the same line, and within
+    // each of these Connections there can be SyllableConnectors leading towards
+    // the given readingName.
+    const scOutput: Array<SyllableConnector> = [];
+    for (const c of this.connections.filter(con => con.textRegion === textLine.block)) {
+      const scArray = c.syllableConnectors.filter(s => s.reading.readingName === readingName);
+      if (scArray) { scOutput.push(...scArray); }
+    }
+    if (scOutput.length > 0) { return scOutput; }
+    return null;
+  }
+
   findSyllableConnectorBySyllable(syllable: Syllable): SyllableConnector {
     if (!syllable) { return null; }
     for (const c of this.connections) {
