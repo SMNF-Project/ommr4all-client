@@ -73,6 +73,15 @@ export class ActionCaller {
     command.do();
   }
 
+  public addCommand(command: Command) {
+    /* Add a command without executing it straight away -- expects
+     * to be executed by a finishAction() call to the ActionCaller later. */
+    if (command.isIdentity()) { return; }
+    if (!this._actionToCreate) { console.error('No action started yet!'); this.startAction(ActionType.Undefined, []); }
+    const lastCommand = this._actionToCreate.command as MultiCommand;
+    lastCommand.push(command);
+  }
+
   public finishAction(updateCallback: () => void = null): Action {
     if (!this._actionToCreate) { console.warn('No action started.'); return null; }
     if ((this._actionToCreate.command as MultiCommand).empty) { this._actionToCreate = null; return null; }

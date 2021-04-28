@@ -103,5 +103,10 @@ export enum ActionType {
   WorkAdded,
   WorkRemoved,
   WorkSelect,
-  WorkDeselect
+  WorkDeselect,
+
+  // Readings
+  Readings = 900,
+  ReadingAdded,
+  ReadingRemoved
 }
