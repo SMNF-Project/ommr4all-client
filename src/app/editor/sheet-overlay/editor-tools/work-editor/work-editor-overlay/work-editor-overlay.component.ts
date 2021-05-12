@@ -52,6 +52,7 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   deleteRequested = new EventEmitter<Work>();
 
   public showVolpianoString = false;
+  public showMetadataEditInterface = false;
 
   get aabb() { return this._work.AABB; }
   get top() { return Math.max(0, (this.aabb.top + this.height / 2.0) * this.zoom + this.pan.y); }
