@@ -353,18 +353,62 @@ export class Page extends Region {
   }
 
   closesLogicalComponentToPosition(pos: Point): Note {
+    // The name "Component" should probably be "NeumeComponent"?
     let closestLine: PageLine = null;
     let closestDistance = 10e6;
 
-    this.allMusicLines().filter(ml => ml.AABB.top < pos.y).forEach(
-      ml => {
-        const d = Math.abs(ml.AABB.vcenter() - pos.y);
-        if (d < closestDistance) {
-          closestLine = ml;
-          closestDistance = d;
+    // Take all the music lines that are higher than the point and sort them from the *bottom*.
+    const musicLinesAbovePoint = this.allMusicLines().filter(ml => ml.AABB.top < pos.y)
+      .sort((ml1, ml2) => ml2.AABB.top - ml1.AABB.top);
+    if (musicLinesAbovePoint.length === 0) { return null; }
+
+    // Find candidates. Candidates are those that have vertical overlap with the bottommost
+    // music line.
+    const lowestCandidate = musicLinesAbovePoint[0];
+    const candidates = musicLinesAbovePoint.filter(ml => ml.AABB.bottom > lowestCandidate.AABB.top);
+
+    if (candidates.length > 1) {
+      const candidatesDirectlyAbovePoint = candidates.filter(ml =>
+        (ml.AABB.left < pos.x) &&  (pos.x < ml.AABB.right));
+      if (candidatesDirectlyAbovePoint.length === 1) {
+        closestLine = candidatesDirectlyAbovePoint[0];
+      } else {
+        // No musicLine is directly above the given point? Find closest horizontally.
+        // "Closest" is defined as minimum distance of point to left or right bound,
+        // not center, to avoid the effect of short vs long music lines.
+        const candidatesLeftToRight = candidates.sort((c1, c2) => c1.AABB.left - c2.AABB.left);
+        let closestHorizontalDistance = 10e6;
+        // console.log('closest musicline to point: point not directly any line. Candidates:');
+        // console.log(candidatesLeftToRight);
+        for (const candidate of candidatesLeftToRight) {
+          const dist = Math.min(Math.abs(candidate.AABB.left - pos.x), Math.abs(pos.x - candidate.AABB.right));
+          if (dist < closestHorizontalDistance) {
+            closestLine = candidate;
+            closestHorizontalDistance = dist;
+            // console.log('Found closest line: ' + candidate.id + ' at distance: ' + dist);
+          }
         }
+
       }
-    );
+    } else {
+      closestLine = candidates[0];
+    }
+
+    // this.allMusicLines().filter(ml => ml.AABB.top < pos.y).forEach(
+    //   ml => {
+    //     // and find the one with the closest vertical distance.
+    //     // That is why issue #51 happens.
+    //     // Quick fix: check if the point is also within the horizontal bounds of the line?
+    //     // This is not good enough in the long run:
+    //     // there can be points that are slightly diagonally
+    //     // off but still obviously belong to the closest staff.
+    //     const d = Math.abs(ml.AABB.vcenter() - pos.y);
+    //     if (d < closestDistance) {
+    //       closestLine = ml;
+    //       closestDistance = d;
+    //     }
+    //   }
+    // );
 
     if (!closestLine) { return null; }
 
