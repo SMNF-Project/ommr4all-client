@@ -1,0 +1,9 @@
+<h3>Selected blocks</h3>
+<div>
+  <ul>
+    <li *ngFor="let region of blockList">
+      {{ region.id }}
+    </li>
+  </ul>
+  <button mat-flat-button (click)="workCreatorTool.addWorkFromCurrentSelection()">Add work</button>
+</div>

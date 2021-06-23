@@ -145,6 +145,8 @@ export class PageLine extends Region {
   // Caches
   private _volpianoLine = null;
 
+  public selected = false;
+
   // Reference to page
   private get _page() { return this.parentOfType(Page) as Page; }
 

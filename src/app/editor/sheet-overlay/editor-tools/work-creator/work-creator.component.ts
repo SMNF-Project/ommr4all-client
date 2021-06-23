@@ -84,6 +84,7 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
 
   updateBlocksSelection(blocks: Array<Block>) {
     this._blocksSelectedForWorkCreation = blocks;
+    this.sheetOverlayService._sheetOverlayComponent.handleSelection(blocks);
     // this.actions.startAction(ActionType.LayoutSelect);
     // this.actions.run(new CommandChangeProperty(
     //   this,
@@ -107,17 +108,28 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
     if (rect === null) { return; }
     // This method actually builds the work.
     const blocks = this.editorService.pcgts.page.listBlocksInRect(rect);
+    // console.log('Rectangle: ' + rect);
     if (blocks.length > 0) {
-      if (blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph)).length < 1) {
-        console.log('Cannot create work without lyrics or paragraph blocks! (This is just a placeholder check.');
-        return;
+      // Is it just a click? (This is a quick dirty way to misuse SelectionBox
+      // to also handle block selection with indvidual clicks.)
+      if (this._isRectOnlyClick(rect)) {
+        console.log('Handling selectionFinished as click. Blocks: ');
+        console.log(blocks.map(b => b.id));
+        this.handleClick(blocks);
+      } else {
+        // If not, then really add a work.
+        if (blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph)).length < 1) {
+          console.log('Cannot create work without lyrics or paragraph blocks! (This is just a placeholder check.');
+          return;
+        }
+        // Check for sufficiently large rectangle to handle selection
+        // Check for duplicates?
+        console.log('WorkCreator: Building Work with blocks: ');
+        console.log(blocks.map(b => b.id));
+        this.updateBlocksSelection(blocks);
+        // Maybe the selection of blocks could be shown now, *after* the selection is done?
+        this.addWorkFromCurrentSelection();
       }
-      // Check for duplicates?
-      console.log('WorkCreator: Building Work with blocks: ');
-      console.log(blocks.map(b => b.id));
-      this.updateBlocksSelection(blocks);
-      // Maybe the selection of blocks could be shown now, *after* the selection is done?
-      this.addWorkFromCurrentSelection();
     }
   }
 
@@ -131,13 +143,42 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
       workTitle,
       this.blocksSelectedForWorkCreation);
     this.actions.finishAction();
+    this.updateBlocksSelection([]);
+  }
+
+  private _isRectOnlyClick(rect: Rect): boolean {
+    if (rect.area < 10) { return true; }
+    return false;
+  }
+
+  handleClick(blocks: Block[]) {
+    const currentSelection = new Set(this._blocksSelectedForWorkCreation);
+    console.log('handleClick: current selection:');
+    console.log(this._blocksSelectedForWorkCreation.map(b => b.id));
+    for (const b of new Set(blocks)) {
+      if (!b.selected) {
+        if (currentSelection.has(b)) {
+          console.log('Strange situation: block not marked as selected, but it is scheduled for work creation: ' + b.id);
+        }
+        console.log('Block ' + b.id + ': not selected, adding.');
+        currentSelection.add(b);
+      } else { // b.selected === true
+        console.log('Block ' + b.id + ': already selected, removinng.');
+        if (currentSelection.has(b)) {
+          currentSelection.delete(b);
+        } else { console.log('Strange situation: block should be deselected but already is not scheduled for work creation.' + b.id); }
+      }
+    }
+    console.log('Selection after handling click: ');
+    console.log(Array.from(currentSelection).map(b => b.id));
+    this.updateBlocksSelection(Array.from(currentSelection));
   }
 
   onSelectionUpdated(rect: Rect) {
     if (rect === null) { return; }
     const blocks = this.editorService.pcgts.page.listBlocksInRect(rect);
     if (blocks !== this.blocksSelectedForWorkCreation) {
-
+      this.updateBlocksSelection(blocks);
     }
   }
 

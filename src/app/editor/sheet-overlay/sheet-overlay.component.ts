@@ -51,6 +51,7 @@ import {WorkCreatorComponent} from './editor-tools/work-creator/work-creator.com
 import {DiscussionEditorComponent} from './editor-tools/discussion-editor/discussion-editor.component';
 import {DiscussionEditorOverlayComponent} from './editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
 import {PageViewComponent} from './views/page-view/page-view.component';
+import {Region} from '../../data-types/page/region';
 
 
 @Component({
@@ -218,6 +219,30 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
       this._editors.get(event.next).states.handle('activate');
     }
     this.changeDetector.markForCheck();
+  }
+
+  handleSelection(selectedRegions: Array<Region>) {
+    const selectedSet = new Set(selectedRegions);
+    for (const region of this.page.allRegions) {
+      const selected = selectedSet.has(region);
+      if (region.selected !== selected) {
+        region.updateRequired = true;
+        region.update();
+        this.viewChanges.request([region]);
+      }
+      region.selected = selected;
+      // console.log('Selected regions: ' + selectedRegions.length);
+      // console.log(this.page.allRegions.filter(r => r.selected).map(r => r.id));
+    }
+    // this.pageView.redraw();
+    this.viewChanges.updateAllLines(this.page);
+  }
+
+  unselectAll() {
+    this.handleSelection([]);
+  }
+  selectAll() {
+    this.handleSelection(this.page.allRegions);
   }
 
   lineUpdated(line: PolyLine) {

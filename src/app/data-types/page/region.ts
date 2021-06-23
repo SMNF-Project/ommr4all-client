@@ -13,6 +13,10 @@ export class Region implements UserCommentHolder {
   // and filtering it.
   public visible = true;
 
+  // This is for handling operations that take as input,
+  // including providing visual feedback.
+  public selected = false;
+
   get commentOrigin() { return this._AABB.tl(); }
 
   constructor(

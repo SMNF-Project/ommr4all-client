@@ -138,6 +138,7 @@ import { DiscussionComponent } from './discussion/discussion.component';
 import { DiscussionEditorComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor.component';
 import { DiscussionEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
 import { DiscussionCommentComponent } from './discussion/discussion-comment/discussion-comment.component';
+import { WorkCreationPropertyWidgetComponent } from './editor/property-widgets/work-creation-property-widget/work-creation-property-widget.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -268,6 +269,7 @@ const appRoutes: Routes = [
     DiscussionEditorComponent,
     DiscussionEditorOverlayComponent,
     DiscussionCommentComponent,
+    WorkCreationPropertyWidgetComponent,
   ],
   imports: [
     CommonModule,

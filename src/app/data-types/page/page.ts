@@ -66,15 +66,26 @@ export class Page extends Region {
   get annotations() { return this._annotations; }
   get userComments() { return this._userComments; }
 
-  // Work regions are children of the page, but they are not Blocks.
   get blocks() { return this._children.filter(c => c instanceof Block) as Array<Block>; }
   get textRegions() { return this.blocks.filter(b => BlockTypeUtil.isText(b.type)); }
   get musicRegions() { return this.blocks.filter(b => BlockTypeUtil.isMusic(b.type)); }
   filterBlocks(blockType: BlockType) { return this.blocks.filter(b => b.type === blockType); }
 
+  // Work regions are children of the page, but they are not Blocks.
   get works() { return this._children.filter(b => b instanceof Work) as Array<Work>; }
   get worksContainer() { return this._worksContainer; }
   hasWorks(): boolean { return (this.works.length > 0); }
+
+  get allRegions(): Array<Region> {
+    // Collects all Regions (blocks, lines and works) on the given page.
+    const regions: Array<Region> = [];
+    regions.push(...this.blocks);
+    for (const block of this.blocks) {
+      regions.push(...block.lines);
+    }
+    regions.push(...this.works);
+    return regions;
+  }
 
   get availableReadings(): Array<string> {
     const readingNames: Array<string> = [];
@@ -416,4 +427,5 @@ export class Page extends Region {
     if (lcs.length === 0) { return null; }
     return lcs[lcs.length - 1].neumeStart;
   }
+
 }

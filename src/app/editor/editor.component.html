@@ -53,6 +53,13 @@
           (activeReadingChanged)="sheetOverlayComponent.syllableEditor.onActiveReadingChanged($event)"
         ></app-syllable-property-widget>
       </div>
+      <div *ngIf="sheetOverlayComponent && sheetOverlayComponent.currentEditorTool && toolbarStateService.currentEditorTool === ET.WorkCreator"
+           class="property-widget">
+        <app-work-creation-property-widget
+          [blockList]="sheetOverlayComponent.currentEditorTool.blocksSelectedForWorkCreation"
+          [workCreatorTool]="sheetOverlayComponent.currentEditorTool"
+        ></app-work-creation-property-widget>
+      </div>
       <div *ngIf="sheetOverlayComponent && sheetOverlayComponent.currentEditorTool"
            class="property-widget">
         <app-view-property-widget

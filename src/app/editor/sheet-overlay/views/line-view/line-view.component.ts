@@ -58,7 +58,12 @@ export class LineViewComponent implements OnInit, AfterContentChecked, OnChanges
   isLineSelectable(line: PageLine) { return this.editorTool.isLineSelectable(line); }
 
   get readingOrderSelectedLine() { return this.sheetOverlayService.readingOrderHoveredPageLine; }
-  get highlighted() { return this.readingOrderSelectedLine === this.line; }
+  get highlighted() {
+    if (this.readingOrderSelectedLine === this.line) { return true; }
+    if (this.block.selected) { return true; }
+    if (this.line.selected) { return true; }
+    return false;
+  }
 
   indexOfMusicLine(line: PageLine) { return line.getBlock().page.musicRegions.indexOf(line.getBlock()); }
   shading(index: number) { return LineViewComponent._shadingPalette[index % 10]; }

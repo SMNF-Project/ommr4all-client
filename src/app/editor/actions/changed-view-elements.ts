@@ -48,6 +48,19 @@ export class ChangedView {
       this.checkChangesWorks.add(c as Work);
     }
   }
+
+  logStateString(): string {
+    let s: string = 'Changes:';
+    if (this.checkChangesBlock.size > 0) {
+      s = s + '\nBlocks';
+      this.checkChangesBlock.forEach(b => { s = s + ', ' + b.id; });
+    }
+    if (this.checkChangesLine.size > 0) {
+      s = s + '\nLines';
+      this.checkChangesLine.forEach(l => { s = s + ', ' + l.id})
+    }
+    return s;
+  }
 }
 
 export type RequestChangedViewElement = Region|MusicSymbol|StaffLine|Syllable|UserComment|Work;
