@@ -128,7 +128,8 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
         console.log(blocks.map(b => b.id));
         this.updateBlocksSelection(blocks);
         // Maybe the selection of blocks could be shown now, *after* the selection is done?
-        this.addWorkFromCurrentSelection();
+        // Adding a work is now done from the widget!
+        // this.addWorkFromCurrentSelection();
       }
     }
   }

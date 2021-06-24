@@ -57,6 +57,13 @@ export class SelectionBoxComponent implements OnInit {
     }
   });
 
+  public static isLargerThanClick(rect: Rect) {
+    // Checks if the given rectangle is larger than what would
+    // be produced in a click.
+    if (rect === null) { return true; }
+    return (rect.area > 10);
+  }
+
   constructor(
     private sheetOverlayService: SheetOverlayService,
     private changeDetector: ChangeDetectorRef,
@@ -71,6 +78,7 @@ export class SelectionBoxComponent implements OnInit {
   set selectionRect(rect: Rect) {
     if (this.selectionRect !== rect || (this.selectionRect && this.selectionRect.equals(rect) === false)) {
       this._selectionRect = rect;
+      if (!SelectionBoxComponent.isLargerThanClick(rect)) { return; }
       this.selectionUpdated.emit(this.selectionRect);
     }
   }
@@ -133,4 +141,5 @@ export class SelectionBoxComponent implements OnInit {
       this.states.handle('cancel');
     }
   }
+
 }
