@@ -11,7 +11,6 @@ import {WorkCreatorService} from './work-creator.service';
 import {ViewSettings} from '../../views/view';
 import {Block} from '../../../../data-types/page/block';
 import {ActionType} from '../../../actions/action-types';
-import {CommandChangeProperty} from '../../../undo/util-commands';
 import {PageLine} from '../../../../data-types/page/pageLine';
 import {Work} from '../../../../data-types/page/work';
 import {BlockType} from '../../../../data-types/page/definitions';
@@ -139,12 +138,24 @@ export class WorkCreatorComponent extends EditorTool implements OnInit {
     const workTitle = Work.generateTitleFromBlocks(this.blocksSelectedForWorkCreation);
     // Create work
     this.actions.startAction(ActionType.WorkAdded);
-    this.actions.addNewWork(
+    const work = this.actions.addNewWork(
       this.editorService.pcgts.page,
       workTitle,
       this.blocksSelectedForWorkCreation);
     this.actions.finishAction();
     this.updateBlocksSelection([]);
+    this.goToNewWorkDetail(work);
+  }
+
+  goToNewWorkDetail(work) {
+    const _sheetOverlay = this.sheetOverlayService._sheetOverlayComponent;
+    const _workEditorTool = _sheetOverlay.workEditor;
+    const _currentTool = _sheetOverlay.currentEditorTool;
+    _workEditorTool.currentWork = work;
+    _sheetOverlay.toolBarStateService.currentEditorTool = EditorTools.Work;
+    // _sheetOverlay.onToolChanged({
+    //   prev: EditorTools.WorkCreator,
+    //   next: EditorTools.Work});
   }
 
   private _isRectOnlyClick(rect: Rect): boolean {
