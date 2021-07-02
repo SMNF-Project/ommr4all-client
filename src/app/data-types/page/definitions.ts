@@ -12,6 +12,7 @@ export enum BlockType {
   Music = 'music',
 
   Work = 'work',
+  Generic = 'generic',
 }
 
 export class BlockTypeUtil {
@@ -23,6 +24,7 @@ export class BlockTypeUtil {
     folioNumber: 'folio-number',
     music: 'music',
     work: 'work',
+    generic: 'generic',
   };
 
   static isMusic(type: BlockType) {
@@ -46,6 +48,9 @@ export class BlockTypeUtil {
     return (type === BlockType.Lyrics)
       // || (type === BlockType.DropCapital)
       || (type === BlockType.Paragraph);
+  }
+  static isGeneric(type: BlockType) {
+    return (type === BlockType.Generic);
   }
 }
 

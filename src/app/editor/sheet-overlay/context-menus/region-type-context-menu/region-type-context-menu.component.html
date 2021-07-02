@@ -13,6 +13,7 @@
   <button mat-menu-item (click)="onSelectRegionType(BT.DropCapital)" i18n="@@Drop_capital">Drop capital</button>
   <button mat-menu-item (click)="onSelectRegionType(BT.Paragraph)" i18n="@@Texts">Texts</button>
   <button mat-menu-item (click)="onSelectRegionType(BT.FolioNumber)"i18n="@@Folio">Folio</button>
+  <button mat-menu-item (click)="onSelectRegionType(BT.Generic)"i18n="@@Generic">Generic</button>
   <mat-divider *ngIf="hasDelete"></mat-divider>
   <button mat-menu-item *ngIf="hasDelete" (click)="onDelete()" class="warn" i18n="@@Delete">Delete</button>
 </mat-menu>

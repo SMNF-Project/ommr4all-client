@@ -84,6 +84,11 @@ svg {
   stroke: lightskyblue;
 }
 
+::ng-deep .generic.region {
+  fill: lightgray;
+  stroke: lightgray;
+}
+
 /*::ng-deep .work.region {*/
 /*  fill: deepskyblue;*/
 /*  stroke: deepskyblue;*/
