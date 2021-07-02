@@ -10,6 +10,8 @@ import {Subscription} from 'rxjs';
 import {Work} from '../../../../data-types/page/work';
 import {CommandChangeProperty} from '../../../undo/util-commands';
 import {EditorTools, ToolBarStateService} from '../../../tool-bar/tool-bar-state.service';
+import {Region} from '../../../../data-types/page/region';
+import {PageLine} from '../../../../data-types/page/pageLine';
 
 const machina: any = require('machina');
 
@@ -90,12 +92,19 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
 
   get visible() { return this.toolBarService.currentEditorTool === EditorTools.Discussion; }
   isCommentHolderSelectable(h: UserCommentHolder): boolean { return true; }
+  isLineSelectable(line: PageLine): boolean { return true; }
 
   onCommentHolderMouseUp(event: MouseEvent, h: UserCommentHolder) {
     console.log('DiscussionEditor: Detected click on comment holder ' + h.id);
     this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, h));
     this.actions.finishAction();
     event.preventDefault();
+  }
+
+  onLineMouseUp(event: MouseEvent, line: PageLine) {
+    console.log('DiscussionEditor: detected click on line ' + line.id);
+    this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, line));
+    this.actions.finishAction();
   }
 
   onKeyup(event: KeyboardEvent) {
@@ -113,6 +122,10 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
   close() {
     this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, null));
     this.actions.finishAction();
+  }
+
+  isRegionSelectable(region: Region): boolean {
+    return true;
   }
 
 
