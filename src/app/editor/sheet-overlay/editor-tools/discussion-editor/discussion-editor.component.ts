@@ -93,6 +93,7 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
   get visible() { return this.toolBarService.currentEditorTool === EditorTools.Discussion; }
   isCommentHolderSelectable(h: UserCommentHolder): boolean { return true; }
   isLineSelectable(line: PageLine): boolean { return true; }
+  isWorkSelectable(work: Work): boolean { return true; }
 
   onCommentHolderMouseUp(event: MouseEvent, h: UserCommentHolder) {
     console.log('DiscussionEditor: Detected click on comment holder ' + h.id);
@@ -104,6 +105,12 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
   onLineMouseUp(event: MouseEvent, line: PageLine) {
     console.log('DiscussionEditor: detected click on line ' + line.id);
     this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, line));
+    this.actions.finishAction();
+  }
+
+  onWorkMouseUp(event: MouseEvent, work: Work) {
+    console.log('DiscussionEditor: detected click on line ' + work.id);
+    this.actions.run(new CommandChangeProperty(this, 'currentHolder', this.currentHolder, work));
     this.actions.finishAction();
   }
 

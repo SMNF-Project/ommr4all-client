@@ -6,10 +6,10 @@
   cdkDrag
 >
   <div class="full-width">
-    <p><b>Selected holder: {{ holder.id }}</b></p>
-    <mat-icon matSuffix class="button icon" matTooltip="Close"
-
+    <p><b>Selected holder: {{ holder.id }}</b>
+    <mat-icon matSuffix class="button icon close-overlay" matTooltip="Close"
               (click)="close()">highlight_off</mat-icon>
+    </p>
     <app-discussion
       [holder]="holder"
       [userComments]="userComments"
