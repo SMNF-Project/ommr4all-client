@@ -74,9 +74,9 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
   @ViewChild(RegionTypeContextMenuComponent, {static: true}) regionTypeContextMenu: RegionTypeContextMenuComponent;
   @ViewChild(ReadingOrderContextMenuComponent, {static: true}) readingOrderContextMenu: ReadingOrderContextMenuComponent;
   @ViewChild(SymbolContextMenuComponent, {static: true}) symbolContextMenu: SymbolContextMenuComponent;
-  @ViewChild(TextEditorOverlayComponent, {static: true}) textEditorOverlay: TextEditorOverlayComponent;
-  @ViewChild(WorkEditorOverlayComponent, {static: true}) workEditorOverlay: WorkEditorOverlayComponent;
-  @ViewChild(DiscussionEditorOverlayComponent, {static: true}) discussionEditorOverlay: DiscussionEditorOverlayComponent;
+  @ViewChild(TextEditorOverlayComponent, {static: false}) textEditorOverlay: TextEditorOverlayComponent;
+  @ViewChild(WorkEditorOverlayComponent, {static: false}) workEditorOverlay: WorkEditorOverlayComponent;
+  @ViewChild(DiscussionEditorOverlayComponent, {static: false}) discussionEditorOverlay: DiscussionEditorOverlayComponent;
 
   @ViewChild(ViewComponent, {static: true}) viewTool: ViewComponent;
   @ViewChild(WorkEditorComponent, {static: true}) workEditor: WorkEditorComponent;

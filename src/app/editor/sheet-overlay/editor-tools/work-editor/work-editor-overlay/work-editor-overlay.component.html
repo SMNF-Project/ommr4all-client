@@ -10,7 +10,7 @@
     <h3>{{ workInfo.title }}</h3>
     <mat-divider></mat-divider>
 
-    <mat-tab-group>
+    <mat-tab-group [(selectedIndex)]="activeTabIndex">
       <!-- Work overview tab -->
       <mat-tab label="Overview">
         <br>

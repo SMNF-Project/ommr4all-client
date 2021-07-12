@@ -118,6 +118,8 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
   get visible() { return this.toolBarService.currentEditorTool === EditorTools.Work; }
   get comments(): UserComments { return this._page.userComments; }
 
+  get workEditorOverlay(): WorkEditorOverlayComponent { return this.sheetOverlayService._sheetOverlayComponent.workEditorOverlay; }
+
   receivePageMouseEvents(): boolean { return true; }
 
   // Add selectability
@@ -149,7 +151,12 @@ export class WorkEditorComponent extends EditorTool implements OnInit, OnDestroy
         // this.actions.finishAction();
         event.preventDefault();
       } else if (event.code === 'Tab') {
-        if (event.shiftKey) {
+        // Do not move to next work if current work metadata is being edited,
+        // because pressing Tab should move only within that form.
+        if (this.workEditorOverlay.isEditingMetadata) {
+          console.log('WorkEditor processing Tab: is editing metadata, not jumping to next work.');
+          event.preventDefault();
+        } else if (event.shiftKey) {
           this.onSelectPrevious();
         } else {
           this.onSelectNext();

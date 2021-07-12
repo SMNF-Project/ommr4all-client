@@ -68,6 +68,9 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
   public currentMetaKeyToAdd: string = null;
   public currentMetaValueToAdd: string = null;
 
+  public activeTabIndex: number;
+  public readonly tabNames: Array<string> = ['Overview', 'Metadata', 'Discussion'];
+
   constructor(
     public sheetOverlayService: SheetOverlayService,
     private viewChanges: ViewChangesService,
@@ -138,4 +141,12 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     }
   }
 
+  get isEditingMetadata(): boolean {
+    if (this.tabNames[this.activeTabIndex] === 'Metadata') {
+      if (this.showMetadataEditInterface) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

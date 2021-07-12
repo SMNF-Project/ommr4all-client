@@ -28,7 +28,7 @@ export class DiscussionEditorComponent extends EditorTool implements OnInit, OnD
   private _currentHolder: UserCommentHolder = null;
   get currentHolder() { return this._currentHolder; }
   set currentHolder(holder: UserCommentHolder) {
-    if (holder === null) { console.log('Setting holder: null'); } else { console.log('Setting holder: ' + holder.id); }
+    // if (holder === null) { console.log('Setting holder: null'); } else { console.log('Setting holder: ' + holder.id); }
     this._currentHolder = holder;
   }
 
