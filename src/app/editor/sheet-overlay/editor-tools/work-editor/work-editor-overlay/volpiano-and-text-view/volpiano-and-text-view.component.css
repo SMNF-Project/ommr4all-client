@@ -1,0 +1,30 @@
+.word-container {
+  display: inline-block;
+  /*border: 1px solid yellow;*/
+}
+
+.syllable-container {
+  display: inline-block;
+  /*border: 1px solid blue;*/
+}
+
+.volpiano-syllable {
+  font-family: 'Volpiano', sans-serif;
+  font-size: 28px;
+  /*float: left;*/
+  margin: 0px;
+  /*display: block;*/
+  /*border: 1px solid red;*/
+}
+
+.text-syllable {
+  /*float: left;*/
+  margin: 0px;
+  /*display: block;*/
+  /*border: 1px solid green;*/
+  font-size: xx-small;
+}
+
+.first-text-syllable {
+  color: whitesmoke;
+}

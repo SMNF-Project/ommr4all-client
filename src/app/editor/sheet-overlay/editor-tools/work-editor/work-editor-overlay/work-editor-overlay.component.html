@@ -40,7 +40,11 @@
           <ng-container *ngIf="work.hasMusic">
             <li><b>Melody:</b>
               <div class="volpiano-container">
-                <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>
+                <app-volpiano-and-text-view
+                  [textWords]="work.getVolpianoAndTextStructure()[1]"
+                  [volpianoWords]="work.getVolpianoAndTextStructure()[0]">
+                </app-volpiano-and-text-view>
+                <!-- <div class="volpiano-melody">{{ work.getVolpianoString() }}</div>-->
               </div>
               <mat-slide-toggle [(ngModel)]="showVolpianoString">Show Volpiano string</mat-slide-toggle>
               <div *ngIf="showVolpianoString">

@@ -127,7 +127,7 @@ export class Work extends Region {
     private _works: Works,
     public workTitle: string,
     public blocks: Array<Block> = [],
-    public meta: {[key: string]: any} = {},
+    public meta: { [key: string]: any } = {},
     protected _id: string = '',
   ) {
     super(IdType.Work, _id);
@@ -135,12 +135,16 @@ export class Work extends Region {
     // Note that the work does *NOT* add itself to the container.
     this.workTitle = workTitle;
     this.blocks = blocks;
-    if (!meta) { this.meta = {}; } else { this.meta = meta; }
+    if (!meta) {
+      this.meta = {};
+    } else {
+      this.meta = meta;
+    }
     this.type = BlockType.Work;
 
     this.coords = this.computeCoordsFromBlocks();
-    console.log('ID for work ' + this.workTitle + ':');
-    console.log(this._id);
+    // console.log('ID for work ' + this.workTitle + ':');
+    // console.log(this._id);
   }
 
   static create(
@@ -163,7 +167,9 @@ export class Work extends Region {
     // Derive the title from the first three words of the blocks.
     // Since we do not necessarily have the reading order available,
     // just find the topmost block with text.
-    if (blocks === null || blocks.length === 0) { return null; }
+    if (blocks === null || blocks.length === 0) {
+      return null;
+    }
     // TODO: Check if the right blocks are available.
     const textBlocks = blocks.filter(b => (b.type === BlockType.Lyrics) || (b.type === BlockType.Paragraph));
     // TODO: INstead of this, maybe compute a reading order of the given blocks?
@@ -227,8 +233,13 @@ export class Work extends Region {
     return this.blocks.sort((a, b) => a.AABB.top - b.AABB.top);
   }
 
-  get nextWorkInReadingOrder(): Work { return this.worksContainer.getNextWork(this); }
-  get prevWorkInReadingOrder(): Work { return this.worksContainer.getPrevWork(this); }
+  get nextWorkInReadingOrder(): Work {
+    return this.worksContainer.getNextWork(this);
+  }
+
+  get prevWorkInReadingOrder(): Work {
+    return this.worksContainer.getPrevWork(this);
+  }
 
   get hasLyrics(): boolean {
     const lyricsBlocks = this.blocks.filter(b => BlockTypeUtil.isLyrics(b.type));
@@ -255,7 +266,9 @@ export class Work extends Region {
     // console.log(allReadingsPerLine);
 
     // If there is an empty array, there is no universally available reading.
-    if (allReadingsPerLine.includes([])) { return []; }
+    if (allReadingsPerLine.includes([])) {
+      return [];
+    }
 
     const allPotentialReadings = [...new Set(allReadingsPerLine.reduce((acc, val) => acc.concat(val), []))];
     const availableReadings = allPotentialReadings.filter(
@@ -269,7 +282,7 @@ export class Work extends Region {
   get availableReadings(): Array<string> {
     const availableReadings = this.getAvailableReadings();
     if (availableReadings.length === 0) {
-      return [LineReading.defaultReadingName ];
+      return [LineReading.defaultReadingName];
     }
     return availableReadings;
   }
@@ -288,14 +301,20 @@ export class Work extends Region {
     // console.log('Work.initCoords: blocks');
     // console.log(this.blocks);
 
-    if (!this.blocks) { return new PolyLine([]); }
+    if (!this.blocks) {
+      return new PolyLine([]);
+    }
 
     // If there is only one blocks with at most one line,
     // use its coords.
     if (this.blocks.length === 1) {
       const b = this.blocks[0];
-      if (b.coords.length > 0) { return b.coords.deepCopy(); }
-      if (b.lines.length === 1) { return b.lines[0].coords.deepCopy(); }
+      if (b.coords.length > 0) {
+        return b.coords.deepCopy();
+      }
+      if (b.lines.length === 1) {
+        return b.lines[0].coords.deepCopy();
+      }
     }
 
     // More blocks/more lines: use convex hull.
@@ -323,7 +342,7 @@ export class Work extends Region {
   }
 
   get workInfo() {
-    const workInfo: {[key: string]: any} = {};
+    const workInfo: { [key: string]: any } = {};
     workInfo.title = this.workTitle;
     workInfo.nBlocks = this.blocks.length;
     if (this.meta.hasOwnProperty('cantusId')) {
@@ -342,10 +361,10 @@ export class Work extends Region {
     const textLines = this.blocks.map(b => b.textLines).reduce((acc, val) => acc.concat(val), []);
     // console.log('Work.collectTextLines(): potential lines:');
     // console.log(textLines);
-    if (! readingOrder) {
+    if (!readingOrder) {
       // console.log('    Collecting lines: no reading order.');
       return textLines;
-    } else if (! this.hasLyrics) {
+    } else if (!this.hasLyrics) {
       // console.log('    Collecting lines: reading order but no lyrics.');
       return textLines;
     } else {
@@ -356,21 +375,25 @@ export class Work extends Region {
 
   collectMusicLines() {
     /* Returns an array of music lines within the work, sorted from top to bottom. */
-    const musicLines = this.blocks.map(b => b.musicLines).reduce((acc, val) => acc.concat(val), []).filter(l => l.blockType === BlockType.Music);
+    const musicLines = this.blocks.map(b => b.musicLines)
+      .reduce((acc, val) => acc.concat(val), [])
+      .filter(l => l.blockType === BlockType.Music);
     return musicLines.sort((a, b) => a.AABB.top - b.AABB.top);
   }
 
+  /**
+   * Collects the text within the given Work.
+   *
+   * If a ReadingOrder is given, collects the text in the ReadingOrder, otherwise
+   * returns text ordered the way that the blocks and lines are ordered in the work.
+   *
+   * If a readingName is given, selects this reading from the lines and fails
+   * if the reading is not present in each line. If no readingName is given,
+   * reads from the current sentence member of the lines.
+   **/
   getText(readingOrder: ReadingOrder = null,
           readingName: string = null,
           sentenceConnector: string = ' / '): string {
-    /* Collects the text within the given Work.
-     *
-     * If a ReadingOrder is given, collects the text in the ReadingOrder, otherwise
-     * returns text ordered the way that the blocks and lines are ordered in the work.
-     *
-     * If a readingName is given, selects this reading from the lines and fails
-     * if the reading is not present in each line. If no readingName is given,
-     * reads from the current sentence member of the lines. */
     const textLines = this.collectTextLines(readingOrder);
     // console.log('Work.getText(): collected lines: ');
     // console.log(textLines);
@@ -393,12 +416,16 @@ export class Work extends Region {
           text += sentenceConnector + lineText;
         }
       } else {
-        if ((!l.hasReadings) || (!l.readings.hasOwnProperty(readingName)) ) {
+        if ((!l.hasReadings) || (!l.readings.hasOwnProperty(readingName))) {
           console.error('Requested reading ' + readingName + ' but this is not available in line ' + l.id + '. Returning UNAVAILABLE.');
           return '[ERROR] Reading ' + readingName + ' not available for work ' + this.workTitle;
         }
         const lineText = l.readings[readingName].sentence.textWithoutConnectors;
-        if (text === '') { text += lineText; } else { text += sentenceConnector + lineText; }
+        if (text === '') {
+          text += lineText;
+        } else {
+          text += sentenceConnector + lineText;
+        }
       }
     });
     return text;
@@ -423,29 +450,68 @@ export class Work extends Region {
     return pitches;
   }
 
-  getVolpianoString(): string {
+  getVolpianoString(addStartingClef = true, addLineEndingConnector = true): string {
     // if (this._volpianoString) {
     //   console.log('Work.getVolpianoString(): returning from cache');
     //   return this._volpianoString;
     // }
-    let volpiano = '1---';
+    let volpiano = '';
+    if (addStartingClef) {
+      volpiano = '1---';
+    }
+
     const musicLines = this.collectMusicLines();
+    let isFirstLine = true;
     for (const line of musicLines) {
-      // console.log('Line: ');
-      // console.log(line);
-      const lineVolpiano = line.getVolpianoString(false);
+      console.log('Line: ');
+      console.log(line);
+      const lineVolpiano = line.getVolpianoString(false, isFirstLine);
       // console.log('Line ' + line.id + ' Volpiano: ' + lineVolpiano);
       volpiano = volpiano + lineVolpiano;
 
       // Line ending connector
-      if (line !== musicLines[musicLines.length - 1]) {
-        volpiano = volpiano + '7-';
-      } else {
-        volpiano = volpiano + '---4';
+      if (addLineEndingConnector) {
+        if (line !== musicLines[musicLines.length - 1]) {
+          volpiano = volpiano + '7';
+        } else {
+          volpiano = volpiano + '---4';
+        }
       }
+
+      isFirstLine = false;
     }
     this._volpianoString = volpiano;
     return volpiano;
+  }
+
+  /**
+   * Returns the words-syllable structure of strings for volpiano and corresponding
+   * text. Does only the raw Volpiano content: no clef at the beginning
+   */
+  getVolpianoAndTextStructure(readingOrder: ReadingOrder = null): [string[][], string[][]] {
+    const volpianoString = this.getVolpianoString(false, false);
+    const volpianoWordSegments = volpianoString.split('---');
+    const volpianoWords = volpianoWordSegments.map(w => w.split('--'));
+
+    // Assumption: first syllable begins at first note.
+    const lyricLines = this.collectTextLines(readingOrder).filter(l => l.blockType === BlockType.Lyrics);
+    const textSyllablesFlattened = lyricLines.map(l => l.sentence.syllables)
+      .reduce((acc, val) => acc.concat(val), []);
+    const textWords = [];
+    let nextSylIdx = 0;
+    volpianoWords.forEach(vWord => {
+      const nSylsInWord = vWord.length;
+      textWords.push(textSyllablesFlattened.slice(nextSylIdx, nextSylIdx + nSylsInWord).map(syl => syl.visibleText));
+      nextSylIdx += nSylsInWord;
+    });
+
+    console.log('DEBUG: work volpiano string:');
+    console.log(volpianoString);
+    console.log('DEBUG: Work volpiano and text structure:');
+    console.log(volpianoWords);
+    console.log(textWords);
+
+    return [volpianoWords, textWords];
   }
 
 }

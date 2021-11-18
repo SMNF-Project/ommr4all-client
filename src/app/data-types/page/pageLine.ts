@@ -4,11 +4,10 @@ import {Point, PolyLine, Size} from '../../geometry/geometry';
 import {IdType} from './id-generator';
 import {Block} from './block';
 import {
-  BlockType,
   EmptyRegionDefinition,
   GraphicalConnectionType,
   MusicSymbolPositionInStaff,
-  PitchName, SyllableConnectionType,
+  SyllableConnectionType,
   SymbolType
 } from './definitions';
 import {Syllable} from './syllable';
@@ -554,11 +553,16 @@ export class PageLine extends Region {
     return this.symbols.filter(s => s instanceof Note).map(s => s as Note).map(s => Pitch.pitchFromNote(s));
   }
 
-  getVolpianoString(addStartingClef = false): string {
+  getVolpianoString(addStartingClef = false, isFirstLine = false): string {
     let volpiano = '';
-    if (addStartingClef) { volpiano = volpiano + '1--'; }
+
+    let isFirstSymbol = true;
+    if (addStartingClef) {
+      volpiano = volpiano + '1';
+      isFirstSymbol = false;
+    }
     // Here we should rather read symbol by symbol to catch accidentals.
-    // Clef changes are also not handled very well.
+    // Clef changes are also not handled.
 
     // TODO: incorporate syllables into volpiano export & rendering.
     // In volpiano, lyrics have to be aligned by div.
@@ -581,21 +585,56 @@ export class PageLine extends Region {
       if (s.syllable !== null) {
         // console.log('    Note ' + s.id + ' has directly assigned syllable: ' + s.syllable.id);
         connector = '--';
-      } else if (s.findSyllable() !== null) {
-        const syl = s.findSyllable();
-        // console.log('    Note ' + s.id + ' has found syllable: ' + syl.id);
-        if (syl.connection === SyllableConnectionType.New) {
+        if (s.syllable.connection === SyllableConnectionType.New) {
           connector = '---';
-        } else {
-          connector = '--';
         }
+      } else if (s.findSyllables() !== null) {
+        // Why would we need to look for syllables not
+        // directly connected to this note in order to assign a connector other
+        // than a '-' or ''? If we ever needed a '--' or '---', it should be because
+        // this given note is assigned a syllable that ev. starts a word.
+        // BECAUSE: syllables are never assigned to Notes directly, but through
+        // the Annotations! One note can be annotated by multiple syllables. We are
+        // in a *music* line, not in a text line.
+        const syllableConnectors = s.findConnectors();
+        for (const syllableConnector of syllableConnectors) {
+          const textLine = syllableConnector.textLine;
+          const syllable = syllableConnector.syllable;
+          // console.log('    Note ' + s.id + ' has found syllable: ' + syllable.id);
 
+          // Based on which reading the crrent syllable comes from, either
+          // skip it, or use its SyllableConnectionType to determine whether
+          // it is the start of the word.
+          const sylInfo = textLine.syllableInfoById(syllable.id);
+          if (!sylInfo.r) {
+            // console.log('    but the syllable is not from any reading.');
+          } else if (sylInfo.r.readingName !== textLine.activeReading) {
+            // console.log('      but the syllable is from an inactive reading: ' + sylInfo.r.readingName);
+            connector = '-';
+          } else if (sylInfo.r.readingName === textLine.activeReading) {
+            if (syllable.connection === SyllableConnectionType.New) {
+              connector = '---';
+            } else {
+              connector = '--';
+            }
+            break;
+          }
+        }
       }
       if (s.graphicalConnection === GraphicalConnectionType.Looped) {
         connector = '';
       }
+      // The first syllable of the first word of a work (that is, on the work's
+      // first line, which is why we have a function argument for that) does not
+      // get a separator prefix. If this is not the first symbol on the line
+      // (such as: when a clef was inserted), then isFirstSymbol gets set to false.
+      if (isFirstSymbol && isFirstLine) {
+        connector = '';
+      }
+      // console.log('Adding to volpiano ' + volpiano + ': connector ' + connector + ' volpiano=' + v);
       volpiano = volpiano + connector + v;
       // console.log('  Pitch ' + PitchName[p.pname] + ':' + v);
+      isFirstSymbol = false;
     }
     return volpiano;
   }
@@ -682,6 +721,8 @@ export class PageLine extends Region {
         ' (Line: ' + this.id + ')' +
         ' If found in the current sentence, something is strange, because current sentence' +
         ' should be at least the default reading.');
+      console.log('    Available readings:');
+      console.log(this.availableReadings);
       return {s: null, r: null};
     }
     const syllable = this.sentence.syllables.find(s => s.id === id);

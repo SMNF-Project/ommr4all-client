@@ -1,0 +1,23 @@
+<div class="word-container"
+     *ngFor="let word of volpianoAndTextWords;
+             let isLastWord = last; let isFirstWord = first; index as wordIndex">
+  <div class="syllable-container"
+       *ngFor="let syllable of word;
+               let isLastSyllable = last; let isFirstSyllable = first; index as syllableIndex">
+    <div class="volpiano-syllable">
+      <!-- There is always "--" after a syllable; after a word, there is an extra "-" -->
+      <!-- Also, we add a spacer in front of a volpiano syllable, in order to avoid
+           breaks in the staffs when a syllable text is very long.-->
+      {{ determineVolpianoConnectorPrefix(isLastWord, isLastSyllable, isFirstSyllable) }}{{
+        syllable.volpiano
+      }}{{ determineVolpianoConnectorSuffix(isLastWord, isLastSyllable, isFirstSyllable) }}
+<!--      <ng-container *ngIf="!isLastSyllable">{{ syllable.volpiano }}&#45;&#45;</ng-container>-->
+<!--      <ng-container *ngIf="isLastSyllable && !isLastWord">{{ syllable.volpiano }}-&#45;&#45;</ng-container>-->
+<!--      <ng-container *ngIf="isLastSyllable && isLastWord">{{ syllable.volpiano }}-&#45;&#45;4</ng-container>-->
+    </div>
+    <div class="text-syllable">
+      <!-- Text connectors are "-" after each syllable that is not last within a word. -->
+      {{ syllable.text }}
+    </div>
+  </div>
+</div>

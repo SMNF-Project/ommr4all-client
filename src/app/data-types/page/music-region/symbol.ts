@@ -10,9 +10,10 @@ import {
 import {Point} from 'src/app/geometry/geometry';
 import {Syllable} from '../syllable';
 import {IdGenerator, IdType} from '../id-generator';
-import {PageLine} from '../pageLine';
+import {LineReading, PageLine} from '../pageLine';
 import {UserCommentHolder} from '../userComment';
 import {VolpianoConstants} from '../../../utils/volpiano-notation';
+import {SyllableConnector} from '../annotations';
 
 type MusicLine = PageLine;
 
@@ -340,7 +341,7 @@ export class Note extends MusicSymbol {
   findSyllable(): Syllable {
     // Returns the Syllable(s) that this note is connected to in annotations.
     // There can be more than one syllable, due to Readings. For now we just
-    // get the syllable of the default reading.
+    // get the first syllable that shows up.
     // The behavior of Annotations.findSyllableConnectorByNote, used here,
     // only returns the first connected Syllable found.
     // If there is no syllable connected with the note, returns null.
@@ -351,6 +352,37 @@ export class Note extends MusicSymbol {
       return null;
     }
     return sc.syllable;
+  }
+
+  /**
+   * Finds all syllables that this note is connected to in annotations.
+   * There can be more than one syllable, due to Readings.
+   */
+  findSyllables(): Syllable[] {
+    if (!this.isSyllableConnectionAllowed()) { return null; }
+    const annotations = this._staff.block.page.annotations;
+    const connectors = annotations.findAllSyllableConnectorsByNote(this);
+    if (!connectors) { return null; }
+    const syllables = connectors.map(c => c.syllable);
+    return syllables;
+  }
+
+  /**
+   * Find all SyllableConnectors that connect to this note.
+   */
+  findConnectors(): SyllableConnector[] {
+    if (!this.isSyllableConnectionAllowed()) { return []; }
+    const annotations = this._staff.block.page.annotations;
+    const connectors = annotations.findAllSyllableConnectorsByNote(this);
+    return connectors;
+  }
+
+  findSyllableByReading(reading: LineReading): Syllable {
+    if (!this.isSyllableConnectionAllowed()) { return null; }
+    const annotations = this._staff.block.page.annotations;
+    const connector = annotations.findSyllableConnectorByNoteAndReading(this, reading);
+    if (!connector) { return null; }
+    return connector.syllable;
   }
 
   get clef() {

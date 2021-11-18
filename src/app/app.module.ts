@@ -139,6 +139,7 @@ import { DiscussionEditorComponent } from './editor/sheet-overlay/editor-tools/d
 import { DiscussionEditorOverlayComponent } from './editor/sheet-overlay/editor-tools/discussion-editor/discussion-editor-overlay/discussion-editor-overlay.component';
 import { DiscussionCommentComponent } from './discussion/discussion-comment/discussion-comment.component';
 import { WorkCreationPropertyWidgetComponent } from './editor/property-widgets/work-creation-property-widget/work-creation-property-widget.component';
+import { VolpianoAndTextViewComponent } from './editor/sheet-overlay/editor-tools/work-editor/work-editor-overlay/volpiano-and-text-view/volpiano-and-text-view.component';
 
 registerLocaleData(localeDe, 'de');
 
@@ -270,6 +271,7 @@ const appRoutes: Routes = [
     DiscussionEditorOverlayComponent,
     DiscussionCommentComponent,
     WorkCreationPropertyWidgetComponent,
+    VolpianoAndTextViewComponent,
   ],
   imports: [
     CommonModule,
