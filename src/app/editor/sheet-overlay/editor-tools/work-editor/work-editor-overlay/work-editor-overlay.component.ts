@@ -149,4 +149,9 @@ export class WorkEditorOverlayComponent implements OnInit, OnDestroy, AfterConte
     }
     return false;
   }
+
+  isMetaPropertyValueURL(metaValue: string): boolean {
+    if (metaValue.startsWith('http')) { return true; }
+    return false;
+  }
 }

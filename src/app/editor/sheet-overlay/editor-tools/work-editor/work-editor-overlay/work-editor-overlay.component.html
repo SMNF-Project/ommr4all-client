@@ -125,7 +125,8 @@
         </ul>
         <ul *ngIf="(!isAllowedEditing) || (isAllowedEditing && !showMetadataEditInterface)">
           <li *ngFor="let metaProperty of work.metaKeys">
-            <span><b>{{ metaProperty }}:</b> {{ work.meta[metaProperty] }}</span>
+            <span *ngIf="!isMetaPropertyValueURL(work.meta[metaProperty])"><b>{{ metaProperty }}:</b>&nbsp; {{ work.meta[metaProperty] }}</span>
+            <span *ngIf="isMetaPropertyValueURL(work.meta[metaProperty])"><b>{{ metaProperty }}:</b>&nbsp; <a href="{{ work.meta[metaProperty] }}" target="_blank">{{ work.meta[metaProperty] }}</a></span>
           </li>
 
         </ul>
