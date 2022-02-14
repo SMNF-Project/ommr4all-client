@@ -46,9 +46,9 @@ import {SyllablePropertyWidgetComponent} from './property-widgets/syllable-prope
 })
 export class EditorComponent implements OnInit, OnDestroy {
   private _subscription = new Subscription();
-  @ViewChild(SheetOverlayComponent, {static: false}) sheetOverlayComponent: SheetOverlayComponent;
-  @ViewChild(NotePropertyWidgetComponent, {static: false}) notePropertyWidget: NotePropertyWidgetComponent;
-  @ViewChild(SyllablePropertyWidgetComponent, {static: false}) syllablePropertyWidget: SyllablePropertyWidgetComponent;
+  @ViewChild(SheetOverlayComponent) sheetOverlayComponent: SheetOverlayComponent;
+  @ViewChild(NotePropertyWidgetComponent) notePropertyWidget: NotePropertyWidgetComponent;
+  @ViewChild(SyllablePropertyWidgetComponent) syllablePropertyWidget: SyllablePropertyWidgetComponent;
 
   readonly TaskStatusCodes = TaskStatusCodes;
   readonly ET = EditorTools;

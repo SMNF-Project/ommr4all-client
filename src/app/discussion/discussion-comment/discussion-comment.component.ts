@@ -30,7 +30,7 @@ export class DiscussionCommentComponent implements OnInit, AfterContentChecked {
 
   @Input() comment: UserComment = null;
   @ViewChildren(DiscussionCommentComponent) childCommentViews: Array<DiscussionCommentComponent>;
-  @ViewChild(MatExpansionPanel, {static: false}) expansionPanel: MatExpansionPanel;
+  @ViewChild(MatExpansionPanel) expansionPanel: MatExpansionPanel;
 
   @Output() addedReply = new EventEmitter<UserComment>();
   @Output() deletedComment = new EventEmitter<UserComment>();

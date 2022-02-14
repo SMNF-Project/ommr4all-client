@@ -46,7 +46,7 @@ export class SyllablePropertyWidgetComponent implements OnInit, DoCheck {
 
   @Output() activeReadingChanged = new EventEmitter<SyllablesActiveReadingChanged>();
 
-  @ViewChild('textInput', {static: false}) textElem: ElementRef;
+  @ViewChild('textInput') textElem: ElementRef;
 
   processSyllableClicked(event: SyllableClickEvent) {
     // Filtering the click event based on the active reading. Refactor lower?

@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
+import { EventEmitter, Injectable, Output, Directive } from '@angular/core';
 import {
   CommandAttachLine,
   CommandAttachRegion,
@@ -49,6 +49,7 @@ import {Work} from '../../data-types/page/work';
 const leven = require('leven');
 
 
+@Directive()
 @Injectable({
   providedIn: 'root'
 })

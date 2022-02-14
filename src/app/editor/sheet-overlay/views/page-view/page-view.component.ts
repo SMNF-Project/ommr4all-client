@@ -38,8 +38,8 @@ export class PageViewComponent implements OnInit, OnDestroy {
 
   @ViewChildren(BlockViewComponent) blockViews: QueryList<BlockViewComponent>;
   @ViewChildren(WorkViewComponent) workViews: QueryList<WorkViewComponent>;
-  @ViewChild(AnnotationsViewComponent, {static: false}) annotationView: AnnotationsViewComponent;
-  @ViewChild(CommentsViewComponent, {static: false}) commentsView: CommentsViewComponent;
+  @ViewChild(AnnotationsViewComponent) annotationView: AnnotationsViewComponent;
+  @ViewChild(CommentsViewComponent) commentsView: CommentsViewComponent;
 
   // @Output() commentHolderSelected = new EventEmitter<UserCommentHolder>();
 

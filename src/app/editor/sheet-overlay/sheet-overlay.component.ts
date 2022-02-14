@@ -69,14 +69,14 @@ export class SheetOverlayComponent implements OnInit, OnDestroy, AfterViewInit, 
 
   readonly dummyEditor = new DummyEditorTool(this.sheetOverlayService, this.viewChanges, this.changeDetector);
 
-  @ViewChild(PageViewComponent, {static: false}) pageView: PageViewComponent;
+  @ViewChild(PageViewComponent) pageView: PageViewComponent;
 
   @ViewChild(RegionTypeContextMenuComponent, {static: true}) regionTypeContextMenu: RegionTypeContextMenuComponent;
   @ViewChild(ReadingOrderContextMenuComponent, {static: true}) readingOrderContextMenu: ReadingOrderContextMenuComponent;
   @ViewChild(SymbolContextMenuComponent, {static: true}) symbolContextMenu: SymbolContextMenuComponent;
-  @ViewChild(TextEditorOverlayComponent, {static: false}) textEditorOverlay: TextEditorOverlayComponent;
-  @ViewChild(WorkEditorOverlayComponent, {static: false}) workEditorOverlay: WorkEditorOverlayComponent;
-  @ViewChild(DiscussionEditorOverlayComponent, {static: false}) discussionEditorOverlay: DiscussionEditorOverlayComponent;
+  @ViewChild(TextEditorOverlayComponent) textEditorOverlay: TextEditorOverlayComponent;
+  @ViewChild(WorkEditorOverlayComponent) workEditorOverlay: WorkEditorOverlayComponent;
+  @ViewChild(DiscussionEditorOverlayComponent) discussionEditorOverlay: DiscussionEditorOverlayComponent;
 
   @ViewChild(ViewComponent, {static: true}) viewTool: ViewComponent;
   @ViewChild(WorkEditorComponent, {static: true}) workEditor: WorkEditorComponent;

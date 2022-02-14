@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable, OnDestroy, Output} from '@angular/core';
+import { EventEmitter, Injectable, OnDestroy, Output, Directive } from '@angular/core';
 import {BehaviorSubject, forkJoin, Subscription} from 'rxjs';
 import {ToolBarStateService} from './tool-bar/tool-bar-state.service';
 import {BookCommunication, PageCommunication} from '../data-types/communication';
@@ -62,6 +62,7 @@ export interface PredictedEvent {
   data: PredictData;
 }
 
+@Directive()
 @Injectable({
   providedIn: 'root'
 })

@@ -1,9 +1,10 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
+import { EventEmitter, Injectable, Output, Directive } from '@angular/core';
 import {ChangedView, RequestChangedViewElements} from './changed-view-elements';
 import {PageLine} from '../../data-types/page/pageLine';
 import {Page} from '../../data-types/page/page';
 import {Work} from '../../data-types/page/work';
 
+@Directive()
 @Injectable({
   providedIn: 'root'
 })
