@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {ActionsService} from '../../actions/actions.service';
 import {PcGts} from '../../../data-types/page/pcgts';
 import {MEIHeadMeta} from '../../../data-types/page/meta';
