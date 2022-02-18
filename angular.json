@@ -29,6 +29,11 @@
             "tsConfig": "tsconfig.app.json",
             "aot": false,
             "preserveSymlinks": true,
+            "allowedCommonJsDependencies": [
+              "safe-pipe",
+              "seedrandom",
+              "automation-events"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
