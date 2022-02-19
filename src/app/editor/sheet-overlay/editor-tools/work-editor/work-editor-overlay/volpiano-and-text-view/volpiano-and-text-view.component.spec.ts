@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { VolpianoAndTextViewComponent } from './volpiano-and-text-view.component';
 
@@ -6,7 +6,7 @@ describe('VolpianoAndTextViewComponent', () => {
   let component: VolpianoAndTextViewComponent;
   let fixture: ComponentFixture<VolpianoAndTextViewComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ VolpianoAndTextViewComponent ]
     })

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DiscussionEditorOverlayComponent } from './discussion-editor-overlay.component';
 
@@ -6,7 +6,7 @@ describe('DiscussionEditorOverlayComponent', () => {
   let component: DiscussionEditorOverlayComponent;
   let fixture: ComponentFixture<DiscussionEditorOverlayComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DiscussionEditorOverlayComponent ]
     })

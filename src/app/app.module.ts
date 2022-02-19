@@ -316,7 +316,7 @@ const appRoutes: Routes = [
     MatPaginatorModule,
     RouterModule.forRoot(
       appRoutes,
-      {enableTracing: !environment.production}
+      { enableTracing: !environment.production, relativeLinkResolution: 'legacy' }
     ),
     MatListModule,
     MatTabsModule,

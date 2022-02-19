@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MeiHeadToolDialogComponent } from './mei-head-tool-dialog.component';
 
@@ -6,7 +6,7 @@ describe('MeiHeadToolDialogComponent', () => {
   let component: MeiHeadToolDialogComponent;
   let fixture: ComponentFixture<MeiHeadToolDialogComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MeiHeadToolDialogComponent ]
     })
