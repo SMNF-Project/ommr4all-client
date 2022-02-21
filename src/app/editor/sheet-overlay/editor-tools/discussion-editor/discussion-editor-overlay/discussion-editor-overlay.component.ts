@@ -8,6 +8,7 @@ import {EditorService} from '../../../../editor.service';
 import {ActionsService} from '../../../../actions/actions.service';
 import {Page} from '../../../../../data-types/page/page';
 import {DiscussionEditorComponent} from '../discussion-editor.component';
+import {Work} from '../../../../../data-types/page/work';
 
 @Component({
   selector: 'app-discussion-editor-overlay',
@@ -68,8 +69,10 @@ export class DiscussionEditorOverlayComponent implements OnInit, OnDestroy {
     // }
 
     this._subscription.add(this.viewChanges.changed.subscribe((vc) => {
-      if (vc.checkChangesWorks.has(this._holder)) {
-        this.changeDetector.markForCheck();
+      if (this._holder instanceof Work) {
+        if (vc.checkChangesWorks.has(this._holder)) {
+          this.changeDetector.markForCheck();
+        }
       }
     }));
   }
