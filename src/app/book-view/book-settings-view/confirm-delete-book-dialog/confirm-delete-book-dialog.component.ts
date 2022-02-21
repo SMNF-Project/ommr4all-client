@@ -36,7 +36,7 @@ export class ConfirmDeleteBookDialogComponent implements OnInit {
   }
 
   onConfirm() {
-    (new Promise(((resolve, reject) => {
+    (new Promise<void>(((resolve, reject) => {
       this.http.delete(ServerUrls.deleteBook(this.data.book.id)).subscribe(
         next => {
           resolve();

@@ -103,7 +103,7 @@ export class TaskWorker {
   get accuracy() { return this.status.accuracy < 0 ? 0 : this.status.accuracy * 100; }
 
   public cancelTask() {
-    return new Promise(((resolve, reject) => {
+    return new Promise<void>(((resolve, reject) => {
       this._statusPollerRunning = false;
       this._taskStatus = new TaskStatus();
       this.http.delete(this.operationUrl.operationTaskUrl(this.algorithmType, this._taskId)).subscribe(

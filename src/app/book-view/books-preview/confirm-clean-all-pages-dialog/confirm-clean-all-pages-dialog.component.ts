@@ -32,7 +32,7 @@ export class ConfirmCleanAllPagesDialogComponent implements OnInit {
 
   onConfirm() {
     if (this.data.pages.length === 0) { this.close(true); }
-    (new Promise(((resolve, reject) => {
+    (new Promise<void>(((resolve, reject) => {
       forkJoin(this.data.pages.map(page => this.http.delete(page.operationUrl('clean')))).subscribe(
         next => {
           resolve();
