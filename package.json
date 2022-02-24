@@ -26,7 +26,6 @@
     "@angular/platform-browser": "~12.2.16",
     "@angular/platform-browser-dynamic": "~12.2.16",
     "@angular/router": "~12.2.16",
-    "@ngx-i18nsupport/tooling": "^8.0.3",
     "google-palette": "^1.1.0",
     "hull.js": "^1.0.2",
     "leven": "^3.1.0",
