@@ -4,14 +4,6 @@
   "newProjectRoot": "projects",
   "projects": {
     "ommr4all-client": {
-      "i18n": {
-        "locales": {
-          "de": {
-            "translation": "src/i18n/messages.de.xlf",
-            "baseHref": ""
-          }
-        }
-      },
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -92,9 +84,6 @@
           "configurations": {
             "production": {
               "browserTarget": "ommr4all-client:build:production"
-            },
-            "de": {
-              "browserTarget": "ommr4all-client:build:de"
             }
           }
         },
@@ -144,8 +133,7 @@
               "genDir": "src/i18n",
               "defaultLanguage": "en",
               "languages": [
-                "en",
-                "de"
+                "en"
               ]
             }
           }
