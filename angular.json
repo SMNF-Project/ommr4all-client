@@ -80,46 +80,6 @@
                 }
               ]
             },
-            "production-de": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "5mb",
-                  "maximumError": "10mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "outputPath": "dist/ommr4all-client-de",
-              "i18nFile": "src/i18n/messages.de.xlf",
-              "i18nLocale": "de"
-            },
-            "de": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "outputPath": "dist/ommr4all-client-de",
-              "i18nFile": "src/i18n/messages.de.xlf",
-              "i18nLocale": "de"
-            }
           },
           "defaultConfiguration": ""
         },
