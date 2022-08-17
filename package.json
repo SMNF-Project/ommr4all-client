@@ -36,7 +36,7 @@
     "moment": "^2.29.1",
     "ngx-dropzone-wrapper": "^8.0.0",
     "ngx-highlightjs": "^4.1.4",
-    "node": "^12.22.10",
+    "node": "^16.10",
     "polybooljs": "^1.2.0",
     "rxjs": "^6.5.5",
     "safe-pipe": "^0.3.0",
